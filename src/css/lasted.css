@@ -1,0 +1,42 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+html, body{
+    height: 100%;
+    width: 100%;
+}
+.topp{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 80px;
+    margin: 0;
+    background-color: #343a40;
+    margin-bottom: 20px;
+}
+.logo{
+    height: 20px;
+    margin-left: 5%;
+}
+.infos{
+    padding: .2rem;
+    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+.contInfo{
+    margin-top: 10%;
+    display: flex;
+    margin-left: 5%;
+    margin-right: 5%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+#btnBaixar{
+    align-self: flex-end;
+    justify-self: flex-end;
+}

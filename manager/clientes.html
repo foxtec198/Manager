@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta theme-color="#2B3035">
+    <title>Hubbix Manager</title>
+    <script src="../src/js/manager.js"></script>
+    
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <!-- Favicon -->
+    <link rel="icon" href="../src/img/newFav.png">
+
+    <!-- Local Arch -->
+    <link rel="stylesheet" href="../src/css/base_manager.css">
+    
+    <!-- Outros Modulos (JQUERY, CHARTJS) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <!-- Jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body data-bs-theme="dark">
+    <div class="p-2">
+        <div class="d-flex flex-row justify-content-between align-items-center">
+            <p class="fs-2 fw-bold">Clientes</p>
+            <button class="btn btn-success btn-sm"><i class="bi bi-person-fill-add"></i> Novo Cliente</button>
+        </div>
+        <div class="d-flex flex-column gap-2">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" placeholder="Busque por um elemento da tabela!" id="busca">
+            </div>
+            <div class="card table-responsive-sm p-2 overflow-auto">
+                <table class="table" id="table">
+                    <thead>
+                        <th>Id</th>
+                        <th>CPF</th>
+                        <th>Nome</th>
+                        <th>Telefone</th>
+                        <th>Modelo</th>
+                        <th>Marca</th>
+                        <th>Cor</th>
+                        <th>Endereço</th>
+                        <!-- <th>Obs</th> -->
+                        <th>Ação</th>
+                    </thead>
+                    <tbody id="tableClientes">
+    
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    
+        <script>
+            $(document).ready(function(){
+            $("#busca").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#table tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+            });
+    
+            fetch('/m_get_cliente/')
+            .then(res=>{
+                res.json()
+                .then(res=>{
+                    console.log(res)
+                    for(var x = 0; x < res.length; x++){
+                        const tr = document.createElement('tr')
+    
+                        const id = res[x][0]
+                        const cpf = res[x][1]
+                        const nome = res[x][2]
+                        const telefone = res[x][3]
+                        const modelo = res[x][4]
+                        const marca = res[x][5]
+                        const cor = res[x][6]
+                        const endereco = res[x][7]
+                        const obs = res[x][8]
+    
+                        const idTd = document.createElement('td')
+                        idTd.textContent = id
+                        
+                        const cpfTd = document.createElement('td')
+                        cpfTd.classList.add('text-truncate')
+                        cpfTd.textContent = cpf
+                        
+                        const nomeTd = document.createElement('td')
+                        nomeTd.classList.add('text-truncate')
+                        nomeTd.textContent = nome
+                        
+                        const telefoneTd = document.createElement('td')
+                        telefoneTd.classList.add('text-truncate')
+                        telefoneTd.textContent = telefone
+                        
+                        const modeloTd = document.createElement('td')
+                        modeloTd.classList.add('text-truncate')
+                        modeloTd.textContent = modelo
+                        
+                        const marcaTd = document.createElement('td')
+                        marcaTd.classList.add('text-truncate')
+                        marcaTd.textContent = marca
+    
+                        const corTd = document.createElement('td')
+                        corTd.classList.add('text-truncate')
+                        corTd.textContent = cor
+    
+                        const enderecoTd = document.createElement('td')
+                        enderecoTd.classList.add('text-truncate')
+                        enderecoTd.textContent = endereco
+                        
+                        // const obsTd = document.createElement('td')
+                        // obsTd.textContent = obs
+    
+                        const btnWhats = document.createElement('button')
+                        btnWhats.classList.add('btn')
+                        btnWhats.classList.add('btn-sm')
+                        btnWhats.classList.add('btn-success')
+                        var icon = document.createElement('i')
+                        icon.classList.add('bi')
+                        icon.classList.add('bi-whatsapp')
+                        btnWhats.appendChild(icon)
+                        btnWhats.addEventListener('click',function(){window.location = `https://api.whatsapp.com/send/?phone=${telefone}`})
+    
+                        const btnEditar = document.createElement('button')
+                        btnEditar.classList.add('btn')
+                        btnEditar.classList.add('btn-sm')
+                        btnEditar.classList.add('btn-secondary')
+                        var icon = document.createElement('i')
+                        icon.classList.add('bi')
+                        icon.classList.add('bi-box-arrow-up-right')
+                        btnEditar.appendChild(icon)
+    
+                        const btnRemov = document.createElement('button')
+                        btnRemov.classList.add('btn')
+                        btnRemov.classList.add('btn-sm')
+                        btnRemov.classList.add('btn-danger')
+                        var icon = document.createElement('i')
+                        icon.classList.add('bi')
+                        icon.classList.add('bi-trash-fill')
+                        btnRemov.appendChild(icon)
+    
+                        const btngp = document.createElement('div')
+                        btngp.classList.add('btn-group')
+                        btngp.appendChild(btnEditar)
+                        btngp.appendChild(btnWhats)
+                        btngp.appendChild(btnRemov)
+    
+                        const btns = document.createElement('td')
+                        btns.appendChild(btngp)
+    
+                        tr.appendChild(idTd)
+                        tr.appendChild(cpfTd)
+                        tr.appendChild(nomeTd)
+                        tr.appendChild(telefoneTd)
+                        tr.appendChild(modeloTd)
+                        tr.appendChild(marcaTd)
+                        tr.appendChild(corTd)
+                        tr.appendChild(enderecoTd)
+                        // tr.appendChild(obsTd)
+                        tr.appendChild(btns)
+    
+                        document.getElementById('tableClientes').appendChild(tr)
+                    }
+                })
+            })
+        </script>
+    </div>
+</body>
+</html>
