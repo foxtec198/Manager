@@ -40,22 +40,10 @@
 
     <nav class="d-flex p-2 gap-2 justify-content-between align-items-center">
         <a href="/manager/login.html"><img src="../src/img/logo.svg" class="logo"></a>
-        <button class="btn mobile" data-bs-toggle="dropdown"><i class="bi bi-list"></i></button>
-        <ul class="dropdown-menu text-bg-dark">
-            <li><button onclick="changeWin('/manager/caixa.html')" class="dropdown-item"><i class="bi bi-box-seam-fill"></i> Caixa</a></li>
-            <li><button onclick="changeWin('/manager/vendas.html')" class="dropdown-item"><i class="bi bi-graph-up-arrow"></i> Vendas</a></li>
-            <li><button onclick="changeWin('/manager/os.html')" class="dropdown-item"><i class="bi bi-file-earmark-zip-fill"></i> OS's</a></li>
-            <li><button onclick="changeWin('/manager/clientes.html')" class="dropdown-item"><i class="bi bi-person-bounding-box"></i> Clientes</a></li>
-            <li><button onclick="changeWin('/manager/estoque.html')" class="dropdown-item"><i class="bi bi-archive-fill"></i> Estoque</a></li>
-            <li><button onclick="changeWin('/manager/pecas.html')" class="dropdown-item"><i class="bi bi-gear-fill"></i> Peças</a></li>
-            <li><button onclick="changeWin('/manager/relatorios.html')" class="dropdown-item"><i class="bi bi-microsoft"></i> Relatórios</a></li>
-            <hr>
-            <!-- <li><button onclick="changeWin('/manager/')" class="dropdown-item">Suporte</a></li> -->
-            <li><button onclick="changeWin('/manager/config.html')" class="dropdown-item">Configurações</a></li>
-            <li><a class="dropdown-item" href="/manager/login.html">Sair</a></li>
-        </ul>
+        
     </nav>
-    <div class="d-flex gap-2 p-2 h-100">
+
+    <div class="d-flex gap-2 p-2 h-100" style="margin-bottom: 90px;">
         <div class="card overflow-hidden mobile-hide" style="min-width: 180px;">
             <br>
             <p class="fw-bold p-2 text-center rounded-pill placeholder" id="nomeLoja" style="font-size: 14px;"></p>
@@ -72,10 +60,39 @@
             <a href="/manager/login.html"" class="btnM-exit">Sair</a>
             <br>
         </div>
-
         <iframe class="card" src="/manager/caixa.html" id="changer" width="100%" height="100%" frameborder="0"></iframe>
+        <br>
     </div>
-
+    <br class="mobile">
+    <div class="navBot mobile">
+        <div class="d-flex flex-row justify-content-around g-4">
+            <a class="d-flex flex-column p-1 align-items-center navBot-item" onclick="changeWin('/manager/caixa.html')">
+                <i class="bi bi-box-seam-fill"></i>
+                <p>Caixa</p>
+            </a>
+            <a class="d-flex flex-column p-1 align-items-center navBot-item" onclick="changeWin('/manager/vendas.html')">
+                <i class="bi bi-graph-up-arrow"></i>
+                <p>Vendas</p>
+            </a>
+            <a class="d-flex flex-column p-1 align-items-center navBot-item" onclick="changeWin('/manager/os.html')">
+                <i class="bi bi-file-earmark-zip-fill"></i>
+                <p>Ordens</p>
+            </a>
+            <a class="d-flex flex-column p-1 align-items-center navBot-item" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-list"></i>
+                <p>Demais</p>
+            </a>
+            <ul class="dropdown-menu text-bg-dark">
+                <li><button onclick="changeWin('/manager/clientes.html')" class="dropdown-item dp-item"><i class="bi bi-person-bounding-box"></i> Clientes</a></li>
+                <li><button onclick="changeWin('/manager/estoque.html')" class="dropdown-item dp-item"><i class="bi bi-archive-fill"></i> Estoque</a></li>
+                <li><button onclick="changeWin('/manager/pecas.html')" class="dropdown-item dp-item"><i class="bi bi-gear-fill"></i> Peças</a></li>
+                <li><button onclick="changeWin('/manager/relatorios.html')" class="dropdown-item dp-item"><i class="bi bi-microsoft"></i> Relatórios</a></li>
+                <hr>
+                <li><button onclick="changeWin('/manager/config.html')" class="dropdown-item dp-item">Configurações</a></li>
+                <li><a class="dropdown-item dp-item-exit" href="/manager/login.html">Sair</a></li>
+            </ul>
+        </div>
+    </div>
     
     <script>
         async function getCr() {

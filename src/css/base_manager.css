@@ -17,6 +17,36 @@ body, html{
 nav{
     background: var(--cinza2);
 }
+.navBot{
+    background: var(--cinza2);
+    justify-content: space-around;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding: 10px;
+    color: white;
+    bottom   : 0;
+    position: fixed;
+    width: 100%;
+    box-shadow: #0000 3px -5px 60px;
+    height: 80px;
+}
+.navBot-item{
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+}
+.navBot-item:hover{
+    color: var(--green);
+}
+.dp-item-exit:hover{
+    background-color: var(--red);
+}
+.dp-item:hover{
+    background-color: var(--green);
+}
 .btnM, .btnM-exit{
     background: none;
     text-decoration: none;
