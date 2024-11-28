@@ -56,24 +56,25 @@
             ldg()
             var m = document.getElementById('mat')
             var p = document.getElementById('pwd')
-            document.location = '/manager/base.html'
-            // fetch(`/manager/api/v1//login/?mat=${m.value}&pw=${p.value}`, {method:'post'})
-            // .then(res=>{
-            //     res.json()
-            //     .then(js=>{
-            //         if(res.ok && parseInt(js[0]) == parseInt(m.value)){
-            //             const cr = js[2]
-            //             const gc = js[1]
-            //             fetch(`/manager/api/v1/set_cr/?cr=${cr}&gc=${gc}`, {method:'post'})
-            //             .then(res=>{
-            //                 if(res.ok){document.location = '/manager/caixa'}
-            //             })
-            //         }else if(res.status === 401){
-            //             console.log(js)
-            //             document.location = `/manager/?tst=${js}`
-            //         }
-            //     })
-            // })
+            // document.location = '/manager/base.html'
+            fetch(api + `/manager/api/v1//login/?mat=${m.value}&pw=${p.value}`, {method:'post'})
+            .then(res=>{
+                res.json()
+                .then(js=>{
+                    console.log(js)
+                    // if(res.ok && parseInt(js[0]) == parseInt(m.value)){
+                    //     const cr = js[2]
+                    //     const gc = js[1]
+                    //     fetch(`/manager/api/v1/set_cr/?cr=${cr}&gc=${gc}`, {method:'post'})
+                    //     .then(res=>{
+                    //         if(res.ok){document.location = '/manager/caixa'}
+                    //     })
+                    // }else if(res.status === 401){
+                    //     console.log(js)
+                    //     document.location = `/manager/?tst=${js}`
+                    // }
+                })
+            })
         }
     </script>
 </body>

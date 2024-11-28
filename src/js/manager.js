@@ -1,5 +1,6 @@
 var div = document.createElement('div')
 var cart = []
+var api = 'https://api-hbx.onrender.com/'
 
 function ldg(){
     div.hidden = ''
@@ -56,7 +57,7 @@ function vender(){
 
     if(mat && valorTotal && sel){
         document.getElementById('btnVender').innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div>'
-        fetch(`/manager/api/v1/vender/?dd=${dd}&&cart=${cart}`, {method:'post'})
+        fetch(api + `/manager/api/v1/vender/?dd=${dd}&&cart=${cart}`, {method:'post'})
         .then(res=>{
             if(res.ok){
                 toast('Venda realizada com sucesso!')
@@ -70,7 +71,7 @@ function vender(){
 
 function conferMatricula(mat){
     if(mat.value){
-        fetch('/manager/api/v1/mat_verify/?mat='+mat.value)
+        fetch(api + '/manager/api/v1/mat_verify/?mat='+mat.value)
         .then(res=>{
             res.json()
             .then(res=>{
@@ -86,12 +87,12 @@ function conferMatricula(mat){
 function conferTroco(mat){
     conferMatricula(document.getElementById('mattroco'))
     if(mat.value){
-        fetch('/manager/api/v1/mat_verify/?mat='+mat.value)
+        fetch(api + '/manager/api/v1/mat_verify/?mat='+mat.value)
         .then(res=>{
             res.json()
             .then(res=>{
                 if(res){
-                    fetch('/manager/api/v1/get_valor_caixa/')
+                    fetch(api + '/manager/api/v1/get_valor_caixa/')
                     .then(res=>{
                         res.json()
                         .then(res=>{
@@ -133,7 +134,7 @@ function changeWin(win){
 
 // =============== Caixa
 async function calc(){
-    const res = await fetch('/manager/api/v1//calc_fechamento/')
+    const res = await fetch(api + '/manager/api/v1//calc_fechamento/')
     const js = await res.json()
     for(item in js){
         document.getElementById(item.toLowerCase()).value += parseFloat(js[item]).toFixed(2)
@@ -142,7 +143,7 @@ async function calc(){
 }
 
 async function conferCaixa(){
-    const res = await fetch('/manager/api/v1//confer_caixa')
+    const res = await fetch(api + '/manager/api/v1//confer_caixa')
     const resJ = await res.json()
 
     if(resJ){
@@ -165,7 +166,7 @@ async function conferCaixa(){
 }
 
 async function getSaidasCaixa(){
-    const res = await fetch('/manager/api/v1/get_saidas_caixa')
+    const res = await fetch(api + '/manager/api/v1/get_saidas_caixa')
     const resJ = await res.json()
     for(var x = 0; x < resJ.length; x++){
         var li = document.createElement('li') 
@@ -183,7 +184,7 @@ async function getSaidasCaixa(){
         btn.classList.add('btn-danger')
         btn.innerHTML = `<i class="bi bi-trash-fill"></i>`
         btn.addEventListener('click', function(){
-            fetch(`/manager/api/v1/excluir_saidas/?id=${id}`, {method:'post'})
+            fetch(api + `/manager/api/v1/excluir_saidas/?id=${id}`, {method:'post'})
             .then(res=>{
                 if(res.ok){
                     window.location = '?tst=Excluso com sucesso!'
@@ -200,7 +201,7 @@ async function getSaidasCaixa(){
 
 // =============== Vendas
 async function vendasPorTipo(){
-    const res = await fetch('/manager/api/v1/vendas_por_tipo/')
+    const res = await fetch(api + '/manager/api/v1/vendas_por_tipo/')
     const js = await res.json()
 
     var credito = Math.round(parseFloat(js['CREDITO']))
@@ -218,7 +219,7 @@ async function vendasPorTipo(){
 }
 
 async function getSaidas(){
-    const res = await fetch('/manager/api/v1/get_saidas/', {method:'get'})
+    const res = await fetch(api + '/manager/api/v1/get_saidas/', {method:'get'})
     const js = await res.json()
 
     for(var x = 0; x < js.length; x++){
@@ -261,7 +262,7 @@ async function getSaidas(){
         btnCancel.classList.add('btn-sm')
         btnCancel.classList.add('btn-danger')
         btnCancel.addEventListener('click',function(){
-            fetch(`/m_excluir_saida/?id=${id}&idVenda=${idVenda}`, {method:'post'})
+            fetch(api + `/m_excluir_saida/?id=${id}&idVenda=${idVenda}`, {method:'post'})
             .then(res=>{
                 btnCancel.innerHTML = `
                 <div class="spinner-border spinner-border-sm" role="status">
@@ -292,7 +293,7 @@ async function getSaidas(){
 }
 
 async function getProds(){
-    const res = await fetch('/manager/api/v1/get_prods/')
+    const res = await fetch(api + '/manager/api/v1/get_prods/')
     const js = await res.json()
 
     for(var x = 0; x < js.length; x++){
@@ -349,7 +350,7 @@ async function getProds(){
 
 // =============== Ordens de Serviço
 async function getStatusOs() {
-    const res = await fetch('/manager/api/v1/get_os_status/')
+    const res = await fetch(api + '/manager/api/v1/get_os_status/')
     const js = await res.json()
     document.getElementById('abertas').textContent = js['ABERTA']
     document.getElementById('canceladas').textContent = js['CANCELADA']
@@ -359,7 +360,7 @@ async function getStatusOs() {
 }
 
 async function getOsAbertas(){
-    const res = await fetch('/manager/api/v1/get_os_abertas/')
+    const res = await fetch(api + '/manager/api/v1/get_os_abertas/')
     const js = await res.json()
     
     for(var x = 1; x < js.length; x++){
@@ -477,7 +478,7 @@ async function getOsAbertas(){
 }
 
 async function getAllOs(){
-    const res = await fetch('/manager/api/v1/get_os/')
+    const res = await fetch(api + '/manager/api/v1/get_os/')
     const js = await res.json()
 
     for(var x = 1; x < js.length; x++){
