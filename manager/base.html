@@ -95,18 +95,10 @@
     </div>
     
     <script>
-        async function getCr() {
-            const res = await fetch('/manager/api/v1/get_cr/')
-            const js = await res.json()
-            if(js){
-                document.getElementById('nomeLoja').textContent = js
-            }
-        }
-        try{
-            getCr()
-        }catch{res=>
-            console.log(res)
-        }
+        var label = document.getElementById('nomeLoja')
+
+        label.textContent = cr
+        label.classList.remove('placeholder')
     </script>
 </body>
 </html>

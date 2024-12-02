@@ -1,6 +1,10 @@
 var div = document.createElement('div')
 var cart = []
-var api = 'https://api-hbx.onrender.com/'
+var api = 'https://api-hbx.onrender.com'
+
+var cr = localStorage.getItem('cr')
+var gr = localStorage.getItem('gc')
+
 
 function ldg(){
     div.hidden = ''
@@ -71,13 +75,15 @@ function vender(){
 
 function conferMatricula(mat){
     if(mat.value){
-        fetch(api + '/manager/api/v1/mat_verify/?mat='+mat.value)
+        mat.disabled = true
+        fetch(`${api}/manager/api/v1/mat_verify/?mat=${mat.value}&&cr=${cr}`)
         .then(res=>{
             res.json()
             .then(res=>{
                 if(!res){
-                    toast('Matricula Invalida!')
+                    // toast('Matricula Invalida!')
                     mat.value = ''
+                    mat.disabled = false
                 }
             })
         })
@@ -87,12 +93,12 @@ function conferMatricula(mat){
 function conferTroco(mat){
     conferMatricula(document.getElementById('mattroco'))
     if(mat.value){
-        fetch(api + '/manager/api/v1/mat_verify/?mat='+mat.value)
+        fetch(`${api}/manager/api/v1/mat_verify/?mat=${mat.value}&cr=${cr}`)
         .then(res=>{
             res.json()
             .then(res=>{
                 if(res){
-                    fetch(api + '/manager/api/v1/get_valor_caixa/')
+                    fetch(api + '/manager/api/v1/get_valor_caixa/?cr=' + cr)
                     .then(res=>{
                         res.json()
                         .then(res=>{
@@ -134,7 +140,7 @@ function changeWin(win){
 
 // =============== Caixa
 async function calc(){
-    const res = await fetch(api + '/manager/api/v1//calc_fechamento/')
+    const res = await fetch(api + '/manager/api/v1/calc_fechamento/?cr=' + cr)
     const js = await res.json()
     for(item in js){
         document.getElementById(item.toLowerCase()).value += parseFloat(js[item]).toFixed(2)
@@ -143,7 +149,7 @@ async function calc(){
 }
 
 async function conferCaixa(){
-    const res = await fetch(api + '/manager/api/v1//confer_caixa')
+    const res = await fetch(`${api}/manager/api/v1/confer_caixa/?cr=${cr}`)
     const resJ = await res.json()
 
     if(resJ){
@@ -166,7 +172,7 @@ async function conferCaixa(){
 }
 
 async function getSaidasCaixa(){
-    const res = await fetch(api + '/manager/api/v1/get_saidas_caixa')
+    const res = await fetch(api + '/manager/api/v1/get_saidas_caixa/?cr=' + cr)
     const resJ = await res.json()
     for(var x = 0; x < resJ.length; x++){
         var li = document.createElement('li') 

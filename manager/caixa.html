@@ -38,7 +38,7 @@
                 <div class="card p-4">
                     <p class="fs-5 fw-bold">Abrir Caixa</p>
                     <form id="formABC" action="/manager/api/v1/abrir_caixa" method="post" class="d-flex flex-column gap-1">
-                        <input class="form-control" id="mattroco" oninput="conferTroco(this)" placeholder="Matricula" type="number" name="mat" required>
+                        <input class="form-control" id="mattroco" onblur="conferTroco(this)" placeholder="Matricula" type="number" name="mat" required>
                         <input class="form-control" id="troco" placeholder="Troco" type="text" name="valor" required>
                         <button class="btn btn-success" id="btnAbrirCaixa" type="submit">Abrir</button>
                     </form>
@@ -46,7 +46,7 @@
                 <div class="card p-4">
                     <p class="fs-5 fw-bold">Aplicar Valor</p>
                     <form action="/manager/api/v1/aplicar_valor/" method="post" class="d-flex flex-column gap-1">
-                        <input class="form-control" placeholder="Matricula" oninput="conferMatricula(this)" type="number" name="mat" required>
+                        <input class="form-control" placeholder="Matricula" onblur="conferMatricula(this)" type="number" name="mat" required>
                         <input class="form-control" placeholder="Valor" type="text" name="valor" required>
                         <button class="btn btn-success" type="submit">Aplicar</button>
                     </form>
@@ -54,7 +54,7 @@
                 <div class="card p-4">
                     <p class="fs-5 fw-bold">Retirar Valor</p>
                     <form action="/manager/api/v1/retirar_valor/" method="post" class="d-flex flex-column gap-1">
-                        <input class="form-control" placeholder="Matricula" oninput="conferMatricula(this)" type="number" name="mat" required>
+                        <input class="form-control" placeholder="Matricula" onblur="conferMatricula(this)" type="number" name="mat" required>
                         <select class="form-select" name="motivo" onchange="motivoF(this)">
                             <option>Sangria</option>
                             <option>Outro</option>
@@ -68,7 +68,7 @@
             <div class="card p-4" style="flex-grow: 1;">
                 <p class="fs-5 fw-bold">Fechamento</p>
                 <form action="/manager/api/v1/fechar_caixa/" method="post" class="d-flex flex-column gap-1">
-                    <input class="form-control" placeholder="Matricula" oninput="conferMatricula(this)" type="number" name="mat" required>
+                    <input class="form-control" placeholder="Matricula" onblur="conferMatricula(this)" type="number" name="mat" required>
                     <input class="form-control" value="Dinheiro: R$" type="text" id="dinheiro" disabled>
                     <input class="form-control" value="Debito: R$" type="text" id="debito" disabled>
                     <input class="form-control" value="Crédito: R$" type="text" id="credito" disabled>
@@ -92,10 +92,6 @@
                 await calc()
             }
             start()
-            var tst = '{{tst}}'
-            if(tst){
-                toast(tst)
-            }
         </script>
     
     </div>
