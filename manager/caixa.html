@@ -37,31 +37,31 @@
             <div class="d-flex flex-column gap-2" style="flex-grow: 1;">
                 <div class="card p-4">
                     <p class="fs-5 fw-bold">Abrir Caixa</p>
-                    <form id="formABC" action="/manager/api/v1/abrir_caixa" method="post" class="d-flex flex-column gap-1">
+                    <form id="formABC" class="d-flex flex-column gap-1">
                         <input class="form-control" id="mattroco" onblur="conferTroco(this)" placeholder="Matricula" type="number" name="mat" required>
                         <input class="form-control" id="troco" placeholder="Troco" type="text" name="valor" required>
-                        <button class="btn btn-success" id="btnAbrirCaixa" type="submit">Abrir</button>
+                        <button class="btn btn-success" id="btnAbrirCaixa" type="button" onclick="abrirCaixa()">Abrir</button>
                     </form>
                 </div>
                 <div class="card p-4">
                     <p class="fs-5 fw-bold">Aplicar Valor</p>
-                    <form action="/manager/api/v1/aplicar_valor/" method="post" class="d-flex flex-column gap-1">
-                        <input class="form-control" placeholder="Matricula" onblur="conferMatricula(this)" type="number" name="mat" required>
-                        <input class="form-control" placeholder="Valor" type="text" name="valor" required>
-                        <button class="btn btn-success" type="submit">Aplicar</button>
+                    <form class="d-flex flex-column gap-1">
+                        <input class="form-control" id="aplicarMat" placeholder="Matricula" onblur="conferMatricula(this)" type="number" name="mat" required>
+                        <input class="form-control" id="aplicarValor" placeholder="Valor" type="text" name="valor" required>
+                        <button class="btn btn-success" type="button" onclick="aplicarVlr()">Aplicar</button>
                     </form>
                 </div>
                 <div class="card p-4">
                     <p class="fs-5 fw-bold">Retirar Valor</p>
-                    <form action="/manager/api/v1/retirar_valor/" method="post" class="d-flex flex-column gap-1">
-                        <input class="form-control" placeholder="Matricula" onblur="conferMatricula(this)" type="number" name="mat" required>
-                        <select class="form-select" name="motivo" onchange="motivoF(this)">
+                    <form class="d-flex flex-column gap-1">
+                        <input class="form-control" id="retirarMat" placeholder="Matricula" onblur="conferMatricula(this)" type="number" name="mat" required>
+                        <select class="form-select" name="motivo" id="retirarMotivo" onchange="motivoF(this)">
                             <option>Sangria</option>
                             <option>Outro</option>
                         </select>
                         <input class="form-control" id="motivoIn" placeholder="Outro Motivo" type="text" name="motivoDet" hidden>
-                        <input class="form-control" placeholder="Valor" type="text" name="valor" required>
-                        <button class="btn btn-success" type="submit">Retirar</button>
+                        <input class="form-control" id="retirarV" placeholder="Valor" type="text" name="valor" required>
+                        <button class="btn btn-success" type="button" onclick="retirarValor()">Retirar</button>
                     </form>
                 </div>
             </div>

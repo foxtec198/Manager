@@ -1,9 +1,10 @@
 var div = document.createElement('div')
 var cart = []
-var api = 'https://api-hbx.onrender.com'
+// var api = 'https://api-hbx.onrender.com'
+var api = 'http://10.0.0.249:5432'
 
 var cr = localStorage.getItem('cr')
-var gr = localStorage.getItem('gc')
+var gc = localStorage.getItem('gc')
 
 
 function ldg(){
@@ -206,6 +207,57 @@ async function getSaidasCaixa(){
 }
 
 // =============== Vendas
+function abrirCaixa(){
+    var mat = document.getElementById('mattroco').value
+    var troco = document.getElementById('troco').value
+
+    if(mat !== '' && troco !== ''){
+        fetch(`${api}/manager/api/v1/abrir_caixa/?cr=${cr}&valor=${troco}&mat=${mat}`, {method:'post'})   
+        .then(res=>{
+            if(res.ok){
+                location.reload()
+            }
+        })
+    }
+}
+
+async function aplicarVlr(){
+    var mat = document.getElementById('aplicarMat').value
+    var valor = document.getElementById('aplicarValor').value
+
+    if(mat !== '' && valor !== ''){
+        fetch(`${api}/manager/api/v1/aplicar_valor/?gc=${gc}&cr=${cr}&valor=${valor}&mat=${mat}`, {method:'post'})   
+        .then(res=>{
+            res.json()
+            .then(js=>{
+                console.log(js)
+            })
+        })
+    }
+}
+
+function retirarValor(){
+    var mat = document.getElementById('retirarMat').value
+    var motivo = document.getElementById('retirarMotivo').value
+    var desc = document.getElementById('motivoIn').value
+    var valor = document.getElementById('retirarV').value
+    console.log(mat, valor, motivo, desc)
+
+    
+    if(mat !== '' && valor !== '' && motivo !==  ''){
+        fetch(`${api}/manager/api/v1/retirar_valor/?gc=${gc}&cr=${cr}&valor=${valor}&mat=${mat}&motivo=${motivo}&motivoDet=${desc}`, {method:'post'})   
+        .then(res=>{
+            if(res.ok){
+                res.json()
+                .then(js=>{
+                    console.log(js)
+                    toast(js)
+                })
+            }
+        })
+    }
+}
+
 async function vendasPorTipo(){
     const res = await fetch(api + '/manager/api/v1/vendas_por_tipo/')
     const js = await res.json()
