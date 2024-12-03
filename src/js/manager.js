@@ -1,7 +1,7 @@
 var div = document.createElement('div')
 var cart = []
-// var api = 'https://api-hbx.onrender.com'
-var api = 'http://10.0.0.249:5432'
+var api = 'https://api-hbx.onrender.com'
+// var api = 'http://10.0.0.249:5432'
 
 var cr = localStorage.getItem('cr')
 var gc = localStorage.getItem('gc')
