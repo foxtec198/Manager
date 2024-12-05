@@ -1,7 +1,7 @@
 var div = document.createElement('div')
 var cart = []
-var api = 'https://api-hbx.onrender.com'
-// var api = 'http://10.0.0.249:5432'
+var api = 'http://apihubbix.freeddns.org:9560'
+// var api = 'http://127.0.0.1:5432'
 
 var cr = localStorage.getItem('cr')
 var gc = localStorage.getItem('gc')
@@ -137,6 +137,12 @@ function changeWin(win){
     changer.src = win
 }
 
+function toast2(msg){
+    var d = document.getElementById('alertt')
+    d.hidden = ''
+    document.getElementById('alertt-msg').textContent = decodeURI(msg)
+}
+
 // CONSULTAS
 
 // =============== Caixa
@@ -230,7 +236,7 @@ async function aplicarVlr(){
         .then(res=>{
             res.json()
             .then(js=>{
-                console.log(js)
+                toast2(js)
             })
         })
     }
