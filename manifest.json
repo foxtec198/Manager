@@ -4,6 +4,17 @@
   "background_color": "#000000",
   "short_name": "HBX",
   "description": "Um novo conceito de Gestão",
+  "display_override": [
+      "fullscreen",
+      "browser",
+      "minimal-ui",
+      "window-controls-overlay",
+      "standalone"
+  ],
+  "categories": [
+      "utilities"
+  ],
+  "start_url": "https://hubbix.com.br",
   "icons": [
       {
         "src": "windows11/SmallTile.scale-100.png",
@@ -453,5 +464,5 @@
         "src": "ios/1024.png",
         "sizes": "1024x1024"
       }
-    ]
+  ]
 }
