@@ -1,6 +1,6 @@
 var div = document.createElement('div')
 var cart = []
-var api = 'http://apihubbix.freeddns.org:9560'
+var api = 'https://apihubbix.freeddns.org:9560'
 // var api = 'http://127.0.0.1:5432'
 
 var cr = localStorage.getItem('cr')
