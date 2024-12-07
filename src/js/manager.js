@@ -1,7 +1,6 @@
 var div = document.createElement('div')
 var cart = []
 var api = 'https://apihubbix.freeddns.org:9560'
-// var api = 'http://127.0.0.1:5432'
 
 var cr = localStorage.getItem('cr')
 var gc = localStorage.getItem('gc')
@@ -62,8 +61,8 @@ function vender(){
 
     if(mat && valorTotal && sel){
         document.getElementById('btnVender').innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div>'
-        fetch(api + `/manager/api/v1/vender/?dd=${dd}&&cart=${cart}`, {method:'post'})
-        .then(res=>{
+        fetch(api + `/manager/api/v1/vender/?gc=${gc}&cr=${cr}&dd=${dd}&&cart=${cart}`, {method:'post'})
+        .then(res=>{    
             if(res.ok){
                 toast('Venda realizada com sucesso!')
                 location.reload()
@@ -197,7 +196,7 @@ async function getSaidasCaixa(){
         btn.classList.add('btn-danger')
         btn.innerHTML = `<i class="bi bi-trash-fill"></i>`
         btn.addEventListener('click', function(){
-            fetch(api + `/manager/api/v1/excluir_saidas/?id=${id}`, {method:'post'})
+            fetch(api + `/manager/api/v1/excluir_saidas/?id=${id}&cr=${cr}`, {method:'post'})
             .then(res=>{
                 if(res.ok){
                     window.location = '?tst=Excluso com sucesso!'
@@ -265,7 +264,7 @@ function retirarValor(){
 }
 
 async function vendasPorTipo(){
-    const res = await fetch(api + '/manager/api/v1/vendas_por_tipo/')
+    const res = await fetch(api + '/manager/api/v1/vendas_por_tipo/?cr='+cr)
     const js = await res.json()
 
     var credito = Math.round(parseFloat(js['CREDITO']))
@@ -283,7 +282,7 @@ async function vendasPorTipo(){
 }
 
 async function getSaidas(){
-    const res = await fetch(api + '/manager/api/v1/get_saidas/', {method:'get'})
+    const res = await fetch(api + '/manager/api/v1/get_saidas/?cr='+cr, {method:'get'})
     const js = await res.json()
 
     for(var x = 0; x < js.length; x++){
@@ -357,7 +356,7 @@ async function getSaidas(){
 }
 
 async function getProds(){
-    const res = await fetch(api + '/manager/api/v1/get_prods/')
+    const res = await fetch(api + '/manager/api/v1/get_prods/?cr='+cr)
     const js = await res.json()
 
     for(var x = 0; x < js.length; x++){
