@@ -64,7 +64,6 @@ function vender(){
         fetch(api + `/manager/api/v1/vender/?gc=${gc}&cr=${cr}&dd=${dd}&&cart=${cart}`, {method:'post'})
         .then(res=>{    
             if(res.ok){
-                toast('Venda realizada com sucesso!')
                 location.reload()
             }
         })
@@ -130,19 +129,24 @@ function capitalize(string){
 }
 
 function changeWin(win){
-    console.log(win)
     const changer = document.getElementById('changer')
 
     changer.src = win
 }
 
-function toast2(msg){
+function inform(msg){
     var d = document.getElementById('alertt')
     d.hidden = ''
     document.getElementById('alertt-msg').textContent = decodeURI(msg)
 }
 
-// CONSULTAS
+async function conferCpf(inp){
+    var cpf = await inp.value
+    const res = await fetch(`${api}/manager/api/v1/conferir_cpf/?cr=${cr}&id=${cpf}`, {method:'get'})
+    const js = await res.json()
+    return js
+}
+
 
 // =============== Caixa
 async function calc(){
@@ -211,7 +215,6 @@ async function getSaidasCaixa(){
     }
 }
 
-// =============== Vendas
 function abrirCaixa(){
     var mat = document.getElementById('mattroco').value
     var troco = document.getElementById('troco').value
@@ -220,22 +223,22 @@ function abrirCaixa(){
         fetch(`${api}/manager/api/v1/abrir_caixa/?cr=${cr}&valor=${troco}&mat=${mat}`, {method:'post'})   
         .then(res=>{
             if(res.ok){
+                alert('Caixa aberto com sucesso!')
                 location.reload()
             }
         })
     }
 }
 
-async function aplicarVlr(){
-    var mat = document.getElementById('aplicarMat').value
-    var valor = document.getElementById('aplicarValor').value
-
-    if(mat !== '' && valor !== ''){
-        fetch(`${api}/manager/api/v1/aplicar_valor/?gc=${gc}&cr=${cr}&valor=${valor}&mat=${mat}`, {method:'post'})   
+function fecharCaixa(){
+    var mat = document.getElementById('fecharMat').value
+    if(mat !== ''){
+        fetch(`${api}/manager/api/v1/fechar_caixa/?gc=${gc}&cr=${cr}&mat=${mat}`, {method:'post'})
         .then(res=>{
             res.json()
             .then(js=>{
-                toast2(js)
+                alert(js)
+                location.reload()
             })
         })
     }
@@ -246,7 +249,6 @@ function retirarValor(){
     var motivo = document.getElementById('retirarMotivo').value
     var desc = document.getElementById('motivoIn').value
     var valor = document.getElementById('retirarV').value
-    console.log(mat, valor, motivo, desc)
 
     
     if(mat !== '' && valor !== '' && motivo !==  ''){
@@ -255,32 +257,32 @@ function retirarValor(){
             if(res.ok){
                 res.json()
                 .then(js=>{
-                    console.log(js)
-                    toast(js)
+                    alert(js)
+                    location.reload()
                 })
             }
         })
     }
 }
 
-async function vendasPorTipo(){
-    const res = await fetch(api + '/manager/api/v1/vendas_por_tipo/?cr='+cr)
-    const js = await res.json()
+function aplicarVlr(){
+    var mat = document.getElementById('aplicarMat').value
+    var valor = document.getElementById('aplicarValor').value
 
-    var credito = Math.round(parseFloat(js['CREDITO']))
-    var debito = Math.round(parseFloat(js['DEBITO']))
-    var pix = Math.round(parseFloat(js['PIX']))
-    var dinheiro = Math.round(parseFloat(js['DINHEIRO']))
-    var dia = Math.round(parseFloat(js['DIA']))
-    var total = dinheiro + pix + debito + credito
-
-    document.getElementById('vendasMes').textContent = 'R$' + total.toLocaleString('pt-BR')
-    document.getElementById('vendasDia').textContent = 'R$' + dia.toLocaleString('pt-BR')
-    document.getElementById('pix').textContent = 'R$' + pix.toLocaleString('pt-BR')
-    document.getElementById('cards').textContent = 'R$' + (debito + credito).toLocaleString('pt-BR')
-    document.getElementById('dinheiro').textContent = 'R$' + dinheiro.toLocaleString('pt-BR')
+    if(mat !== '' && valor !== ''){
+        fetch(`${api}/manager/api/v1/aplicar_valor/?gc=${gc}&cr=${cr}&valor=${valor}&mat=${mat}`, {method:'post'})   
+        .then(res=>{
+            res.json()
+            .then(js=>{
+                alert(js)
+                location.reload()
+            })
+        })
+    }
 }
 
+
+// =============== Vendas
 async function getSaidas(){
     const res = await fetch(api + '/manager/api/v1/get_saidas/?cr='+cr, {method:'get'})
     const js = await res.json()
@@ -324,8 +326,11 @@ async function getSaidas(){
         btnCancel.classList.add('btn')
         btnCancel.classList.add('btn-sm')
         btnCancel.classList.add('btn-danger')
+        
+        new bootstrap.Tooltip(btnCancel, {title:'Excluir venda!'})
+
         btnCancel.addEventListener('click',function(){
-            fetch(api + `/m_excluir_saida/?id=${id}&idVenda=${idVenda}`, {method:'post'})
+            fetch(api + `/manager/api/v1/excluir_venda/?cr=${cr}&id=${idVenda}`, {method:'post'})
             .then(res=>{
                 btnCancel.innerHTML = `
                 <div class="spinner-border spinner-border-sm" role="status">
@@ -338,6 +343,32 @@ async function getSaidas(){
             })
         })
 
+        const btnCancelItem = document.createElement('button')
+        var icon = document.createElement('i')
+        icon.classList.add('bi')
+        icon.classList.add('bi-phone')
+        btnCancelItem.appendChild(icon)
+        btnCancelItem.classList.add('btn')
+        btnCancelItem.classList.add('btn-sm')
+        btnCancelItem.classList.add('btn-warning')
+
+        new bootstrap.Tooltip(btnCancelItem, {title:'Excluir item!'})
+
+        btnCancelItem.addEventListener('click',function(){
+            fetch(api + `/manager/api/v1/excluir_saida/?cr=${cr}&id=${id}&idVenda=${idVenda}`, {method:'post'})
+            .then(res=>{
+                btnCancelItem.innerHTML = `
+                <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                `
+                if(res.ok){
+                    location.reload()
+                }
+            })
+        })
+
+        btngp.appendChild(btnCancelItem)
         btngp.appendChild(btnCancel)
 
         const act = document.createElement('td')
@@ -353,6 +384,24 @@ async function getSaidas(){
 
         document.getElementById('tbVendas').appendChild(tr)  
     }
+}
+
+async function vendasPorTipo(){
+    const res = await fetch(api + '/manager/api/v1/vendas_por_tipo/?cr='+cr)
+    const js = await res.json()
+
+    var credito = Math.round(parseFloat(js['CREDITO']))
+    var debito = Math.round(parseFloat(js['DEBITO']))
+    var pix = Math.round(parseFloat(js['PIX']))
+    var dinheiro = Math.round(parseFloat(js['DINHEIRO']))
+    var dia = Math.round(parseFloat(js['DIA']))
+    var total = dinheiro + pix + debito + credito
+
+    document.getElementById('vendasMes').textContent = 'R$' + total.toLocaleString('pt-BR')
+    document.getElementById('vendasDia').textContent = 'R$' + dia.toLocaleString('pt-BR')
+    document.getElementById('pix').textContent = 'R$' + pix.toLocaleString('pt-BR')
+    document.getElementById('cards').textContent = 'R$' + (debito + credito).toLocaleString('pt-BR')
+    document.getElementById('dinheiro').textContent = 'R$' + dinheiro.toLocaleString('pt-BR')
 }
 
 async function getProds(){
@@ -411,9 +460,34 @@ async function getProds(){
     }
 }
 
+async function conferCPFNewVenda(inp) {
+    var cpf = await inp.value
+    
+    if(cpf.length >= 10){
+        var l = document.getElementById('ldgCPF')
+        l.hidden = ''
+        fetch(`${api}/manager/api/v1/conferir_cpf/?cr=${cr}&id=${cpf}`, {method:'get'})
+        .then(res=>{
+            res.json()
+            .then(js=>{
+                if(js === 'Sem obs'){
+                    l.hidden = 'none'
+                }else if(js === 'CPF Não cadastrado!'){
+                    l.hidden = 'none'
+                    inp.value = ''
+                    alert(js)
+                }else{
+                    l.hidden = 'none'
+                    alert(`OBSERVAÇÃO ENCONTRADA: ${js}`)
+                }
+            })
+        })
+    }
+}
+
 // =============== Ordens de Serviço
 async function getStatusOs() {
-    const res = await fetch(api + '/manager/api/v1/get_os_status/')
+    const res = await fetch(api + '/manager/api/v1/get_os_status/?cr=' + cr)
     const js = await res.json()
     document.getElementById('abertas').textContent = js['ABERTA']
     document.getElementById('canceladas').textContent = js['CANCELADA']
@@ -423,7 +497,7 @@ async function getStatusOs() {
 }
 
 async function getOsAbertas(){
-    const res = await fetch(api + '/manager/api/v1/get_os_abertas/')
+    const res = await fetch(api + '/manager/api/v1/get_os_abertas/?cr='+cr)
     const js = await res.json()
     
     for(var x = 1; x < js.length; x++){
@@ -485,15 +559,16 @@ async function getOsAbertas(){
         btnEntregue.classList.add('btn-success')
         btnEntregue.addEventListener('click',function(){alert(numOs.textContent)})
 
-        // Botao para finalizar
-        const btnFinalizar = document.createElement('button')
+        // Botao para Editar
+        const btnEditar = document.createElement('button')
         const iconFinalizar = document.createElement('i')
         iconFinalizar.classList.add('bi')
-        iconFinalizar.classList.add('bi-chat-left-quote-fill')
-        btnFinalizar.appendChild(iconFinalizar)
-        btnFinalizar.classList.add('btn')
-        btnFinalizar.classList.add('btn-sm')
-        btnFinalizar.classList.add('bg-orange')
+        // iconFinalizar.classList.add('bi-chat-left-quote-fill')
+        iconFinalizar.classList.add('bi-box-arrow-up-right')
+        btnEditar.appendChild(iconFinalizar)
+        btnEditar.classList.add('btn')
+        btnEditar.classList.add('btn-sm')
+        btnEditar.classList.add('btn-secondary')
 
         // Botao sem conserto
         const btnSemConserto = document.createElement('button')
@@ -517,9 +592,9 @@ async function getOsAbertas(){
 
         
         btngp.appendChild(btnEntregue)
-        btngp.appendChild(btnFinalizar)
         btngp.appendChild(btnSemConserto)
         btngp.appendChild(btnCancelar)
+        btngp.appendChild(btnEditar)
         
         const act = document.createElement('td')
         act.appendChild(btngp)
@@ -541,7 +616,7 @@ async function getOsAbertas(){
 }
 
 async function getAllOs(){
-    const res = await fetch(api + '/manager/api/v1/get_os/')
+    const res = await fetch(api + '/manager/api/v1/get_os/?cr='+cr)
     const js = await res.json()
 
     for(var x = 1; x < js.length; x++){

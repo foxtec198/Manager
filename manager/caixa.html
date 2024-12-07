@@ -68,8 +68,8 @@
             </div>
             <div class="card p-4" style="flex-grow: 1;">
                 <p class="fs-5 fw-bold">Fechamento</p>
-                <form action="/manager/api/v1/fechar_caixa/" method="post" class="d-flex flex-column gap-1">
-                    <input class="form-control" placeholder="Matricula" onblur="conferMatricula(this)" type="number" name="mat" required>
+                <form class="d-flex flex-column gap-1">
+                    <input class="form-control" id="fecharMat" placeholder="Matricula" onblur="conferMatricula(this)" type="number" name="mat" required>
                     <input class="form-control" value="Dinheiro: R$" type="text" id="dinheiro" disabled>
                     <input class="form-control" value="Debito: R$" type="text" id="debito" disabled>
                     <input class="form-control" value="Crédito: R$" type="text" id="credito" disabled>
@@ -78,7 +78,7 @@
                     <input class="form-control" value="Saidas: R$" type="text" id="saidas" disabled>
                     <input class="form-control" value="Abertura: R$" type="text" id="abertura" disabled>
                     <br>
-                    <button class="btn btn-danger" type="submit">Fechar Caixa</button>
+                    <button class="btn btn-danger" type="button" onclick="fecharCaixa()">Fechar Caixa</button>
                 </form>
             </div>
             <div class="card p-4" style="flex-grow: 1;">

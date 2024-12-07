@@ -67,7 +67,7 @@
             });
             });
     
-            fetch('/m_get_cliente/')
+            fetch(api + '/manager/api/v1/get_cliente/?cr=' + cr)
             .then(res=>{
                 res.json()
                 .then(res=>{

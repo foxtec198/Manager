@@ -72,7 +72,7 @@
             });
         });
     
-        fetch('/m_get_prods/')
+        fetch(api + '/manager/api/v1/get_prods/?cr=' + cr)
         .then(res=>{
             res.json()
             .then(res=>{
@@ -122,9 +122,19 @@
                     icon.classList.add('bi')
                     icon.classList.add('bi-trash-fill')
                     btnRemov.appendChild(icon)
+
+                    const btnEntrada = document.createElement('button')
+                    btnEntrada.classList.add('btn')
+                    btnEntrada.classList.add('btn-sm')
+                    btnEntrada.classList.add('btn-success')
+                    var icon = document.createElement('i')
+                    icon.classList.add('bi')
+                    icon.classList.add('bi-plus-circle-fill')
+                    btnEntrada.appendChild(icon)
     
                     btngp.appendChild(btnEditar)
                     btngp.appendChild(btnRemov)
+                    btngp.appendChild(btnEntrada)
     
                     tr.appendChild(id)
                     tr.appendChild(nome)

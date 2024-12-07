@@ -26,12 +26,39 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body data-bs-theme="dark">
+  <!-- Modals -->
+  <div class="modal fade modal-xl" id="newOSmodal" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Cadastrar OS</h1>
+            </div>
+            <div class="modal-body" style="overflow-x: auto;">
+              <div class="d-flex w-100">
+                <div class="card p-4 gap-4 d-flex w-50">
+                  <input class="form-control" placeholder="CPF ou Nome">
+                  <ul id="listClient list-group"></ul>
+                </div>
+                <div class="card p-4 gap-4">
+                  <input class="form-control" placeholder="CPF ou Nome">
+                  <ul id="listClient list-group"></ul>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-success">Imprimir OS</button>
+            </div>
+      </div>
+    </div>
+  </div>
+  
   <div class="p-2">
       <div class="d-flex flex-row justify-content-between align-items-center">
           <p class="fs-2 fw-bold">Ordens de Seviços</p>
           <div>
-        <button class="btn btn-success mobile"><i class="bi bi-folder-plus"></i></button>
-        <button class="btn btn-success btn-sm mobile-hide"><i class="bi bi-folder-plus"></i> Nova OS</button>
+        <button class="btn btn-success mobile" data-bs-toggle="modal" data-bs-target="#newOSmodal" ><i class="bi bi-folder-plus"></i></button>
+        <button class="btn btn-success btn-sm mobile-hide" data-bs-toggle="modal" data-bs-target="#newOSmodal" ><i class="bi bi-folder-plus"></i> Nova OS</button>
           </div>
       </div>
   

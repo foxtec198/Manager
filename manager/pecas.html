@@ -68,7 +68,7 @@
             });
         });
     
-        fetch('/m_get_pecas00/')
+        fetch(api + '/manager/api/v1/get_pecas/?cr=' + cr)
         .then(res=>{
             res.json()
             .then(res=>{
