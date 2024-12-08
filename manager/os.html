@@ -33,15 +33,81 @@
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Cadastrar OS</h1>
             </div>
-            <div class="modal-body" style="overflow-x: auto;">
-              <div class="d-flex w-100">
-                <div class="card p-4 gap-4 d-flex w-50">
-                  <input class="form-control" placeholder="CPF ou Nome">
-                  <ul id="listClient list-group"></ul>
+            <div class="modal-body gap-4" style="overflow-x: auto;">
+              <div class="d-flex flex-column gap-2">
+                <div class="d-flex flex-wrap gap-2 w-100">
+                  <div class="card p-4 gap-4 d-flex" style="flex-grow: 1; flex-basis: 200px; max-height: 200px;">
+                    <input class="form-control" placeholder="Digite um CPF ou Nome, ou selecione na lista abaixo!">
+                    <ul id="listClient" class="list-group"></ul>
+                  </div>
+                  <div class="card p-4 gap-4" style="flex-grow: 1; flex-basis: 200px; max-height: 200px;">
+                    <span class="fs-6 text-sub">Cliente</span>
+                    <div class="d-flex flex-wrap gap-2">
+                      <div class="d-flex align-items-center gap-2 w-100" style="flex-grow: 1; flex-basis: 200px;">
+                        <label for="">Nome</label>
+                        <input class="form-control" placeholder="Fulano" id="Nome" disabled>
+                      </div>
+                      <div class="d-flex align-items-center gap-2 w-100" style="flex-grow: 1; flex-basis: 200px;">
+                        <label for="">Telefone*</label>
+                        <input class="form-control" placeholder="99999999999">
+                      </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 w-100">
+                      <label for="">Endereço*</label>
+                      <input class="form-control" placeholder="Nome da Rua, 1234 - Bairro - UF">
+                    </div>
+                  </div>
                 </div>
-                <div class="card p-4 gap-4">
-                  <input class="form-control" placeholder="CPF ou Nome">
-                  <ul id="listClient list-group"></ul>
+                <div class="card d-flex p-4 gap-4">
+                  <span class="fs-6 text-sub">Celular</span>
+                  <div class="d-flex gap-2">
+                    <div class="d-flex align-items-center gap-2 w-100">
+                      <label for="">IMEI</label>
+                      <input class="form-control" placeholder="333536321455875">
+                    </div>
+                    <div class="d-flex align-items-center gap-2 w-100">
+                      <label for="">Modelo*</label>
+                      <input class="form-control" placeholder="A10, A30s, S21F...">
+                    </div>
+                  </div>
+                  <div class="d-flex gap-2">
+                    <div class="d-flex align-items-center gap-2 w-100">
+                      <label>Cor*</label>
+                      <input class="form-control" placeholder="Branca, Preto...">
+                    </div>
+                    <div class="d-flex align-items-center gap-2 w-100">
+                      <label>Marca*</label>
+                      <select class="form-select"></select>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                  <div class="card d-flex p-4 gap-4" style="flex-grow: 1; flex-basis: 200px;">
+                    <span class="fs-6 text-sub">Status do Serviço*</span>
+                    <div class="d-flex">
+                      <select class="form-select"></select>
+                      <button class="btn">+</button>
+                    </div>
+                    <ul class="list-group"></ul>
+                  </div>
+                  <div class="card d-flex p-4 gap-4" style="flex-grow: 1; flex-basis: 200px;">
+                    <span class="fs-6 text-sub">Tipo de Serviço*</span>
+                    <div class="d-flex">
+                      <select class="form-select"></select>
+                      <button class="btn">+</button>
+                    </div>
+                    <ul class="list-group"></ul>
+                  </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                  <div class="card d-flex flex-column p-4 gap-4" style="flex-grow: 1; flex-basis: 200px;">
+                    <span class="fs-6 text-sub">Observação*</span>
+                    <textarea class="form-control" id="" rows="4"></textarea>
+                  </div>
+                  <div class="card d-flex flex-column p-4 gap-4" style="flex-grow: 1; flex-basis: 200px;">
+                    <span class="fs-6 text-sub">Relato do Cliente*</span>
+                    <textarea class="form-control" id="" rows="4"></textarea>
+                  </div>
                 </div>
               </div>
             </div>
