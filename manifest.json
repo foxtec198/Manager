@@ -5,11 +5,11 @@
   "short_name": "HBX",
   "description": "Um novo conceito de Gestão",
   "display_override": [
+    "standalone",
+    "minimal-ui",
     "window-controls-overlay",
     "browser",
-    "fullscreen",
-    "standalone",
-    "minimal-ui"
+    "fullscreen"
   ],
   "categories": [
     "utilities"
