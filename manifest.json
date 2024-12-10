@@ -2,7 +2,7 @@
   "name": "Hubbix",
   "theme_color": "#5e8b60",
   "background_color": "#000000",
-  "short_name": "HBX",
+  "short_name": "Hubbix",
   "description": "Um novo conceito de Gestão",
   "display_override": [
     "standalone",
@@ -465,7 +465,7 @@
       "sizes": "1024x1024"
     }
   ],
-  "dir": "auto",
+  "dir": "ltr",
   "lang": "pa",
   "orientation": "any",
   "display": "minimal-ui"
