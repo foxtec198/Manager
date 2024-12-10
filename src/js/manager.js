@@ -4,8 +4,8 @@ var statusM = []
 var tipo = []
 var spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 
-// var api = 'https://apihubbix.freeddns.org'
-var api = 'http://10.0.0.105:5432'
+var api = 'https://apihubbix.freeddns.org'
+// var api = 'http://10.0.0.105:5432'
 
 var cr = localStorage.getItem('cr')
 var gc = localStorage.getItem('gc')
