@@ -465,8 +465,8 @@
       "sizes": "1024x1024"
     }
   ],
-  "dir": "ltr",
-  "lang": "pa",
-  "orientation": "any",
+  "dir": "auto",
+  "lang": "pt",
+  "orientation": "natural",
   "display": "minimal-ui"
 }
