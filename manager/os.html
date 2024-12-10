@@ -30,112 +30,113 @@
   <div class="modal fade modal-xl" id="newOSmodal" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Cadastrar OS</h1>
-            </div>
-            <div class="modal-body gap-4" style="overflow-x: auto;">
-              <div class="d-flex flex-column gap-2">
-                <div class="d-flex flex-wrap gap-2 w-100">
-                  <div class="card p-4 gap-4 d-flex" style="flex-grow: 1; flex-basis: 200px; max-height: 300px;">
-                    <input class="form-control" placeholder="Digite um CPF ou Nome, ou selecione na lista abaixo!">
-                    <ul id="listClient" class="list-group"></ul>
+          <div class="modal-header">
+              <h1 class="modal-title fs-5" id="staticBackdropLabel">Cadastrar OS</h1>
+          </div>
+          <div class="modal-body gap-4" style="overflow-x: auto;">
+            <div class="d-flex flex-column gap-2">
+              <div class="d-flex flex-wrap gap-2 w-100">
+                <div class="card p-4 gap-4 d-flex" style="flex-grow: 1; flex-basis: 200px; max-height: 300px; overflow-y: scroll;">
+                  <input class="form-control" id="searchClient" placeholder="Digite um CPF ou Nome, ou selecione na lista abaixo!">
+                  <ul id="listClient" class="list-group"></ul>
+                </div>
+                <div class="card p-4 gap-4" style="flex-grow: 1; flex-basis: 200px; max-height: 300px;">
+                  <span class="fs-6 text-sub">Cliente</span>
+                  <div class="d-flex flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2 w-100" style="flex-grow: 1; flex-basis: 200px;">
+                      <input id="CPF" hidden>
+                      <label for="">Nome</label>
+                      <input class="form-control" placeholder="Fulano" id="Nome" disabled>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 w-100" style="flex-grow: 1; flex-basis: 200px;">
+                      <label for="">Telefone*</label>
+                      <input id="Telefone" class="form-control" placeholder="99999999999">
+                    </div>
                   </div>
-                  <div class="card p-4 gap-4" style="flex-grow: 1; flex-basis: 200px; max-height: 300px;">
-                    <span class="fs-6 text-sub">Cliente</span>
-                    <div class="d-flex flex-wrap gap-2">
-                      <div class="d-flex align-items-center gap-2 w-100" style="flex-grow: 1; flex-basis: 200px;">
-                        <label for="">Nome</label>
-                        <input class="form-control" placeholder="Fulano" id="Nome" disabled>
-                      </div>
-                      <div class="d-flex align-items-center gap-2 w-100" style="flex-grow: 1; flex-basis: 200px;">
-                        <label for="">Telefone*</label>
-                        <input class="form-control" placeholder="99999999999">
-                      </div>
-                    </div>
-                    <div class="d-flex align-items-center gap-2 w-100">
-                      <label for="">Endereço*</label>
-                      <input class="form-control" placeholder="Nome da Rua, 1234 - Bairro - UF">
-                    </div>
+                  <div class="d-flex align-items-center gap-2 w-100">
+                    <label for="">Endereço*</label>
+                    <input id="endereco" class="form-control" placeholder="Nome da Rua, 1234 - Bairro - UF">
                   </div>
                 </div>
-                <div class="card d-flex p-4 gap-4">
-                  <span class="fs-6 text-sub">Celular</span>
-                  <div class="d-flex gap-2">
-                    <div class="d-flex align-items-center gap-2 w-100">
-                      <label for="">IMEI</label>
-                      <input class="form-control" placeholder="333536321455875">
-                    </div>
-                    <div class="d-flex align-items-center gap-2 w-100">
-                      <label for="">Modelo*</label>
-                      <input class="form-control" placeholder="A10, A30s, S21F...">
-                    </div>
+              </div>
+              <div class="card d-flex p-4 gap-4">
+                <span class="fs-6 text-sub">Celular</span>
+                <div class="d-flex gap-2">
+                  <div class="d-flex align-items-center gap-2 w-100">
+                    <label for="">IMEI</label>
+                    <input id="imei" class="form-control" placeholder="333536321455875">
                   </div>
-                  <div class="d-flex gap-2">
-                    <div class="d-flex align-items-center gap-2 w-100">
-                      <label>Cor*</label>
-                      <input class="form-control" placeholder="Branca, Preto...">
-                    </div>
-                    <div class="d-flex align-items-center gap-2 w-100">
-                      <label>Marca*</label>
-                      <select class="form-select"></select>
-                    </div>
+                  <div class="d-flex align-items-center gap-2 w-100">
+                    <label for="">Modelo*</label>
+                    <input id="modelo" class="form-control" placeholder="A10, A30s, S21F...">
                   </div>
                 </div>
-                <div class="d-flex flex-wrap gap-2">
-                  <div class="card d-flex p-4 gap-4" style="flex-grow: 1; flex-basis: 200px;">
-                    <span class="fs-6 text-sub">Status do Serviço*</span>
-                    <div class="d-flex">
-                      <select class="form-select"></select>
-                      <button class="btn">+</button>
-                    </div>
-                    <ul class="list-group"></ul>
+                <div class="d-flex gap-2">
+                  <div class="d-flex align-items-center gap-2 w-100">
+                    <label>Cor*</label>
+                    <input id="cor" class="form-control" placeholder="Branca, Preto...">
                   </div>
-                  <div class="card d-flex p-4 gap-4" style="flex-grow: 1; flex-basis: 200px;">
-                    <span class="fs-6 text-sub">Tipo de Serviço*</span>
-                    <div class="d-flex">
-                      <select class="form-select"></select>
-                      <button class="btn">+</button>
-                    </div>
-                    <ul class="list-group"></ul>
+                  <div class="d-flex align-items-center gap-2 w-100">
+                    <label>Marca*</label>
+                    <select id="marca" class="form-select"></select>
                   </div>
                 </div>
-                <div class="d-flex flex-wrap gap-2">
-                  <div class="card d-flex flex-column p-4 gap-4" style="flex-grow: 1; flex-basis: 200px;">
-                    <span class="fs-6 text-sub">Observação*</span>
-                    <textarea class="form-control" id="" rows="4"></textarea>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <div class="card d-flex p-4 gap-4" style="flex-grow: 1; flex-basis: 200px;">
+                  <span class="fs-6 text-sub">Status do Serviço*</span>
+                  <div class="d-flex">
+                    <select class="form-select" id="status"></select>
+                    <button class="btn" onclick="addStatus()">+</button>
                   </div>
-                  <div class="card d-flex flex-column p-4 gap-4" style="flex-grow: 1; flex-basis: 200px;">
-                    <span class="fs-6 text-sub">Relato do Cliente*</span>
-                    <textarea class="form-control" id="" rows="4"></textarea>
-                  </div>
+                  <ul class="list-group" id="ul-status"></ul>
                 </div>
-                <div class="card d-flex flex-column p-4 gap-4">
-                  <div class="d-flex gap-2 align-items-center justify-content-end">
-                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                    <label for="">Ligar Avisando?</label>
+                <div class="card d-flex p-4 gap-4" style="flex-grow: 1; flex-basis: 200px;">
+                  <span class="fs-6 text-sub">Tipo de Serviço*</span>
+                  <div class="d-flex">
+                    <select class="form-select" id="tipo"></select>
+                    <button class="btn" onclick="addTipo()">+</button>
                   </div>
-                  <div class="d-flex gap-2 align-items-center justify-content-end">
-                    <label class="text-truncation w-100 text-end">Data de Retirada</label>
-                    <input class="form-control" type="date">
+                  <ul class="list-group" id="ul-tipo"></ul>
+                </div>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <div class="card d-flex flex-column p-4 gap-4" style="flex-grow: 1; flex-basis: 200px;">
+                  <span class="fs-6 text-sub">Observação*</span>
+                  <textarea class="form-control" id="obs" rows="4"></textarea>
+                </div>
+                <div class="card d-flex flex-column p-4 gap-4" style="flex-grow: 1; flex-basis: 200px;">
+                  <span class="fs-6 text-sub">Relato do Cliente*</span>
+                  <textarea class="form-control" id="relato" rows="4"></textarea>
+                </div>
+              </div>
+              <div class="card d-flex flex-column p-4 gap-4">
+                <div class="d-flex gap-2 align-items-center justify-content-end">
+                  <input class="form-check-input" type="checkbox" id="ligar">
+                  <label for="">Ligar Avisando?</label>
+                </div>
+                <div class="d-flex gap-2 align-items-center justify-content-end">
+                  <label class="text-truncation w-100 text-end">Data de Retirada</label>
+                  <input class="form-control" type="date" id="retirada">
+                </div>
+                <hr>
+                <div class="d-flex justify-content-around">
+                  <div class="d-flex gap-2 align-items-center">
+                    <label class="w-100 text-end">Valor R$:</label>
+                    <input class="form-control" type="number" id="valor" placeholder="Somente num.">
                   </div>
-                  <hr>
-                  <div class="d-flex justify-content-around">
-                    <div class="d-flex gap-2 align-items-center">
-                      <label class="w-100 text-end">Valor R$:</label>
-                      <input class="form-control" type="number" placeholder="Somente num.">
-                    </div>
-                    <div class="d-flex gap-2 align-items-center">
-                      <label class="w-100 text-end">Matricula</label>
-                      <input class="form-control" type="number">
-                    </div>
+                  <div class="d-flex gap-2 align-items-center">
+                    <label class="w-100 text-end">Matricula</label>
+                    <input class="form-control" id="matricula" onblur="conferMatricula(this)" type="number">
                   </div>
                 </div>
               </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-success">Imprimir OS</button>
-            </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+              <button type="button" onclick="abrirOS(this)" class="btn btn-success">Imprimir OS</button>
+          </div>
       </div>
     </div>
   </div>
@@ -170,13 +171,6 @@
                   <p>Sem Conserto</p>
               </div>
               <p class="fs-4 fw-bold text-center" id="semconserto">0</p>
-          </div>
-          <div class="d-flex flex-column p-2 border rounded bg-orange metric" style="flex-grow: 1; flex-basis: 10px;">
-              <div class="d-flex gap-1">
-                  <i class="bi bi-chat-left-quote-fill"></i>
-                  <p>Finalizadas</p>
-              </div>
-              <p class="fs-4 fw-bold text-center" id="finalizadas">0</p>
           </div>
           <div class="d-flex flex-column p-2 border rounded bg-green metric" style="flex-grow: 1; flex-basis: 10px;">
               <div class="d-flex gap-1">
@@ -257,7 +251,8 @@
           </div>
       </div>
   
-      <script>
+  </div>
+  <script>
       $(document).ready(function(){
           $("#buscarAbertas").on("keyup", function() {
               var value = $(this).val().toLowerCase();
@@ -275,14 +270,23 @@
               });
           });
           });
+
+      $(document).ready(function(){
+          $("#searchClient").on("keyup", function() {
+              var value = $(this).val().toLowerCase();
+              $("#listClient ul").filter(function() {
+              $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+              });
+          });
+          });
   
       async function start(){
         await getStatusOs()
         await getOsAbertas()
         await getAllOs()
+        await getDadosOs()
       }
       start()
-      </script>
-  </div>
+  </script>
 </body>
 </html>

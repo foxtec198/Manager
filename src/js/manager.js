@@ -1,10 +1,37 @@
 var div = document.createElement('div')
 var cart = []
+var statusM = []
+var tipo = []
+
 var api = 'https://apihubbix.freeddns.org'
+// var api = 'https://10.0.0.105:5432'
 
 var cr = localStorage.getItem('cr')
 var gc = localStorage.getItem('gc')
 
+function request(url, method='GET', json){
+    if(!json){
+        var options = {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'cr' : `${cr}`,
+                'gc' : `${gc}`
+            }
+        };
+    }else{
+        var options = {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'cr' : `${cr}`,
+                'gc' : `${gc}`
+            },
+            body: json
+        };
+    }
+    return fetch(api + url, options)
+}
 
 function ldg(){
     div.hidden = ''
@@ -33,16 +60,6 @@ function closeLdg(){
     div.hidden = 'none'
 }
 
-function msgA(msg, type){
-    var msgDiv = document.getElementById('msgAlert')
-    msgDiv.innerHTML = `<p>${msg}</p>`
-    if(type === 2){
-        msgDiv.classList.remove('alert-warning')
-        msgDiv.classList.add('alert-danger')
-    }
-    msgDiv.hidden = ''
-}
-
 function toast(msg){
     const toastLiveExample = document.getElementById('toastHbx')
     document.getElementById('toast-text').textContent = msg
@@ -50,77 +67,20 @@ function toast(msg){
     toastBootstrap.show()
 }
 
-function vender(){
-    var valorTotal = document.getElementById('valorProd').value
-    var mat = document.getElementById('matricula').value
-    var cpf = document.getElementById('cpf').value
-    var desconto = document.getElementById('desconto').value
-    var sel = document.getElementById('selPag').value
-
-    var dd = [valorTotal, mat, cpf, desconto, sel]
-
-    if(mat && valorTotal && sel){
-        document.getElementById('btnVender').innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div>'
-        fetch(api + `/manager/api/v1/vender/?gc=${gc}&cr=${cr}&dd=${dd}&&cart=${cart}`, {method:'post'})
-        .then(res=>{    
-            if(res.ok){
-                location.reload()
-            }
-        })
-    }else{
-        toast('Dados incompletos!')
-    }
-}
-
 function conferMatricula(mat){
     if(mat.value){
         mat.disabled = true
-        fetch(`${api}/manager/api/v1/mat_verify/?mat=${mat.value}&&cr=${cr}`)
+        request(`/manager/api/v1/mat_verify/?mat=${mat.value}`)
         .then(res=>{
             res.json()
             .then(res=>{
                 if(!res){
-                    // toast('Matricula Invalida!')
                     mat.value = ''
                     mat.disabled = false
                 }
             })
         })
     }
-}
-
-function conferTroco(mat){
-    conferMatricula(document.getElementById('mattroco'))
-    if(mat.value){
-        fetch(`${api}/manager/api/v1/mat_verify/?mat=${mat.value}&cr=${cr}`)
-        .then(res=>{
-            res.json()
-            .then(res=>{
-                if(res){
-                    fetch(api + '/manager/api/v1/get_valor_caixa/?cr=' + cr)
-                    .then(res=>{
-                        res.json()
-                        .then(res=>{
-                            document.getElementById('troco').value = res[0]
-                        })
-                    })
-                }
-            })
-        })
-    }else{document.getElementById('troco').value = ''}
-}
-
-function zerarcart(){
-    cart = []
-    document.getElementById('valorProd').value =  null
-    document.getElementById('listProdAdd').innerHTML = ''
-}
-
-function motivoF(sl){
-    inn = document.getElementById('motivoIn')
-
-    if(sl.value === 'Outro'){inn.hidden = ''}
-    else{inn.hidden = 'none'}
 }
 
 function capitalize(string){
@@ -142,7 +102,7 @@ function inform(msg){
 
 async function conferCpf(inp){
     var cpf = await inp.value
-    const res = await fetch(`${api}/manager/api/v1/conferir_cpf/?cr=${cr}&id=${cpf}`, {method:'get'})
+    const res = await request(`/manager/api/v1/conferir_cpf/?id=${cpf}`)
     const js = await res.json()
     return js
 }
@@ -150,16 +110,15 @@ async function conferCpf(inp){
 
 // =============== Caixa
 async function calc(){
-    const res = await fetch(api + '/manager/api/v1/calc_fechamento/?cr=' + cr)
+    const res = await request('/manager/api/v1/calc_fechamento/')
     const js = await res.json()
     for(item in js){
         document.getElementById(item.toLowerCase()).value += parseFloat(js[item]).toFixed(2)
     }
-    // document.getElementById('total').value += parseFloat(js['PIX'] + js['DINHEIRO'] + js['DEBITO'] + js['CREDITO']).toFixed(2)
 }
 
 async function conferCaixa(){
-    const res = await fetch(`${api}/manager/api/v1/confer_caixa/?cr=${cr}`)
+    const res = await request(`/manager/api/v1/confer_caixa/`)
     const resJ = await res.json()
 
     if(resJ){
@@ -182,7 +141,7 @@ async function conferCaixa(){
 }
 
 async function getSaidasCaixa(){
-    const res = await fetch(api + '/manager/api/v1/get_saidas_caixa/?cr=' + cr)
+    const res = await request('/manager/api/v1/get_saidas_caixa/')
     const resJ = await res.json()
     for(var x = 0; x < resJ.length; x++){
         var li = document.createElement('li') 
@@ -200,7 +159,7 @@ async function getSaidasCaixa(){
         btn.classList.add('btn-danger')
         btn.innerHTML = `<i class="bi bi-trash-fill"></i>`
         btn.addEventListener('click', function(){
-            fetch(api + `/manager/api/v1/excluir_saidas/?id=${id}&cr=${cr}`, {method:'post'})
+            request(`/manager/api/v1/excluir_saidas/?id=${id}`, 'POST')
             .then(res=>{
                 if(res.ok){
                     window.location = '?tst=Excluso com sucesso!'
@@ -220,7 +179,7 @@ function abrirCaixa(){
     var troco = document.getElementById('troco').value
 
     if(mat !== '' && troco !== ''){
-        fetch(`${api}/manager/api/v1/abrir_caixa/?cr=${cr}&valor=${troco}&mat=${mat}`, {method:'post'})   
+        request(`/manager/api/v1/abrir_caixa/?valor=${troco}&mat=${mat}`, 'POST')   
         .then(res=>{
             if(res.ok){
                 alert('Caixa aberto com sucesso!')
@@ -233,7 +192,7 @@ function abrirCaixa(){
 function fecharCaixa(){
     var mat = document.getElementById('fecharMat').value
     if(mat !== ''){
-        fetch(`${api}/manager/api/v1/fechar_caixa/?gc=${gc}&cr=${cr}&mat=${mat}`, {method:'post'})
+        request(`/manager/api/v1/fechar_caixa/?mat=${mat}`, 'POST')
         .then(res=>{
             res.json()
             .then(js=>{
@@ -252,7 +211,7 @@ function retirarValor(){
 
     
     if(mat !== '' && valor !== '' && motivo !==  ''){
-        fetch(`${api}/manager/api/v1/retirar_valor/?gc=${gc}&cr=${cr}&valor=${valor}&mat=${mat}&motivo=${motivo}&motivoDet=${desc}`, {method:'post'})   
+        request(`/manager/api/v1/retirar_valor/?valor=${valor}&mat=${mat}&motivo=${motivo}&motivoDet=${desc}`, 'POST')   
         .then(res=>{
             if(res.ok){
                 res.json()
@@ -270,7 +229,7 @@ function aplicarVlr(){
     var valor = document.getElementById('aplicarValor').value
 
     if(mat !== '' && valor !== ''){
-        fetch(`${api}/manager/api/v1/aplicar_valor/?gc=${gc}&cr=${cr}&valor=${valor}&mat=${mat}`, {method:'post'})   
+        request(`/manager/api/v1/aplicar_valor/?valor=${valor}&mat=${mat}`, 'post')   
         .then(res=>{
             res.json()
             .then(js=>{
@@ -281,10 +240,37 @@ function aplicarVlr(){
     }
 }
 
+function motivoF(sl){
+    inn = document.getElementById('motivoIn')
+
+    if(sl.value === 'Outro'){inn.hidden = ''}
+    else{inn.hidden = 'none'}
+}
+
+function conferTroco(mat){
+    conferMatricula(document.getElementById('mattroco'))
+    if(mat.value){
+        request(`/manager/api/v1/mat_verify/?mat=${mat.value}`)
+        .then(res=>{
+            res.json()
+            .then(res=>{
+                if(res){
+                    request('/manager/api/v1/get_valor_caixa/')
+                    .then(res=>{
+                        res.json()
+                        .then(res=>{
+                            document.getElementById('troco').value = res[0]
+                        })
+                    })
+                }
+            })
+        })
+    }else{document.getElementById('troco').value = ''}
+}
 
 // =============== Vendas
 async function getSaidas(){
-    const res = await fetch(api + '/manager/api/v1/get_saidas/?cr='+cr, {method:'get'})
+    const res = await request('/manager/api/v1/get_saidas/')
     const js = await res.json()
 
     for(var x = 0; x < js.length; x++){
@@ -330,7 +316,7 @@ async function getSaidas(){
         new bootstrap.Tooltip(btnCancel, {title:'Excluir venda!'})
 
         btnCancel.addEventListener('click',function(){
-            fetch(api + `/manager/api/v1/excluir_venda/?cr=${cr}&id=${idVenda}`, {method:'post'})
+            request(`/manager/api/v1/excluir_venda/?id=${idVenda}`, 'POST')
             .then(res=>{
                 btnCancel.innerHTML = `
                 <div class="spinner-border spinner-border-sm" role="status">
@@ -355,7 +341,7 @@ async function getSaidas(){
         new bootstrap.Tooltip(btnCancelItem, {title:'Excluir item!'})
 
         btnCancelItem.addEventListener('click',function(){
-            fetch(api + `/manager/api/v1/excluir_saida/?cr=${cr}&id=${id}&idVenda=${idVenda}`, {method:'post'})
+            request(`/manager/api/v1/excluir_saida/?id=${id}&idVenda=${idVenda}`, 'POST')
             .then(res=>{
                 btnCancelItem.innerHTML = `
                 <div class="spinner-border spinner-border-sm" role="status">
@@ -387,7 +373,7 @@ async function getSaidas(){
 }
 
 async function vendasPorTipo(){
-    const res = await fetch(api + '/manager/api/v1/vendas_por_tipo/?cr='+cr)
+    const res = await request('/manager/api/v1/vendas_por_tipo/')
     const js = await res.json()
 
     var credito = Math.round(parseFloat(js['CREDITO']))
@@ -405,7 +391,7 @@ async function vendasPorTipo(){
 }
 
 async function getProds(){
-    const res = await fetch(api + '/manager/api/v1/get_prods/?cr='+cr)
+    const res = await request('/manager/api/v1/get_prods/')
     const js = await res.json()
 
     for(var x = 0; x < js.length; x++){
@@ -466,7 +452,7 @@ async function conferCPFNewVenda(inp) {
     if(cpf.length >= 10){
         var l = document.getElementById('ldgCPF')
         l.hidden = ''
-        fetch(`${api}/manager/api/v1/conferir_cpf/?cr=${cr}&id=${cpf}`, {method:'get'})
+        request(`/manager/api/v1/conferir_cpf/?id=${cpf}`)
         .then(res=>{
             res.json()
             .then(js=>{
@@ -485,27 +471,140 @@ async function conferCPFNewVenda(inp) {
     }
 }
 
+function vender(){
+    var valorTotal = document.getElementById('valorProd').value
+    var mat = document.getElementById('matricula').value
+    var cpf = document.getElementById('cpf').value
+    var desconto = document.getElementById('desconto').value
+    var sel = document.getElementById('selPag').value
+
+    var dd = [valorTotal, mat, cpf, desconto, sel]
+
+    if(mat && valorTotal && sel){
+        document.getElementById('btnVender').innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div>'
+        request(`/manager/api/v1/vender/?dd=${dd}&&cart=${cart}`, 'POST')
+        .then(res=>{    
+            if(res.ok){
+                location.reload()
+            }
+        })
+    }else{
+        toast('Dados incompletos!')
+    }
+}
+
+function zerarcart(){
+    cart = []
+    document.getElementById('valorProd').value =  null
+    document.getElementById('listProdAdd').innerHTML = ''
+}
+
 // =============== Ordens de Serviço
+async function getDadosOs() {
+    const res = await request('/manager/api/v1/get_cliente/')
+    const js = await res.json()
+    if(js[0]){
+        for(var x = 0; x < js.length; x++){
+            const id = js[x][0]
+            const cpf = js[x][1]
+            const nome = js[x][2]
+            const telefone = js[x][3]
+            const modelo = js[x][4]
+            const marca = js[x][5]
+            const cor = js[x][6]
+            const endereco = js[x][7]
+            const imei = js[x][10]
+    
+            var ul = document.getElementById('listClient')
+    
+            var li = document.createElement('li')
+            li.classList.add('list-group-item')
+    
+            var s = document.createElement('spam')
+            s.textContent = nome + ' - ' + cpf
+    
+            var btnAdd = document.createElement('button')
+            btnAdd.classList.add('btn')
+            btnAdd.textContent = '+'
+            btnAdd.addEventListener('click', function(){
+                document.getElementById("CPF").value = id
+                document.getElementById("Nome").value = nome
+                document.getElementById("Telefone").value = telefone
+                document.getElementById("endereco").value = endereco
+                document.getElementById("imei").value = imei
+                document.getElementById("modelo").value = modelo
+                document.getElementById("cor").value = cor
+                document.getElementById("marca").value = marca
+                document.getElementById("ligar").checked = true
+                var date = new Date()
+                var day = date.getDay()
+                var month = date.getMonth()
+    
+                if(day < 10){day = '0' + day}
+                if(month < 10){month = '0' + month}
+                document.getElementById("retirada").value = `${date.getFullYear()}-${month}-${day}`
+            })
+    
+            li.appendChild(s)
+            li.appendChild(btnAdd)
+            ul.appendChild(li)
+        }
+    }else{
+        var ul = document.getElementById('listClient')
+        var li = document.createElement('li')
+        li.classList.add('list-group-item')
+        li.textContent = 'Nenhum cliente cadastrado, bora começar ?'
+        ul.appendChild(li)
+
+    }
+
+    const res2 = await request('/manager/api/v1/get_marcas/')
+    const js2 = await res2.json()
+    for(var x = 0; x < js2.length; x++){
+        var sl = document.createElement('option')
+        sl.textContent = js2[x][0]
+        document.getElementById('marca').appendChild(sl)
+    }
+
+    const res3 = await request('/manager/api/v1/get_tipos/')
+    const js3 = await res3.json()
+    for(var x = 0; x < js3.length; x++){
+        var sl = document.createElement('option')
+        sl.textContent = js3[x][0]
+        document.getElementById('tipo').appendChild(sl)
+    }
+
+    const res4 = await request('/manager/api/v1/get_status/')
+    const js4 = await res4.json()
+    for(var x = 0; x < js4.length; x++){
+        var sl = document.createElement('option')
+        sl.textContent = js4[x][0]
+        document.getElementById('status').appendChild(sl)
+    }
+
+
+}
+
 async function getStatusOs() {
-    const res = await fetch(api + '/manager/api/v1/get_os_status/?cr=' + cr)
+    const res = await request('/manager/api/v1/get_os_status/')
     const js = await res.json()
     document.getElementById('abertas').textContent = js['ABERTA']
     document.getElementById('canceladas').textContent = js['CANCELADA']
     document.getElementById('semconserto').textContent = js['SEM CONSERTO']
-    document.getElementById('finalizadas').textContent = js['FINALIZADA']
     document.getElementById('entregues').textContent = js['ENTREGUE']
 }
 
 async function getOsAbertas(){
-    const res = await fetch(api + '/manager/api/v1/get_os_abertas/?cr='+cr)
+    const res = await request('/manager/api/v1/get_os_abertas/')
     const js = await res.json()
     
-    for(var x = 1; x < js.length; x++){
+    for(var x = 0; x < js.length; x++){
         const tr = document.createElement('tr')
 
         const numOs = document.createElement('td')
         numOs.classList.add('text-truncate')
         numOs.textContent = js[x][0]
+        const id = js[x][0]
 
         const cliente = document.createElement('td')
         cliente.classList.add('text-truncate')
@@ -563,12 +662,21 @@ async function getOsAbertas(){
         const btnEditar = document.createElement('button')
         const iconFinalizar = document.createElement('i')
         iconFinalizar.classList.add('bi')
-        // iconFinalizar.classList.add('bi-chat-left-quote-fill')
         iconFinalizar.classList.add('bi-box-arrow-up-right')
         btnEditar.appendChild(iconFinalizar)
         btnEditar.classList.add('btn')
         btnEditar.classList.add('btn-sm')
         btnEditar.classList.add('btn-secondary')
+
+        // Botao para download
+        const btnDown = document.createElement('button')
+        const iconsDown = document.createElement('i')
+        iconsDown.classList.add('bi')
+        iconsDown.classList.add('bi-cloud-arrow-down-fill')
+        btnDown.appendChild(iconsDown)
+        btnDown.classList.add('btn')
+        btnDown.classList.add('btn-sm')
+        btnDown.classList.add('btn-primary')
 
         // Botao sem conserto
         const btnSemConserto = document.createElement('button')
@@ -579,6 +687,10 @@ async function getOsAbertas(){
         btnSemConserto.classList.add('btn')
         btnSemConserto.classList.add('btn-sm')
         btnSemConserto.classList.add('bg-violet')
+        btnDown.addEventListener('click', function(){
+            window.location = api + '/manager/api/v1/get_os_ind/?os=' + id
+
+        })
 
         // Botao cancelar
         const btnCancelar = document.createElement('button')
@@ -595,6 +707,7 @@ async function getOsAbertas(){
         btngp.appendChild(btnSemConserto)
         btngp.appendChild(btnCancelar)
         btngp.appendChild(btnEditar)
+        btngp.appendChild(btnDown)
         
         const act = document.createElement('td')
         act.appendChild(btngp)
@@ -616,10 +729,10 @@ async function getOsAbertas(){
 }
 
 async function getAllOs(){
-    const res = await fetch(api + '/manager/api/v1/get_os/?cr='+cr)
+    const res = await request('/manager/api/v1/get_os/?cr=')
     const js = await res.json()
 
-    for(var x = 1; x < js.length; x++){
+    for(var x = 0; x < js.length; x++){
         const tr = document.createElement('tr')
 
         const numOs = document.createElement('td')
@@ -721,4 +834,89 @@ async function getAllOs(){
         
     }
     
+}
+
+function abrirOS(t){
+    t.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div>'
+
+    var dados = `{
+        "id": ${parseInt(document.getElementById("CPF").value)},
+        "telefone" : "${document.getElementById("Telefone").value}",
+        "endereco" : "${document.getElementById("endereco").value}",
+        "imei" : "${document.getElementById("imei").value}",
+        "modelo" : "${document.getElementById("modelo").value}",
+        "cor" : "${document.getElementById("cor").value}",
+        "marca" : "${document.getElementById("marca").value}",
+        "status":"${statusM}",
+        "tipo":"${tipo}",
+        "ligar" : ${document.getElementById("ligar").checked},
+        "obs" : "${document.getElementById("obs").value}",
+        "relato" : "${document.getElementById("relato").value}",
+        "retirada" : "${document.getElementById("retirada").value}",
+        "valor" : ${parseFloat(document.getElementById("valor").value)},
+        "matricula" : "${document.getElementById("matricula").value}"
+        }`
+
+    request('/manager/api/v1/abrir_os/', 'POST', dados)
+    .then(res=>{
+        res.json()
+        .then(js=>{
+            alert(js)
+            location.reload()
+        })
+    })
+}
+
+function addTipo(){
+    const tp = document.getElementById('tipo').value
+    var ul = document.getElementById('ul-tipo')
+    const li = document.createElement('li')
+    li.classList.add('d-flex')
+    li.classList.add('list-group-item')
+    li.classList.add('justify-content-between')
+
+    var s = document.createElement('spam')
+    s.textContent = tp
+
+    var btnExcluir = document.createElement('button')
+    btnExcluir.classList.add('btn')
+    btnExcluir.classList.add('btn-sm')
+    btnExcluir.classList.add('btn-danger')
+    btnExcluir.innerHTML = `<i class="bi bi-trash-fill"></i>`
+    btnExcluir.addEventListener('click', function(){
+        ul.removeChild(li)
+        tipo.splice(tipo.indexOf(tp), 1)
+    })
+
+    li.appendChild(s)
+    li.appendChild(btnExcluir)
+    ul.appendChild(li)
+    tipo.push(tp)
+}
+
+function addStatus(){
+    const tp = document.getElementById('status').value
+    var ul = document.getElementById('ul-status')
+    const li = document.createElement('li')
+    li.classList.add('d-flex')
+    li.classList.add('list-group-item')
+    li.classList.add('justify-content-between')
+
+    var s = document.createElement('spam')
+    s.textContent = tp
+
+    var btnExcluir = document.createElement('button')
+    btnExcluir.classList.add('btn')
+    btnExcluir.classList.add('btn-sm')
+    btnExcluir.classList.add('btn-danger')
+    btnExcluir.innerHTML = `<i class="bi bi-trash-fill"></i>`
+    btnExcluir.addEventListener('click', function(){
+        ul.removeChild(li)
+        statusM.splice(statusM.indexOf(tp), 1)
+    })
+
+    li.appendChild(s)
+    li.appendChild(btnExcluir)
+    ul.appendChild(li)
+    statusM.push(tp)
 }
