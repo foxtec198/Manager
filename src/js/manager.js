@@ -2,9 +2,10 @@ var div = document.createElement('div')
 var cart = []
 var statusM = []
 var tipo = []
+var spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 
-var api = 'https://apihubbix.freeddns.org'
-// var api = 'http://10.0.0.105:5432'
+// var api = 'https://apihubbix.freeddns.org'
+var api = 'http://10.0.0.105:5432'
 
 var cr = localStorage.getItem('cr')
 var gc = localStorage.getItem('gc')
@@ -623,12 +624,13 @@ async function getOsAbertas(){
     const js = await res.json()
     
     for(var x = 0; x < js.length; x++){
+        const id = js[x][0]
+
         const tr = document.createElement('tr')
 
         const numOs = document.createElement('td')
         numOs.classList.add('text-truncate')
         numOs.textContent = js[x][0]
-        const id = js[x][0]
 
         const cliente = document.createElement('td')
         cliente.classList.add('text-truncate')
@@ -680,7 +682,12 @@ async function getOsAbertas(){
         btnEntregue.classList.add('btn')
         btnEntregue.classList.add('btn-sm')
         btnEntregue.classList.add('btn-success')
-        btnEntregue.addEventListener('click',function(){alert(numOs.textContent)})
+
+        btnEntregue.addEventListener('click',function(){
+            const myModal = new bootstrap.Modal(document.getElementById('ModalEntregue'), {show:'true'})
+            myModal.show()
+            // request(`/manager/api/v1/alter_status_os/?os=${id}&status=ENTREGUE&custo=${}&pag=${}`)
+        })
 
         // Botao para Editar
         const btnEditar = document.createElement('button')
@@ -701,7 +708,11 @@ async function getOsAbertas(){
         btnDown.classList.add('btn')
         btnDown.classList.add('btn-sm')
         btnDown.classList.add('btn-primary')
-
+        btnDown.addEventListener('click', function(){
+            btnDown.innerHTML = spinner
+            window.location = api + '/manager/api/v1/get_os_ind/?os=' + id
+        })
+            
         // Botao sem conserto
         const btnSemConserto = document.createElement('button')
         const iconSemConserto = document.createElement('i')
@@ -711,9 +722,16 @@ async function getOsAbertas(){
         btnSemConserto.classList.add('btn')
         btnSemConserto.classList.add('btn-sm')
         btnSemConserto.classList.add('bg-violet')
-        btnDown.addEventListener('click', function(){
-            window.location = api + '/manager/api/v1/get_os_ind/?os=' + id
-
+        btnSemConserto.addEventListener('click', function(){
+            btnSemConserto.innerHTML = spinner
+            request(`/manager/api/v1/alter_status_os/?os=${id}&status=SEM CONSERTO`, 'POST')
+            .then(res=>{
+                res.json()
+                .then(js=>{
+                    alert(js)
+                    location.reload()
+                })
+            })
         })
 
         // Botao cancelar
@@ -725,13 +743,24 @@ async function getOsAbertas(){
         btnCancelar.classList.add('btn')
         btnCancelar.classList.add('btn-sm')
         btnCancelar.classList.add('btn-danger')
+        btnCancelar.addEventListener('click', function(){
+            btnCancelar.innerHTML = spinner
+            request(`/manager/api/v1/alter_status_os/?os=${id}&status=CANCELADA`, 'POST')
+            .then(res=>{
+                res.json()
+                .then(js=>{
+                    alert(js)
+                    location.reload()
+                })
+            })
+        })
 
         
         btngp.appendChild(btnEntregue)
         btngp.appendChild(btnSemConserto)
         btngp.appendChild(btnCancelar)
-        btngp.appendChild(btnEditar)
         btngp.appendChild(btnDown)
+        btngp.appendChild(btnEditar)
         
         const act = document.createElement('td')
         act.appendChild(btngp)
