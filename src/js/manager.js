@@ -936,13 +936,12 @@ function abrirOS(t){
     }else{alert('Telefone não deve estar vazio!')}
 }
 
-function entregarOs(){
+function entregarOs(t){
     var idOs = document.getElementById('idOsEntrega').value
     var custo = document.getElementById('osCusto').value
     var peca = document.getElementById('osPeca').value
     var pag = document.getElementById('osPag').value
 
-    console.log(idOs)
     request(`/manager/api/v1/alter_status_os/?os=${idOs}&status=ENTREGUE&custo=${custo}&pag=${pag}&peca=${peca}`)
     .then(res=>{
         res.json().then(js=>{
