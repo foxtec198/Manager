@@ -84,11 +84,6 @@
     </div>
     
     <script>
-        if (typeof navigator.serviceWorker !== 'undefined') {
-            navigator.serviceWorker.register('sw.js')
-        }
-
-
         var query = location.search.slice(1);
         var tst = query.split('=')
 

@@ -27,75 +27,75 @@
 </head>
 <body data-bs-theme="dark">
     <!-- Modals -->
-    <div class="modal fade modal-xl" id="staticBackdrop" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <!-- <div class="modal-dialog modal-dialog-scrollable"> -->
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Nova Venda</h1>
-                <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
-            </div>
-            <div class="modal-body" style="overflow-x: auto;">
-                <div class="d-flex flex-column gap-2">
-                    <div class="d-flex flex-wrap gap-2">
-                        <div class="d-flex flex-column border rounded p-2" style="flex-grow: 1; flex-basis: 200px; max-height: 300px; overflow-x: auto;">
-                            <label for="selProd" class="fs-6"><i class="bi bi-box-seam-fill"></i> Selecione o produto:</label>
-                            <div class="input-group mb-3 p-2">
-                                <input class="form-control" placeholder="Buscar item" id="buscaitem">
-                                <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
+    <div class="modal fade modal-xl" id="staticBackdrop" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true"> 
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Nova Venda</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="overflow-x: auto;">
+                    <div class="d-flex flex-column gap-2">
+                        <div class="d-flex flex-wrap gap-2">
+                            <div class="d-flex flex-column border rounded p-2" style="flex-grow: 1; flex-basis: 200px; max-height: 300px; overflow-x: auto;">
+                                <label for="selProd" class="fs-6"><i class="bi bi-box-seam-fill"></i> Selecione o produto:</label>
+                                <div class="input-group mb-3 p-2">
+                                    <input class="form-control" placeholder="Buscar item" id="buscaitem">
+                                    <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
+                                </div>
+                                <table class="table" id="listProd">
+                                    <thead>
+                                        <th>Produto</th>
+                                        <th>Ação</th>
+                                    </thead>
+                                    <tbody id="listProdBody">
+        
+                                    </tbody>
+                                </table>
                             </div>
-                            <table class="table" id="listProd">
-                                <thead>
-                                    <th>Produto</th>
-                                    <th>Ação</th>
-                                </thead>
-                                <tbody id="listProdBody">
-    
-                                </tbody>
-                            </table>
+                            <div class="d-flex flex-column border rounded p-2" style="flex-grow: 1; flex-basis: 200px; max-height: 300px; overflow-x: auto;">
+                                <p class="fs-6"><i class="bi bi-basket-fill"></i> Carrinho:</p>
+                                <ul class="list-group" id="listProdAdd"></ul>
+                            </div>
                         </div>
-                        <div class="d-flex flex-column border rounded p-2" style="flex-grow: 1; flex-basis: 200px; max-height: 300px; overflow-x: auto;">
-                            <p class="fs-6"><i class="bi bi-basket-fill"></i> Carrinho:</p>
-                            <ul class="list-group" id="listProdAdd"></ul>
-                        </div>
-                    </div>
-                    <div class="d-flex flex-wrap border rounded p-2 gap-2">
-                        <div class="d-flex flex-column p-2" style="flex-grow: 1; flex-basis: 400px;">
-                            <input type="text" placeholder="Valor: R$" class="form-control" id="valorProd" disabled>
-                        </div>
-                        <div class="d-flex flex-column p-2" style="flex-grow: 1; flex-basis: 400px;">
-                            <input type="number" placeholder="Matricula" class="form-control" id="matricula" onblur="conferMatricula(this)">
-                        </div>
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex flex-wrap border rounded p-2 gap-2">
+                            <div class="d-flex flex-column p-2" style="flex-grow: 1; flex-basis: 400px;">
+                                <input type="text" placeholder="Valor: R$" class="form-control" id="valorProd" disabled>
+                            </div>
+                            <div class="d-flex flex-column p-2" style="flex-grow: 1; flex-basis: 400px;">
+                                <input type="number" placeholder="Matricula" class="form-control" id="matricula" onblur="conferMatricula(this)">
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="d-flex flex-column p-2" style="flex-grow: 1; flex-basis: 200px;">
+                                    <input type="text" placeholder="CPF" class="form-control" onblur="conferCPFNewVenda(this)" maxlength="11" minlength="11" id="cpf">
+                                </div>
+                                <div class="spinner-border spinner-border-sm" id="ldgCPF" role="status" hidden>
+
+                                </div>
+                            </div>
                             <div class="d-flex flex-column p-2" style="flex-grow: 1; flex-basis: 200px;">
-                                <input type="text" placeholder="CPF" class="form-control" onblur="conferCPFNewVenda(this)" maxlength="11" minlength="11" id="cpf">
+                                <input type="text" placeholder="Desconto" class="form-control" maxlength="11" id="desconto">
                             </div>
-                            <div class="spinner-border spinner-border-sm" id="ldgCPF" role="status" hidden></div>
-                        </div>
-                        <div class="d-flex flex-column p-2" style="flex-grow: 1; flex-basis: 200px;">
-                            <input type="text" placeholder="Desconto" class="form-control" maxlength="11" id="desconto">
-                        </div>
-                        <div class="d-flex flex-column p-2" style="flex-grow: 1; flex-basis: 200px;">
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="basic-addon1"><i class="bi bi-credit-card-fill"></i></span>
-                                <select class="form-select" id="selPag">
-                                    <option>Pix</option>
-                                    <option>Dinheiro</option>
-                                    <option>Debito</option>
-                                    <option>Credito</option>
-                                </select>
+                            <div class="d-flex flex-column p-2" style="flex-grow: 1; flex-basis: 200px;">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon1"><i class="bi bi-credit-card-fill"></i></span>
+                                    <select class="form-select" id="selPag">
+                                        <option>Pix</option>
+                                        <option>Dinheiro</option>
+                                        <option>Debito</option>
+                                        <option>Credito</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-    
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-success" onclick="vender()" id="btnVender">Vender</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-success" onclick="vender()" id="btnVender">Vender</button>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 
     <div class="modal fade" id="confVenda" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -130,7 +130,9 @@
                     <i class="bi bi-cart4"></i>
                     <p>Vendas Mês</p>
                 </div>
-                <p class="fs-4 fw-bold text-center" id="vendasMes">0</p>
+                <p class="fs-4 fw-bold text-center" id="vendasMes">
+                    <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+                </p>
             </div>
             <div class="d-flex flex-column p-2 border rounded bg-green2 metric" style="flex-grow: 1; flex-basis: 10px;">
                 <div class="d-flex gap-1">
@@ -138,28 +140,36 @@
                     <p>Vendas Hoje</p>
 
                 </div>
-                <p class="fs-4 fw-bold text-center" id="vendasDia">0</p>
+                <p class="fs-4 fw-bold text-center" id="vendasDia">
+                    <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+                </p>
             </div>
             <div class="d-flex flex-column p-2 border rounded bg-violet metric" style="flex-grow: 1; flex-basis: 10px;">
                 <div class="d-flex gap-1">
                     <i class="bi bi-x-diamond-fill"></i>
                     <p>Pix</p>
                 </div>
-                <p class="fs-4 fw-bold text-center" id="pix">0</p>
+                <p class="fs-4 fw-bold text-center" id="pix">
+                    <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+                </p>
             </div>
             <div class="d-flex flex-column p-2 border rounded bg-orange metric" style="flex-grow: 1; flex-basis: 10px;">
                 <div class="d-flex gap-1">
                     <i class="bi bi-credit-card-2-front-fill"></i>
                     <p>Cartões</p>
                 </div>
-                <p class="fs-4 fw-bold text-center" id="cards">0</p>
+                <p class="fs-4 fw-bold text-center" id="cards">
+                    <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+                </p>
             </div>
             <div class="d-flex flex-column p-2 border rounded bg-green metric" style="flex-grow: 1; flex-basis: 10px;">
                 <div class="d-flex gap-1">
                     <i class="bi bi-coin"></i>
                     <p>Dinheiro</p>
                 </div>
-                <p class="fs-4 fw-bold text-center" id="dinheiro">0</p>
+                <p class="fs-4 fw-bold text-center" id="dinheiro">
+                    <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+                </p>
             </div>
         </div>
     
@@ -168,21 +178,10 @@
                 <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
                 <input id="busca" type="text" class="form-control" placeholder="Buscar Venda" aria-label="Username" aria-describedby="basic-addon1">
             </div>
-            <div class="card p-2 overflow-auto">
-                <table class="table" id="table">
-                    <thead>
-                        <td>Nome</td>
-                        <td>Valor</td>
-                        <td>Cliente</td>
-                        <td>Pagamento</td>
-                        <td>Atendente</td>
-                        <td>Data</td>
-                        <td>Ação</td>
-                    </thead>
-                    <tbody id="tbVendas">
-                    </tbody>
-                    
-                </table>
+            <div class="card p-2 overflow-auto" id="divTableVendas">
+                <div class="d-flex w-100 align-items-center p-5 justify-content-center">
+                    <span class="spinner-border text-light" role="status"></span>
+                </div>
             </div>
         </div>
     </div>

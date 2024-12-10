@@ -273,6 +273,21 @@ async function getSaidas(){
     const res = await request('/manager/api/v1/get_saidas/')
     const js = await res.json()
 
+    document.getElementById('divTableVendas').innerHTML = `
+    <table class="table" id="table">
+        <thead>
+            <td>Nome</td>
+            <td>Valor</td>
+            <td>Cliente</td>
+            <td>Pagamento</td>
+            <td>Atendente</td>
+            <td>Data</td>
+            <td>Ação</td>
+        </thead>
+        <tbody id="tbVendas">
+        </tbody>
+    </table>`
+
     for(var x = 0; x < js.length; x++){
         const tr = document.createElement('tr')
         
