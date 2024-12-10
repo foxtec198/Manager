@@ -942,7 +942,7 @@ function entregarOs(t){
     var peca = document.getElementById('osPeca').value
     var pag = document.getElementById('osPag').value
 
-    request(`/manager/api/v1/alter_status_os/?os=${idOs}&status=ENTREGUE&custo=${custo}&pag=${pag}&peca=${peca}`)
+    request(`/manager/api/v1/alter_status_os/?os=${idOs}&status=ENTREGUE&custo=${custo}&pag=${pag}&peca=${peca}`, 'POST')
     .then(res=>{
         res.json().then(js=>{
             alert(js)
