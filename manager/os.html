@@ -27,6 +27,8 @@
 </head>
 <body data-bs-theme="dark">
   <!-- Modals -->
+
+  <!-- Modal Nova OS-->
   <div class="modal fade modal-xl" id="newOSmodal" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -135,7 +137,10 @@
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-              <button type="button" onclick="abrirOS(this)" class="btn btn-success">Imprimir OS</button>
+              <button type="button" onclick="abrirOS(this)" class="btn btn-success">
+                <i class="bi bi-printer-fill"></i> 
+                Imprimir OS
+              </button>
           </div>
       </div>
     </div>
@@ -143,140 +148,201 @@
 
   <!-- Modal Entregar-->
   <div class="modal fade" id="ModalEntregue" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5" id="exampleModalLabel">Finalizar Ordem de Serviço!</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <input class="form-control" placeholder="Custo">
+          <div class="d-flex flex-column gap-2">
+            <input class="form-control" id="idOsEntrega" hidden>
+            <div class="d-flex gap-2 align-items-center">
+              <span class="w-100">Custo em Geral</span>
+              <input class="form-control" id="osCusto" placeholder="Somente números!">
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+              <span class="w-100">Custo com Peças</span>
+              <input class="form-control" id="osPeca" placeholder="Somente números!">
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+              <span class="w-100">Pagamento</span>
+              <div class="input-group">
+                <span class="input-group-text" id="basic-addon1"><i class="bi bi-credit-card-fill"></i></span>
+                <select class="form-select" id="osPag">
+                    <option>PIX</option>
+                    <option>DINHEIRO</option>
+                    <option>DEBITO</option>
+                    <option>CREDITO</option>
+                </select>
+            </div>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-          <button type="button" class="btn btn-success">Salvar Alterações</button>
+          <button type="button" class="btn btn-success" onclick="entregarOs()">
+            <i class="bi bi-floppy-fill"></i> 
+            Salvar Alterações
+          </button>
         </div>
       </div>
     </div>
   </div>
   
+  <!-- Corpo da Pagina -->
   <div class="p-2">
-      <div class="d-flex flex-row justify-content-between align-items-center">
-          <p class="fs-2 fw-bold">Ordens de Seviços</p>
-          <div>
-        <button class="btn btn-success mobile" data-bs-toggle="modal" data-bs-target="#newOSmodal" ><i class="bi bi-folder-plus"></i></button>
-        <button class="btn btn-success btn-sm mobile-hide" data-bs-toggle="modal" data-bs-target="#newOSmodal" ><i class="bi bi-folder-plus"></i> Nova OS</button>
-          </div>
-      </div>
-  
-      <div class="d-flex p-2 gap-2 flex-wrap">
-          <div class="d-flex flex-column p-2 border rounded bg-blue metric" style="flex-grow: 1; flex-basis: 10px;">
-              <div class="d-flex gap-1">
-                  <i class="bi bi-box-arrow-up-right"></i>
-                  <p>Abertas</p>
-              </div>
-              <p class="fs-4 fw-bold text-center" id="abertas">
-                <span class="spinner-border spinner-border-sm text-light" role="status"></span>
-              </p>
-          </div>
-          <div class="d-flex flex-column p-2 border rounded text-bg-danger metric" style="flex-grow: 1; flex-basis: 10px;">
-              <div class="d-flex gap-1">
-                  <i class="bi bi-trash-fill"></i>
-                  <p>Canceladas</p>
-              </div>
-              <p class="fs-4 fw-bold text-center" id="canceladas">
-                <span class="spinner-border spinner-border-sm text-light" role="status"></span>
-              </p>
-          </div>
-          <div class="d-flex flex-column p-2 border rounded bg-violet metric" style="flex-grow: 1; flex-basis: 10px;">
-              <div class="d-flex gap-1">
-                  <i class="bi bi-bell-slash-fill"></i>
-                  <p>Sem Conserto</p>
-              </div>
-              <p class="fs-4 fw-bold text-center" id="semconserto">
-                <span class="spinner-border spinner-border-sm text-light" role="status"></span>
-              </p>
-          </div>
-          <div class="d-flex flex-column p-2 border rounded bg-green metric" style="flex-grow: 1; flex-basis: 10px;">
-              <div class="d-flex gap-1">
-                  <i class="bi bi-patch-check"></i>
-                  <p>Entregues</p>
-              </div>
-              <p class="fs-4 fw-bold text-center" id="entregues">
-                <span class="spinner-border spinner-border-sm text-light" role="status"></span>
-              </p>
-          </div>
-      </div>
-  
-      <div class="accordion p-2" id="accordionExample">
-          <!-- Abir OS -->
-          <div class="accordion-item overflow-hidden">
-            <h2 class="accordion-header">
-              <button class="accordion-button text-bg-dark collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                Ordens Abertas
-              </button>
-            </h2>
-            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-              <div class="accordion-body">
-          <div class="input-group mb-3">
-            <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
-            <input class="form-control" placeholder="Buscar OS" id="buscarAbertas">
-          </div>
-          <div class="overflow-auto">
-            <table class="table" id="tbAbertas">
-              <thead>
-              <th>OS</th>
-              <th>Cliente</th>
-              <th>Dispositivo</th>
-              <th>Valor</th>
-              <th>Status</th>
-              <th>Atendente</th>
-              <th>Entrega</th>
-              <th>Cadastro</th>
-              <th>Ação</th>
-              </thead>
-              <tbody id="tbAbertas">
+    <!-- Botoes -->
+    <div class="d-flex flex-row justify-content-between align-items-center">
+        <p class="fs-2 fw-bold">Ordens de Seviços</p>
+        <div>
+      <button class="btn btn-success mobile" data-bs-toggle="modal" data-bs-target="#newOSmodal" ><i class="bi bi-folder-plus"></i></button>
+      <button class="btn btn-success btn-sm mobile-hide" data-bs-toggle="modal" data-bs-target="#newOSmodal" ><i class="bi bi-folder-plus"></i> Nova OS</button>
+        </div>
+    </div>
       
-              </tbody>
-            </table>
-          </div>
-              </div>
+    <!-- Metricas -->
+    <div class="d-flex p-2 gap-2 flex-wrap">
+        <div class="d-flex flex-column p-2 border rounded bg-blue metric" style="flex-grow: 1; flex-basis: 10px;">
+            <div class="d-flex gap-1">
+                <i class="bi bi-box-arrow-up-right"></i>
+                <p>Abertas</p>
+            </div>
+            <p class="fs-4 fw-bold text-center" id="abertas">
+              <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+            </p>
+        </div>
+        <div class="d-flex flex-column p-2 border rounded text-bg-danger metric" style="flex-grow: 1; flex-basis: 10px;">
+            <div class="d-flex gap-1">
+                <i class="bi bi-trash-fill"></i>
+                <p>Canceladas</p>
+            </div>
+            <p class="fs-4 fw-bold text-center" id="canceladas">
+              <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+            </p>
+        </div>
+        <div class="d-flex flex-column p-2 border rounded bg-violet metric" style="flex-grow: 1; flex-basis: 10px;">
+            <div class="d-flex gap-1">
+                <i class="bi bi-bell-slash-fill"></i>
+                <p>Sem Conserto</p>
+            </div>
+            <p class="fs-4 fw-bold text-center" id="semconserto">
+              <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+            </p>
+        </div>
+        <div class="d-flex flex-column p-2 border rounded bg-green metric" style="flex-grow: 1; flex-basis: 10px;">
+            <div class="d-flex gap-1">
+                <i class="bi bi-patch-check"></i>
+                <p>Entregues</p>
+            </div>
+            <p class="fs-4 fw-bold text-center" id="entregues">
+              <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+            </p>
+        </div>
+    </div>
+    
+    <!-- Tabelas -->
+    <div class="accordion p-2" id="accordionExample">
+      <!-- OS Abertas -->
+      <div class="accordion-item overflow-hidden">
+        <h2 class="accordion-header">
+          <button class="accordion-button text-bg-dark collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            Ordens Abertas
+          </button>
+        </h2>
+
+        <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+          <div class="accordion-body">
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
+              <input class="form-control" placeholder="Buscar OS" id="buscarAbertas">
+            </div>
+            <div class="overflow-auto">
+              <table class="table" id="tbAbertas">
+                <thead>
+                  <th>OS</th>
+                  <th>Cliente</th>
+                  <th>Dispositivo</th>
+                  <th>Valor</th>
+                  <th>Status</th>
+                  <th>Atendente</th>
+                  <th>Entrega</th>
+                  <th>Cadastro</th>
+                  <th>Ação</th>
+                </thead>
+                <tbody id="tbAbertas"></tbody>
+              </table>
             </div>
           </div>
-  
-          <!-- Todas OS -->
-          <div class="accordion-item overflow-hidden">
-            <h2 class="accordion-header">
-              <button class="accordion-button text-bg-dark collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                Todas as Ordens
-              </button>
-            </h2>
-            <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-          <div class="accordion-body overflow-auto">
-          <div class="input-group mb-3">
-            <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
-            <input class="form-control" placeholder="Buscar OS" id="buscaAll">
-          </div>
-          <div class="overflow-auto">
-            <table class="table" id="tbAll">
-              <thead>
-                <th>OS</th>
-                <th>Cliente</th>
-                <th>Dispositivo</th>
-                <th>Valor</th>
-                <th>Status</th>
-                <th>Atendente</th>
-                <th>Entrega</th>
-                <th>Cadastro</th>
-                <th>Ação</th>
-              </thead>
-              <tbody id="tbAll2"></tbody>
-            </table>
-          </div>
-              </div>
-            </div>
-          </div>
+        </div>
       </div>
+
+      <!-- Todas OS -->
+      <div class="accordion-item overflow-hidden">
+        <h2 class="accordion-header">
+          <button class="accordion-button text-bg-dark collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          Todas as Ordens
+          </button>
+        </h2>
+        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+          <div class="accordion-body overflow-auto">
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
+              <input class="form-control" placeholder="Buscar OS" id="buscaAll">
+            </div>
+            <div class="overflow-auto">
+              <table class="table" id="tbAll">
+                <thead>
+                  <th>OS</th>
+                  <th>Cliente</th>
+                  <th>Dispositivo</th>
+                  <th>Valor</th>
+                  <th>Status</th>
+                  <th>Atendente</th>
+                  <th>Entrega</th>
+                  <th>Cadastro</th>
+                  <th>Ação</th>
+                </thead>
+                <tbody id="tbAll2"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OS Expiradas -->
+      <div class="accordion-item overflow-hidden">
+        <h2 class="accordion-header">
+          <button class="accordion-button text-bg-danger collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collExpired" aria-expanded="false" aria-controls="collapseThree">
+            Ordens Expiradas
+          </button>
+        </h2>
+        <div id="collExpired" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+          <div class="accordion-body overflow-auto">
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
+              <input class="form-control" placeholder="Buscar OS" id="buscaAll">
+            </div>
+            <div class="overflow-auto">
+              <table class="table" id="tableExp">
+                <thead>
+                  <th>OS</th>
+                  <th>Cliente</th>
+                  <th>Dispositivo</th>
+                  <th>Valor</th>
+                  <th>Status</th>
+                  <th>Atendente</th>
+                  <th>Entrega</th>
+                  <th>Cadastro</th>
+                  <th>Ação</th>
+                </thead>
+                <tbody id="tbExp"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   
   </div>
 

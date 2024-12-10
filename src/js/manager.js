@@ -653,7 +653,7 @@ async function getOsAbertas(){
         const badge = document.createElement('span')
         badge.classList.add('badge')
         badge.classList.add('rounded-pill')
-        badge.classList.add('text-bg-success')
+        badge.style.background = '#023047'
         badge.textContent = capitalize(js[x][5])
         st.appendChild(badge)
 
@@ -684,6 +684,7 @@ async function getOsAbertas(){
         btnEntregue.classList.add('btn-success')
 
         btnEntregue.addEventListener('click',function(){
+            document.getElementById('idOsEntrega').value = id
             const myModal = new bootstrap.Modal(document.getElementById('ModalEntregue'), {show:'true'})
             myModal.show()
             // request(`/manager/api/v1/alter_status_os/?os=${id}&status=ENTREGUE&custo=${}&pag=${}`)
@@ -821,6 +822,8 @@ async function getAllOs(){
             badge.style.background = '#fb8500'
         }else if(js[x][5] === 'CANCELADA'){
             badge.classList.add('text-bg-danger')
+        }else if(js[x][5] === 'ABERTA'){
+            badge.style.background = '#023047'
         }
 
         badge.textContent = capitalize(js[x][5])
@@ -890,8 +893,6 @@ async function getAllOs(){
 }
 
 function abrirOS(t){
-    t.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div>'
-
     var dados = `{
         "id": ${parseInt(document.getElementById("CPF").value)},
         "telefone" : "${document.getElementById("Telefone").value}",
@@ -908,12 +909,43 @@ function abrirOS(t){
         "retirada" : "${document.getElementById("retirada").value}",
         "valor" : ${parseFloat(document.getElementById("valor").value)},
         "matricula" : "${document.getElementById("matricula").value}"
-        }`
+    }`
+    
+    if(document.getElementById("Telefone").value){
+        if(document.getElementById("endereco").value){
+            if(document.getElementById("modelo").value){
+                if(document.getElementById("cor").value){
+                    if(document.getElementById("marca").value){
+                        if(document.getElementById("valor").value){
+                            if(document.getElementById("matricula").value){
+                                t.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div>'
+                                request('/manager/api/v1/abrir_os/', 'POST', dados)
+                                .then(res=>{
+                                    res.json()
+                                    .then(js=>{
+                                        alert(js)
+                                        location.reload()
+                                    })
+                                })
+                            }else{alert('Matricula não informada!')}
+                        }else{alert('Ordem sem valor!')}
+                    }else{alert('Não indicamos trabalhar com aparelho sem marca!')}
+                }else{alert('Registre a cor do aparelho!')}
+            }else{alert('Modelo não deve estar vazio!')}
+        }else{alert('Endereço não deve estar vazio!')}
+    }else{alert('Telefone não deve estar vazio!')}
+}
 
-    request('/manager/api/v1/abrir_os/', 'POST', dados)
+function entregarOs(){
+    var idOs = document.getElementById('idOsEntrega').value
+    var custo = document.getElementById('osCusto').value
+    var peca = document.getElementById('osPeca').value
+    var pag = document.getElementById('osPag').value
+
+    console.log(idOs)
+    request(`/manager/api/v1/alter_status_os/?os=${idOs}&status=ENTREGUE&custo=${custo}&pag=${pag}&peca=${peca}`)
     .then(res=>{
-        res.json()
-        .then(js=>{
+        res.json().then(js=>{
             alert(js)
             location.reload()
         })
