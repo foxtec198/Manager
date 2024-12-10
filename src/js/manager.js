@@ -101,6 +101,10 @@ function inform(msg){
     document.getElementById('alertt-msg').textContent = decodeURI(msg)
 }
 
+function getNameLoja(){
+    return 'Oficina do Celular'
+}
+
 async function conferCpf(inp){
     var cpf = await inp.value
     const res = await request(`/manager/api/v1/conferir_cpf/?id=${cpf}`)
