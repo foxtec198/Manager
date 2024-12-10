@@ -4,7 +4,7 @@ var statusM = []
 var tipo = []
 
 var api = 'https://apihubbix.freeddns.org'
-// var api = 'https://10.0.0.105:5432'
+// var api = 'http://10.0.0.105:5432'
 
 var cr = localStorage.getItem('cr')
 var gc = localStorage.getItem('gc')
@@ -107,7 +107,6 @@ async function conferCpf(inp){
     return js
 }
 
-
 // =============== Caixa
 async function calc(){
     const res = await request('/manager/api/v1/calc_fechamento/')
@@ -118,16 +117,14 @@ async function calc(){
 }
 
 async function conferCaixa(){
-    const res = await request(`/manager/api/v1/confer_caixa/`)
-    const resJ = await res.json()
-
-    if(resJ){
+    const js = await statusCaixa()
+    if(js){
         const status = document.getElementById('statusCaixa')
 
         status.classList.remove('placeholder')
         status.classList.add('text-bg-success')
 
-        status.textContent = `Caixa Aberto - R$ ${parseFloat(resJ).toFixed(2)}`
+        status.textContent = `Caixa Aberto - R$ ${parseFloat(js).toFixed(2)}`
         document.getElementById('btnAbrirCaixa').disabled = true
     }else{
         const status = document.getElementById('statusCaixa')
@@ -172,6 +169,13 @@ async function getSaidasCaixa(){
 
         document.getElementById('saidasCaixa').appendChild(li)
     }
+}
+
+async function statusCaixa(){
+    const res = await request(`/manager/api/v1/confer_caixa/`)
+    const resJ = await res.json()
+    
+    return resJ
 }
 
 function abrirCaixa(){
@@ -495,17 +499,22 @@ function vender(){
 
     var dd = [valorTotal, mat, cpf, desconto, sel]
 
-    if(mat && valorTotal && sel){
-        document.getElementById('btnVender').innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div>'
-        request(`/manager/api/v1/vender/?dd=${dd}&&cart=${cart}`, 'POST')
-        .then(res=>{    
-            if(res.ok){
-                location.reload()
-            }
-        })
-    }else{
-        toast('Dados incompletos!')
-    }
+    statusCaixa()
+    .then(js=>{
+        if(js && mat && valorTotal && sel){
+            document.getElementById('btnVender').innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div>'
+            request(`/manager/api/v1/vender/?dd=${dd}&&cart=${cart}`, 'POST')
+            .then(res=>{    
+                if(res.ok){
+                    location.reload()
+                }
+            })
+        }else if(!js){
+            alert('Caixa ainda fechado!!')
+        }else{
+            alert('Dados incompletos!')
+        }
+    })
 }
 
 function zerarcart(){
