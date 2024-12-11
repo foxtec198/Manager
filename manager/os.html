@@ -80,7 +80,7 @@
                   </div>
                   <div class="d-flex align-items-center gap-2 w-100">
                     <label>Marca*</label>
-                    <select id="marca" class="form-select"></select>
+                    <select id="noMarca" class="form-select"></select>
                   </div>
                 </div>
               </div>
@@ -140,6 +140,76 @@
               <button type="button" onclick="abrirOS(this)" class="btn btn-success">
                 <i class="bi bi-printer-fill"></i> 
                 Imprimir OS
+              </button>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Editar OS -->
+  <div class="modal fade modal-xl" id="editarOsModal" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+              <h1 class="modal-title fs-5" id="staticBackdropLabel"><i class="bi bi-pencil-square"></i> Editar OS</h1>
+          </div>
+          <div class="modal-body gap-4" style="overflow-x: auto;">
+            <div class="d-flex flex-column gap-2 justify-content-center">
+
+              <div class="d-flex gap-2 flex-wrap">
+                <div class="d-flex gap-2 align-items-center" style="flex-grow: 1; flex-basis: 200px;">
+                  <span class="w-25 text-end">Num OS: </span>
+                  <input class="form-control" id="eosId" type="number" disabled>
+                </div>
+                
+                <div class="d-flex gap-2 align-items-center" style="flex-grow: 1; flex-basis: 200px;">
+                  <span class="w-25 text-end">Nome: </span>
+                  <input class="form-control" id="eosNome" type="text" disabled>
+                </div>
+              </div>
+
+              <div class="d-flex gap-2 flex-wrap">
+                <div class="d-flex gap-2 align-items-center" style="flex-grow: 1; flex-basis: 200px;">
+                  <span class="w-25 text-end">CPF: </span>
+                  <input class="form-control" id="eosCpf" type="text" disabled>
+                </div>
+
+                <div class="d-flex gap-2 align-items-center" style="flex-grow: 1; flex-basis: 200px;">
+                  <span class="w-25 text-end">Modelo: </span>
+                  <input class="form-control" id="eosModelo" type="text">
+                </div>
+              </div>
+
+              <div class="d-flex gap-2 flex-wrap">
+                <div class="d-flex gap-2 align-items-center" style="flex-grow: 1; flex-basis: 200px;">
+                  <span class="w-25 text-end">Cor: </span>
+                  <input class="form-control" id="eosCor" type="text">
+                </div>
+
+                <div class="d-flex gap-2 align-items-center" style="flex-grow: 1; flex-basis: 200px;">
+                  <span class="w-25 text-end">Marca: </span>
+                  <select id="eosMarca" class="form-select"></select>
+                </div>
+              </div>
+
+              <div class="d-flex gap-2 flex-wrap">
+                <div class="d-flex gap-2 align-items-center" style="flex-grow: 1; flex-basis: 200px;">
+                  <span class="w-25 text-end">IMEI: </span>
+                  <input class="form-control" id="eosImei" type="text">
+                </div>
+                <div class="d-flex gap-2 align-items-center" style="flex-grow: 1; flex-basis: 200px;">
+                  <span class="w-25 text-end">Valor: R$</span>
+                  <input class="form-control" id="eosValor" type="text">
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+              <button type="button" onclick="editarOs(this)" class="btn btn-success">
+                <i class="bi bi-floppy-fill"></i> 
+                Editar OS
               </button>
           </div>
       </div>
@@ -257,20 +327,21 @@
               <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
               <input class="form-control" placeholder="Buscar OS" id="buscarAbertas">
             </div>
-            <div class="overflow-auto">
-              <table class="table" id="tbAbertas">
+            <div class="card p-2 overflow-auto">
+              <table class="table table-hover">
                 <thead>
-                  <th>OS</th>
-                  <th>Cliente</th>
-                  <th>Dispositivo</th>
-                  <th>Valor</th>
-                  <th>Status</th>
-                  <th>Atendente</th>
-                  <th>Entrega</th>
-                  <th>Cadastro</th>
-                  <th>Ação</th>
+                    <td>OS</td>
+                    <td>Cliente</td>
+                    <td>Dispositivo</td>
+                    <td>Valor</td>
+                    <td>Status</td>
+                    <td>Atendente</td>
+                    <td>Entrega</td>
+                    <td>Data Abertura</td>
+                    <td>Ação</td>
                 </thead>
-                <tbody id="tbAbertas"></tbody>
+                <tbody id="tbAbertas">
+                </tbody>
               </table>
             </div>
           </div>
@@ -290,20 +361,20 @@
               <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
               <input class="form-control" placeholder="Buscar OS" id="buscaAll">
             </div>
-            <div class="overflow-auto">
-              <table class="table" id="tbAll">
+            <div class="card p-2 overflow-auto">
+              <table class="table table-hover">
                 <thead>
-                  <th>OS</th>
-                  <th>Cliente</th>
-                  <th>Dispositivo</th>
-                  <th>Valor</th>
-                  <th>Status</th>
-                  <th>Atendente</th>
-                  <th>Entrega</th>
-                  <th>Cadastro</th>
-                  <th>Ação</th>
+                  <td>OS</td>
+                  <td>Cliente</td>
+                  <td>Dispositivo</td>
+                  <td>Valor</td>
+                  <td>Status</td>
+                  <td>Atendente</td>
+                  <td>Entrega</td>
+                  <td>Data Abertura</td>
+                  <td>Ação</td>
                 </thead>
-                <tbody id="tbAll2"></tbody>
+                <tbody id="tbAll"></tbody>
               </table>
             </div>
           </div>
@@ -321,20 +392,20 @@
           <div class="accordion-body overflow-auto">
             <div class="input-group mb-3">
               <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
-              <input class="form-control" placeholder="Buscar OS" id="buscaAll">
+              <input class="form-control" placeholder="Buscar OS" id="buscaExp">
             </div>
-            <div class="overflow-auto">
-              <table class="table" id="tableExp">
+            <div class="card p-2 overflow-auto">
+              <table class="table table-hover">
                 <thead>
-                  <th>OS</th>
-                  <th>Cliente</th>
-                  <th>Dispositivo</th>
-                  <th>Valor</th>
-                  <th>Status</th>
-                  <th>Atendente</th>
-                  <th>Entrega</th>
-                  <th>Cadastro</th>
-                  <th>Ação</th>
+                  <td>OS</td>
+                  <td>Cliente</td>
+                  <td>Dispositivo</td>
+                  <td>Valor</td>
+                  <td>Status</td>
+                  <td>Atendente</td>
+                  <td>Entrega</td>
+                  <td>Data Abertura</td>
+                  <td>Ação</td>
                 </thead>
                 <tbody id="tbExp"></tbody>
               </table>
@@ -366,6 +437,15 @@
           });
 
       $(document).ready(function(){
+          $("#buscaExp").on("keyup", function() {
+              var value = $(this).val().toLowerCase();
+              $("#tbExp tr").filter(function() {
+              $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+              });
+          });
+          });
+
+      $(document).ready(function(){
           $("#searchClient").on("keyup", function() {
               var value = $(this).val().toLowerCase();
               $("#listClient li").filter(function() {
@@ -374,13 +454,12 @@
           });
           });
   
-      async function start(){
-        await getStatusOs()
-        await getOsAbertas()
-        await getAllOs()
-        await getDadosOs()
-      }
-      start()
+      getMarcasOs()
+      getStatusOs()
+      getOsAbertas()
+      getAllOs()
+      getDadosOs()
+
   </script>
 
 </body>

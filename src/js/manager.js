@@ -283,7 +283,7 @@ async function getSaidas(){
     const js = await res.json()
 
     document.getElementById('divTableVendas').innerHTML = `
-    <table class="table" id="table">
+    <table class="table table-hover" id="table">
         <thead>
             <td>Nome</td>
             <td>Valor</td>
@@ -340,7 +340,7 @@ async function getSaidas(){
         new bootstrap.Tooltip(btnCancel, {title:'Excluir venda!'})
 
         btnCancel.addEventListener('click',function(){
-            request(`/manager/api/v1/excluir_venda/?id=${idVenda}`, 'POST')
+            request(`/manager/api/v1/excluir_venda/?id=${id}&idVenda=${idVenda}`, 'POST')
             .then(res=>{
                 btnCancel.innerHTML = `
                 <div class="spinner-border spinner-border-sm" role="status">
@@ -587,14 +587,6 @@ async function getDadosOs() {
 
     }
 
-    const res2 = await request('/manager/api/v1/get_marcas/')
-    const js2 = await res2.json()
-    for(var x = 0; x < js2.length; x++){
-        var sl = document.createElement('option')
-        sl.textContent = js2[x][0]
-        document.getElementById('marca').appendChild(sl)
-    }
-
     const res3 = await request('/manager/api/v1/get_tipos/')
     const js3 = await res3.json()
     for(var x = 0; x < js3.length; x++){
@@ -610,7 +602,6 @@ async function getDadosOs() {
         sl.textContent = js4[x][0]
         document.getElementById('status').appendChild(sl)
     }
-
 
 }
 
@@ -629,6 +620,14 @@ async function getOsAbertas(){
     
     for(var x = 0; x < js.length; x++){
         const id = js[x][0]
+        const nomeOS = js[x][1]
+        const modeloOs = js[x][2]
+        const valorOs = js[x][4]
+
+        const marcaOs = js[x][9]
+        const corOs = js[x][10]
+        const imeiOs = js[x][11]
+        const cpfOs = js[x][12]
 
         const tr = document.createElement('tr')
 
@@ -662,6 +661,7 @@ async function getOsAbertas(){
         st.appendChild(badge)
 
         const atendente = document.createElement('td')
+        atendente.style.marginRight = '50px'
         atendente.classList.add('text-truncate')
         atendente.textContent = js[x][6]
         
@@ -686,12 +686,12 @@ async function getOsAbertas(){
         btnEntregue.classList.add('btn')
         btnEntregue.classList.add('btn-sm')
         btnEntregue.classList.add('btn-success')
+        new bootstrap.Tooltip(btnEntregue, {title:'Marcar como entregue!'})
 
         btnEntregue.addEventListener('click',function(){
             document.getElementById('idOsEntrega').value = id
             const myModal = new bootstrap.Modal(document.getElementById('ModalEntregue'), {show:'true'})
             myModal.show()
-            // request(`/manager/api/v1/alter_status_os/?os=${id}&status=ENTREGUE&custo=${}&pag=${}`)
         })
 
         // Botao para Editar
@@ -703,6 +703,22 @@ async function getOsAbertas(){
         btnEditar.classList.add('btn')
         btnEditar.classList.add('btn-sm')
         btnEditar.classList.add('btn-secondary')
+        new bootstrap.Tooltip(btnEditar, {title:'Editar Ordem!'})
+
+        btnEditar.addEventListener('click',  function(){
+            document.getElementById('eosId').value = id
+            document.getElementById('eosNome').value = nomeOS
+            document.getElementById('eosModelo').value = modeloOs
+            document.getElementById('eosValor').value = valorOs
+            document.getElementById('eosMarca').value = marcaOs
+            document.getElementById('eosCor').value = corOs
+            document.getElementById('eosCpf').value = cpfOs
+            document.getElementById('eosImei').value = imeiOs
+
+
+            const modalEditar = new bootstrap.Modal(document.getElementById('editarOsModal'), {show:'true'})
+            modalEditar.show()
+        })
 
         // Botao para download
         const btnDown = document.createElement('button')
@@ -712,7 +728,8 @@ async function getOsAbertas(){
         btnDown.appendChild(iconsDown)
         btnDown.classList.add('btn')
         btnDown.classList.add('btn-sm')
-        btnDown.classList.add('btn-primary')
+        btnDown.style.background = '#023047'
+        new bootstrap.Tooltip(btnDown, {title:'Download!'})
         btnDown.addEventListener('click', function(){
             btnDown.innerHTML = spinner
             window.location = api + '/manager/api/v1/get_os_ind/?os=' + id
@@ -726,6 +743,7 @@ async function getOsAbertas(){
         btnSemConserto.appendChild(iconSemConserto)
         btnSemConserto.classList.add('btn')
         btnSemConserto.classList.add('btn-sm')
+        new bootstrap.Tooltip(btnSemConserto, {title:'Sem conserto!'})
         btnSemConserto.classList.add('bg-violet')
         btnSemConserto.addEventListener('click', function(){
             btnSemConserto.innerHTML = spinner
@@ -747,6 +765,7 @@ async function getOsAbertas(){
         btnCancelar.appendChild(iconCancelar)
         btnCancelar.classList.add('btn')
         btnCancelar.classList.add('btn-sm')
+        new bootstrap.Tooltip(btnCancelar, {title:'Cancelar Ordem!!'})
         btnCancelar.classList.add('btn-danger')
         btnCancelar.addEventListener('click', function(){
             btnCancelar.innerHTML = spinner
@@ -761,11 +780,11 @@ async function getOsAbertas(){
         })
 
         
+        btngp.appendChild(btnDown)
+        btngp.appendChild(btnEditar)
         btngp.appendChild(btnEntregue)
         btngp.appendChild(btnSemConserto)
         btngp.appendChild(btnCancelar)
-        btngp.appendChild(btnDown)
-        btngp.appendChild(btnEditar)
         
         const act = document.createElement('td')
         act.appendChild(btngp)
@@ -774,7 +793,6 @@ async function getOsAbertas(){
         tr.appendChild(numOs)
         tr.appendChild(cliente)
         tr.appendChild(aparelho)
-        // tr.appendChild(servico)
         tr.appendChild(valor)
         tr.appendChild(st)
         tr.appendChild(atendente)
@@ -784,13 +802,199 @@ async function getOsAbertas(){
 
         document.getElementById('tbAbertas').appendChild(tr)  
     }
+
+    const res2 = await request('/manager/api/v1/get_os_expiradas/')
+    const js2 = await res2.json()
+
+    for(var x = 0; x < js2.length; x++){
+        const id = js2[x][0]
+        const nomeOS = js2[x][1]
+        const modeloOs = js2[x][2]
+        const valorOs = js2[x][4]
+
+        const marcaOs = js2[x][9]
+        const corOs = js2[x][10]
+        const imeiOs = js2[x][11]
+        const cpfOs = js2[x][12]
+
+        const tr = document.createElement('tr')
+
+        const numOs = document.createElement('td')
+        numOs.classList.add('text-truncate')
+        numOs.textContent = js2[x][0]
+
+        const cliente = document.createElement('td')
+        cliente.classList.add('text-truncate')
+        cliente.textContent = js2[x][1]
+
+        const aparelho = document.createElement('td')
+        aparelho.classList.add('text-truncate')
+        aparelho.textContent = js2[x][2]
+
+        const valor = document.createElement('td')
+        valor.classList.add('text-truncate')
+        valor.textContent = `R$ ${js2[x][4]}`
+
+        const st = document.createElement('td')
+        st.classList.add('text-truncate')
+        const badge = document.createElement('span')
+        badge.classList.add('badge')
+        badge.classList.add('rounded-pill')
+        badge.classList.add('text-bg-danger')
+        badge.textContent = 'EXPIRADA'
+        st.appendChild(badge)
+
+        const atendente = document.createElement('td')
+        atendente.style.marginRight = '50px'
+        atendente.classList.add('text-truncate')
+        atendente.textContent = js2[x][6]
+        
+        const cadastro = document.createElement('td')
+        cadastro.classList.add('text-truncate')
+        cadastro.textContent = js2[x][7]
+
+        const entrega = document.createElement('td')
+        entrega.classList.add('text-truncate')
+        entrega.textContent = js2[x][8]
+        
+        // Buttons
+        const btngp = document.createElement('div')
+        btngp.classList.add('btn-group')
+        
+        // Botao para entregar
+        const btnEntregue = document.createElement('button')
+        const iconEntregue = document.createElement('i')
+        iconEntregue.classList.add('bi')
+        iconEntregue.classList.add('bi-patch-check')
+        btnEntregue.appendChild(iconEntregue)
+        btnEntregue.classList.add('btn')
+        btnEntregue.classList.add('btn-sm')
+        btnEntregue.classList.add('btn-success')
+        new bootstrap.Tooltip(btnEntregue, {title:'Marcar como entregue!'})
+
+        btnEntregue.addEventListener('click',function(){
+            document.getElementById('idOsEntrega').value = id
+            const myModal = new bootstrap.Modal(document.getElementById('ModalEntregue'), {show:'true'})
+            myModal.show()
+        })
+
+        // Botao para Editar
+        const btnEditar = document.createElement('button')
+        const iconFinalizar = document.createElement('i')
+        iconFinalizar.classList.add('bi')
+        iconFinalizar.classList.add('bi-box-arrow-up-right')
+        btnEditar.appendChild(iconFinalizar)
+        btnEditar.classList.add('btn')
+        btnEditar.classList.add('btn-sm')
+        btnEditar.classList.add('btn-secondary')
+        new bootstrap.Tooltip(btnEditar, {title:'Editar Ordem!'})
+
+        btnEditar.addEventListener('click',  function(){
+            document.getElementById('eosId').value = id
+            document.getElementById('eosNome').value = nomeOS
+            document.getElementById('eosModelo').value = modeloOs
+            document.getElementById('eosValor').value = valorOs
+            document.getElementById('eosMarca').value = marcaOs
+            document.getElementById('eosCor').value = corOs
+            document.getElementById('eosCpf').value = cpfOs
+            document.getElementById('eosImei').value = imeiOs
+
+
+            const modalEditar = new bootstrap.Modal(document.getElementById('editarOsModal'), {show:'true'})
+            modalEditar.show()
+        })
+
+        // Botao para download
+        const btnDown = document.createElement('button')
+        const iconsDown = document.createElement('i')
+        iconsDown.classList.add('bi')
+        iconsDown.classList.add('bi-cloud-arrow-down-fill')
+        btnDown.appendChild(iconsDown)
+        btnDown.classList.add('btn')
+        btnDown.classList.add('btn-sm')
+        btnDown.style.background = '#023047'
+        new bootstrap.Tooltip(btnDown, {title:'Download!'})
+        btnDown.addEventListener('click', function(){
+            btnDown.innerHTML = spinner
+            window.location = api + '/manager/api/v1/get_os_ind/?os=' + id
+        })
+            
+        // Botao sem conserto
+        const btnSemConserto = document.createElement('button')
+        const iconSemConserto = document.createElement('i')
+        iconSemConserto.classList.add('bi')
+        iconSemConserto.classList.add('bi-bell-slash-fill')
+        btnSemConserto.appendChild(iconSemConserto)
+        btnSemConserto.classList.add('btn')
+        btnSemConserto.classList.add('btn-sm')
+        new bootstrap.Tooltip(btnSemConserto, {title:'Sem conserto!'})
+        btnSemConserto.classList.add('bg-violet')
+        btnSemConserto.addEventListener('click', function(){
+            btnSemConserto.innerHTML = spinner
+            request(`/manager/api/v1/alter_status_os/?os=${id}&status=SEM CONSERTO`, 'POST')
+            .then(res=>{
+                res.json()
+                .then(js=>{
+                    alert(js)
+                    location.reload()
+                })
+            })
+        })
+
+        // Botao cancelar
+        const btnCancelar = document.createElement('button')
+        const iconCancelar = document.createElement('i')
+        iconCancelar.classList.add('bi')
+        iconCancelar.classList.add('bi-trash-fill')
+        btnCancelar.appendChild(iconCancelar)
+        btnCancelar.classList.add('btn')
+        btnCancelar.classList.add('btn-sm')
+        new bootstrap.Tooltip(btnCancelar, {title:'Cancelar Ordem!!'})
+        btnCancelar.classList.add('btn-danger')
+        btnCancelar.addEventListener('click', function(){
+            btnCancelar.innerHTML = spinner
+            request(`/manager/api/v1/alter_status_os/?os=${id}&status=CANCELADA`, 'POST')
+            .then(res=>{
+                res.json()
+                .then(js=>{
+                    alert(js)
+                    location.reload()
+                })
+            })
+        })
+
+        
+        btngp.appendChild(btnDown)
+        btngp.appendChild(btnEditar)
+        btngp.appendChild(btnEntregue)
+        btngp.appendChild(btnSemConserto)
+        btngp.appendChild(btnCancelar)
+        
+        const act = document.createElement('td')
+        act.appendChild(btngp)
+
+        // Add items table
+        tr.appendChild(numOs)
+        tr.appendChild(cliente)
+        tr.appendChild(aparelho)
+        tr.appendChild(valor)
+        tr.appendChild(st)
+        tr.appendChild(atendente)
+        tr.appendChild(entrega)
+        tr.appendChild(cadastro)
+        tr.appendChild(act)
+
+        document.getElementById('tbExp').appendChild(tr) 
+    }
 }
 
 async function getAllOs(){
-    const res = await request('/manager/api/v1/get_os/?cr=')
+    const res = await request('/manager/api/v1/get_os/')
     const js = await res.json()
 
     for(var x = 0; x < js.length; x++){
+        const id = js[x][0]
+
         const tr = document.createElement('tr')
 
         const numOs = document.createElement('td')
@@ -857,6 +1061,18 @@ async function getAllOs(){
         icon.classList.add('bi')
         icon.classList.add('bi-trash-fill')
         btnCancelar.appendChild(icon)
+        new bootstrap.Tooltip(btnCancelar, {title:'Cancelar Ordem!'})
+        btnCancelar.addEventListener('click', function(){
+            request(`/manager/api/v1/cancelar_os_entregue/?id=${id}`, 'DELETE')
+            .then(res=>{
+                if(res.ok){
+                    res.json().then(js=>{
+                        alert(js)
+                        location.reload()
+                    })
+                }
+            })
+        })
         
         const btnReabrir = document.createElement('button')
         var icon = document.createElement('i')
@@ -864,8 +1080,13 @@ async function getAllOs(){
         btnReabrir.classList.add('btn-sm')
         btnReabrir.style.background = '#023047'
         icon.classList.add('bi')
-        icon.classList.add('bi-box-arrow-up-right')
+        icon.classList.add('bi-cloud-arrow-down-fill')
         btnReabrir.appendChild(icon)
+        new bootstrap.Tooltip(btnReabrir, {title:'Download!'})
+        btnReabrir.addEventListener('click', function(){
+            btnReabrir.innerHTML = spinner
+            window.location = api + '/manager/api/v1/get_os_ind/?os=' + id
+        })
 
         if(js[x][5] == 'CANCELADA'){
             btnCancelar.disabled = true
@@ -896,6 +1117,23 @@ async function getAllOs(){
     
 }
 
+async function getMarcasOs(){
+    const res2 = await request('/manager/api/v1/get_marcas/')
+    const js2 = await res2.json()
+    console.log(js2)
+    for(var x = 0; x < js2.length; x++){
+        const sl = document.createElement('option')
+        sl.textContent = js2[x][0]
+        document.getElementById('noMarca').appendChild(sl)
+
+        const sl2 = document.createElement('option')
+        sl2.textContent = js2[x][0]
+        document.getElementById('eosMarca').appendChild(sl2)
+
+    }
+}
+
+
 function abrirOS(t){
     var dados = `{
         "id": ${parseInt(document.getElementById("CPF").value)},
@@ -922,7 +1160,7 @@ function abrirOS(t){
                     if(document.getElementById("marca").value){
                         if(document.getElementById("valor").value){
                             if(document.getElementById("matricula").value){
-                                t.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div>'
+                                t.innerHTML = spinner
                                 request('/manager/api/v1/abrir_os/', 'POST', dados)
                                 .then(res=>{
                                     res.json()
@@ -941,17 +1179,23 @@ function abrirOS(t){
 }
 
 function entregarOs(t){
-    var idOs = document.getElementById('idOsEntrega').value
-    var custo = document.getElementById('osCusto').value
-    var peca = document.getElementById('osPeca').value
-    var pag = document.getElementById('osPag').value
-
-    request(`/manager/api/v1/alter_status_os/?os=${idOs}&status=ENTREGUE&custo=${custo}&pag=${pag}&peca=${peca}`, 'POST')
+    statusCaixa()
     .then(res=>{
-        res.json().then(js=>{
-            alert(js)
-            location.reload()
-        })
+        if(res){
+            t.innerHTML = spinner
+            var idOs = document.getElementById('idOsEntrega').value
+            var custo = document.getElementById('osCusto').value
+            var peca = document.getElementById('osPeca').value
+            var pag = document.getElementById('osPag').value
+        
+            request(`/manager/api/v1/alter_status_os/?os=${idOs}&status=ENTREGUE&custo=${custo}&pag=${pag}&peca=${peca}`, 'POST')
+            .then(res=>{
+                res.json().then(js=>{
+                    alert(js)
+                    location.reload()
+                })
+            })
+        }else{alert('Caixa ainda fechado!')}
     })
 }
 
@@ -1007,4 +1251,268 @@ function addStatus(){
     li.appendChild(btnExcluir)
     ul.appendChild(li)
     statusM.push(tp)
+}
+
+function editarOs(t){
+    var id = document.getElementById('eosId').value
+    var cpf = document.getElementById('eosCpf').value
+    var modelo = document.getElementById('eosModelo').value
+    var cor = document.getElementById('eosCor').value
+    var marca = document.getElementById('eosMarca').value
+    var imei = document.getElementById('eosImei').value
+    var valor = document.getElementById('eosValor').value
+
+    var dados = `{
+        "id": "${id}",
+        "modelo": "${modelo}",
+        "cor": "${cor}",
+        "marca": "${marca}",
+        "imei": "${imei}",
+        "valor": ${parseFloat(valor)},
+        "cpf": "${cpf}"
+    }`
+
+    if(modelo && marca && cor && valor){
+        request('/manager/api/v1/editar_os/', 'POST', dados)
+        .then(res=>{res.json().then(js=>{
+            alert(js)
+            location.reload()
+        })})
+    }else{
+        alert('Preencha todos os dados!')
+    }
+
+}
+
+// =============== Clientes
+async function get_clientes() {
+    const res = await request('/manager/api/v1/get_cliente/')
+    const js = await res.json()
+
+    for(var x = 0; x < js.length; x++){
+        const tr = document.createElement('tr')
+
+        const id = js[x][0]
+        const cpf = js[x][1]
+        const nome = js[x][2]
+        const telefone = js[x][3]
+        const modelo = js[x][4]
+        const marca = js[x][5]
+        const cor = js[x][6]
+        const endereco = js[x][7]
+        const obs = js[x][8]
+        const imei = js[x][10]
+
+        const idTd = document.createElement('td')
+        idTd.textContent = id
+        
+        const cpfTd = document.createElement('td')
+        cpfTd.classList.add('text-truncate')
+        cpfTd.textContent = cpf
+        
+        const nomeTd = document.createElement('td')
+        nomeTd.classList.add('text-truncate')
+        nomeTd.textContent = nome
+        
+        const telefoneTd = document.createElement('td')
+        telefoneTd.classList.add('text-truncate')
+        telefoneTd.textContent = telefone
+        
+        const modeloTd = document.createElement('td')
+        modeloTd.classList.add('text-truncate')
+        modeloTd.textContent = modelo
+        
+        const marcaTd = document.createElement('td')
+        marcaTd.classList.add('text-truncate')
+        marcaTd.textContent = marca
+
+        const corTd = document.createElement('td')
+        corTd.classList.add('text-truncate')
+        corTd.textContent = cor
+
+        const enderecoTd = document.createElement('td')
+        enderecoTd.classList.add('text-truncate')
+        enderecoTd.textContent = endereco
+        
+        // const obsTd = document.createElement('td')
+        // obsTd.textContent = obs
+
+        const btnWhats = document.createElement('button')
+        btnWhats.classList.add('btn')
+        btnWhats.classList.add('btn-sm')
+        btnWhats.classList.add('btn-success')
+        var icon = document.createElement('i')
+        icon.classList.add('bi')
+        icon.classList.add('bi-whatsapp')
+        btnWhats.appendChild(icon)
+        new bootstrap.Tooltip(btnWhats, {title:'Abrir contato!'})
+        btnWhats.addEventListener('click',function(){
+            window.open(`https://api.whatsapp.com/send/?phone=${telefone}`)
+        })
+
+        const btnEditar = document.createElement('button')
+        btnEditar.classList.add('btn')
+        btnEditar.classList.add('btn-sm')
+        btnEditar.classList.add('btn-secondary')
+        var icon = document.createElement('i')
+        icon.classList.add('bi')
+        icon.classList.add('bi-box-arrow-up-right')
+        new bootstrap.Tooltip(btnEditar, {title:'Editar!'})
+        btnEditar.appendChild(icon)
+        btnEditar.addEventListener('click', function(){
+            document.getElementById('ecId').value = id
+            document.getElementById('ecCpf').value = cpf
+            document.getElementById('ecNome').value = nome
+            document.getElementById('ecTel').value = telefone
+            document.getElementById('ecModelo').value = modelo
+            document.getElementById('ecCor').value = cor
+            document.getElementById('ecMarca').value = marca
+            document.getElementById('ecImei').value = imei
+            document.getElementById('ecEnd').value = endereco
+            document.getElementById('ecObs').value = obs
+
+            const modalEditarCliente = new bootstrap.Modal(document.getElementById('editarClienteModal'), {show:'true'})
+            modalEditarCliente.show()
+        })
+
+        const btnRemov = document.createElement('button')
+        btnRemov.classList.add('btn')
+        btnRemov.classList.add('btn-sm')
+        btnRemov.classList.add('btn-danger')
+        var icon = document.createElement('i')
+        icon.classList.add('bi')
+        icon.classList.add('bi-trash-fill')
+        new bootstrap.Tooltip(btnRemov, {title:'Excluir!'})
+        btnRemov.appendChild(icon)
+        btnRemov.addEventListener('click', function(){
+            btnRemov.innerHTML = spinner
+            request('/manager/api/v1/remover_cliente/?id=' + id, 'DELETE')
+            .then(res=>{res.json().then(js=>{
+                alert(js)
+                location.reload()
+            })})
+        })
+
+        const btngp = document.createElement('div')
+        btngp.classList.add('btn-group')
+        btngp.appendChild(btnWhats)
+        btngp.appendChild(btnEditar)
+        btngp.appendChild(btnRemov)
+
+        const btns = document.createElement('td')
+        btns.appendChild(btngp)
+
+        tr.appendChild(idTd)
+        tr.appendChild(cpfTd)
+        tr.appendChild(nomeTd)
+        tr.appendChild(telefoneTd)
+        tr.appendChild(modeloTd)
+        tr.appendChild(marcaTd)
+        tr.appendChild(corTd)
+        tr.appendChild(enderecoTd)
+        // tr.appendChild(obsTd)
+        tr.appendChild(btns)
+
+        document.getElementById('tableClientes').appendChild(tr)
+    }
+}
+
+async function getMarcasClientes(){
+    const res2 = await request('/manager/api/v1/get_marcas/')
+    const js2 = await res2.json()
+    for(var x = 0; x < js2.length; x++){
+        var sl = document.createElement('option')
+        sl.textContent = js2[x][0]
+        document.getElementById('ncMarca').appendChild(sl)
+
+        var sl2 = document.createElement('option')
+        sl2.textContent = js2[x][0]
+        document.getElementById('ecMarca').appendChild(sl2)
+    }
+}
+
+function newClient(t){
+    var cpf = document.getElementById('ncCpf').value
+    var nome = document.getElementById('ncNome').value
+    var tel = document.getElementById('ncTel').value
+    var modelo = document.getElementById('ncModelo').value
+    var cor = document.getElementById('ncCor').value
+    var marca = document.getElementById('ncMarca').value
+    var imei = document.getElementById('ncImei').value
+    var end = document.getElementById('ncEnd').value
+    var obs = document.getElementById('ncObs').value
+    
+    if(nome){
+        if(tel){
+            if(modelo){
+                if(cor){
+                    if(marca){
+                        if(!cpf){cpf = 0}
+                        var dados = `{
+                            "cpf": "${cpf}",
+                            "nome": "${nome}",
+                            "tel": "${tel}",
+                            "modelo": "${modelo}",
+                            "cor": "${cor}",
+                            "marca": "${marca}",
+                            "imei": "${imei}",
+                            "end": "${end}",
+                            "obs": "${obs}"
+                        }`
+                        t.innerHTML = spinner
+                        console.log(dados)
+                        request('/manager/api/v1/cadastrar_cliente/', 'POST', dados)
+                        .then(res=>{res.json().then(js=>{
+                            alert(js)
+                            location.reload()
+                        })})
+                    }else{alert('Marca obrigatória!')}
+                }else{alert('Cor obrigatória!')}
+            }else{alert('Modelo obrigatório!')}
+        }else{alert('Telefone não deve estar vazio!')}
+    }else{alert('Nome não deve estar vázio!')}
+}
+
+function editarCliente(t){
+    var id = document.getElementById('ecId').value
+    var cpf = document.getElementById('ecCpf').value
+    var nome = document.getElementById('ecNome').value
+    var tel = document.getElementById('ecTel').value
+    var modelo = document.getElementById('ecModelo').value
+    var cor = document.getElementById('ecCor').value
+    var marca = document.getElementById('ecMarca').value
+    var imei = document.getElementById('ecImei').value
+    var end = document.getElementById('ecEnd').value
+    var obs = document.getElementById('ecObs').value
+
+    if(nome){
+        if(tel){
+            if(modelo){
+                if(cor){
+                    if(marca){
+                        if(!cpf){cpf = 0}
+                        var dados = `{
+                            "id": "${id}",
+                            "cpf": "${cpf}",
+                            "nome": "${nome}",
+                            "tel": "${tel}",
+                            "modelo": "${modelo}",
+                            "cor": "${cor}",
+                            "marca": "${marca}",
+                            "imei": "${imei}",
+                            "end": "${end}",
+                            "obs": "${obs}"
+                        }`
+                        t.innerHTML = spinner
+                        console.log(dados)
+                        request('/manager/api/v1/editar_cliente/', 'PATCH', dados)
+                        .then(res=>{res.json().then(js=>{
+                            alert(js)
+                            location.reload()
+                        })})
+                    }else{alert('Marca obrigatória!')}
+                }else{alert('Cor obrigatória!')}
+            }else{alert('Modelo obrigatório!')}
+        }else{alert('Telefone não deve estar vazio!')}
+    }else{alert('Nome não deve estar vázio!')}
 }

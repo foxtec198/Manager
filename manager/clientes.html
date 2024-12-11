@@ -26,10 +26,150 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body data-bs-theme="dark">
+    <!-- Modal novo Cliente -->
+    <div class="modal fade modal-lg" id="newClienteModal" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="staticBackdropLabel"><i class="bi bi-person-fill-add"></i> Cadastrar Cliente</h1>
+              </div>
+              <div class="modal-body gap-4" style="overflow-x: auto;">
+                <!-- CPF, Nome, Telefone, modelo, marca, cor, imei, endereço, obs -->
+                <div class="d-flex flex-column">
+                    <div class="d-flex gap-2 p-2 flex-wrap">
+                        <div class="alert alert-info d-flex gap-4 align-items-center mobile-hide" role="alert">
+                            <span class='fs-6 text-center mb-3'>Caso o cliente se negue a informar o CPF, mantenha em branco, e prossiga com os demais dados, nosso sistema irá preencher de forma automática!</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+
+                        <div class="d-flex flex-column gap-2" style="flex-grow: 1; flex-basis: 200px;">
+                            <input class="w-100 form-control" placeholder="CPF" id="ncCpf">
+                        </div>
+                        <div class="d-flex gap-2 align-items-center justify-content-center" style="flex-grow: 1; flex-basis: 200px;">
+                            <input class="w-100 form-control" placeholder="Nome Completo *" id="ncNome">
+                        </div>
+
+                        <div class="d-flex gap-2 align-items-center justify-content-center" style="flex-grow: 1; flex-basis: 200px;">
+                            <input class="w-100 form-control" placeholder="Telefone *" id="ncTel">
+                        </div>
+                        <div class="d-flex gap-2 align-items-center justify-content-center" style="flex-grow: 1; flex-basis: 200px;">
+                            <input class="w-100 form-control" placeholder="Modelo (A10S, Note 10) *" id="ncModelo">
+                        </div>
+                        <div class="d-flex gap-2 align-items-center justify-content-center" style="flex-grow: 1; flex-basis: 200px;">
+                            <input class="w-100 form-control" placeholder="Cor *" id="ncCor">
+                        </div>
+                        <div class="d-flex gap-2 align-items-center justify-content-center" style="flex-grow: 1; flex-basis: 200px;">
+                            <input class="w-100 form-control" placeholder="IMEI" id="ncImei">
+                        </div>
+                        <div class="d-flex gap-2 align-items-center justify-content-center" style="flex-grow: 1; flex-basis: 200px;">
+                            <span>Marca*</span>
+                            <select class="form-control" id="ncMarca"></select>
+                        </div>
+                        <div class="d-flex flex-column gap-2 align-items-center justify-content-center" style="flex-grow: 1; flex-basis: 200px;">
+                            <input class="w-100 form-control" placeholder="Endereço" id="ncEnd">
+                        </div>
+                        <div class="d-flex flex-column gap-2 align-items-center justify-content-center" style="flex-grow: 1; flex-basis: 200px;">
+                            <input class="w-100 form-control" placeholder="Obs" id="ncObs">
+                        </div>
+                    </div>
+                    <br>
+                    <span class="text-end">Items com asterisco(*) são de preenchimento obrigatório!</span>
+                </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                  <button type="button" onclick="newClient(this)" class="btn btn-success">
+                    <i class="bi bi-floppy-fill"></i> 
+                    Cadastrar
+                  </button>
+              </div>
+          </div>
+        </div>
+    </div>
+
+    <!-- Modal editar Cliente -->
+    <div class="modal fade modal-lg" id="editarClienteModal" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="staticBackdropLabel"><i class="bi bi-pencil-square"></i> Editar Cliente</h1>
+              </div>
+              <div class="modal-body gap-4" style="overflow-x: auto;">
+                <div class="d-flex flex-column gap-2 justify-content-center">
+                    <div class="alert alert-warning d-flex gap-4 align-items-center justify-content-between mobile-hide" role="alert">
+                        <span class='fs-6 text-center mb-3'>Indica-se a utilização da Observação (Obs) somente em casos importantes sobre o cliente!</span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <div class="d-flex gap-2 align-items-center" style="flex-grow: 1; flex-basis: 200px;">
+                            <span class="w-25 text-end">CPF: </span>
+                            <input class="form-control" id="ecId" type="text" hidden>
+                            <input class="form-control" id="ecCpf" type="text" disabled>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center" style="flex-grow: 1; flex-basis: 200px;">
+                            <span class="w-25 text-end">Nome: </span>
+                            <input class="form-control" id="ecNome" type="text">
+                        </div>
+                        <div class="d-flex gap-2 align-items-center" style="flex-grow: 1; flex-basis: 200px;">
+                            <span class="text-end">Telefone: </span>
+                            <input class="form-control" id="ecTel" type="text">
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 flex-wrap">
+                    <div class="d-flex gap-2 align-items-center" style="flex-grow: 1; flex-basis: 200px;">
+                        <span class="w-25 text-end">IMEI: </span>
+                        <input class="form-control" id="ecImei" type="text">
+                    </div>
+
+                    <div class="d-flex gap-2 align-items-center" style="flex-grow: 1; flex-basis: 200px;">
+                        <span class="w-25 text-end">Modelo: </span>
+                        <input class="form-control" id="ecModelo" type="text">
+                    </div>
+                    </div>
+
+                    <div class="d-flex gap-2 flex-wrap">
+                    <div class="d-flex gap-2 align-items-center" style="flex-grow: 1; flex-basis: 200px;">
+                        <span class="w-25 text-end">Cor: </span>
+                        <input class="form-control" id="ecCor" type="text">
+                    </div>
+
+                    <div class="d-flex gap-2 align-items-center" style="flex-grow: 1; flex-basis: 200px;">
+                        <span class="w-25 text-end">Marca: </span>
+                        <select id="ecMarca" class="form-select"></select>
+                    </div>
+                    </div>
+
+                    <div class="d-flex gap-2 flex-wrap">
+                    <div class="d-flex gap-2 align-items-center" style="flex-grow: 1; flex-basis: 200px;">
+                        <span class="w-25 text-end">Endereço: </span>
+                        <input class="form-control" id="ecEnd" type="text">
+                    </div>
+                    <div class="d-flex gap-2 align-items-center" style="flex-grow: 1; flex-basis: 200px;">
+                        <span class="w-25 text-end">Obs: </span>
+                        <input class="form-control" id="ecObs" type="text">
+                    </div>
+                    </div>
+                
+                </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                  <button type="button" onclick="editarCliente(this)" class="btn btn-success">
+                    <i class="bi bi-floppy-fill"></i> 
+                    Editar Cliente
+                  </button>
+              </div>
+          </div>
+        </div>
+    </div>
+
+    <!-- Corpo da Pagina -->
     <div class="p-2">
         <div class="d-flex flex-row justify-content-between align-items-center">
             <p class="fs-2 fw-bold">Clientes</p>
-            <button class="btn btn-success btn-sm"><i class="bi bi-person-fill-add"></i> Novo Cliente</button>
+            <button data-bs-toggle="modal" data-bs-target="#newClienteModal" class="btn btn-success btn-sm mobile-hide"><i class="bi bi-person-fill-add"></i> Novo Cliente</button>
+            <button data-bs-toggle="modal" data-bs-target="#newClienteModal" class="btn btn-success btn-sm mobile"><i class="bi bi-person-fill-add"></i></button>
         </div>
         <div class="d-flex flex-column gap-2">
             <div class="input-group mb-3">
@@ -37,7 +177,7 @@
                 <input type="text" class="form-control" placeholder="Busque por um elemento da tabela!" id="busca">
             </div>
             <div class="card table-responsive-sm p-2 overflow-auto">
-                <table class="table" id="table">
+                <table class="table table-hover" id="table">
                     <thead>
                         <th>Id</th>
                         <th>CPF</th>
@@ -66,111 +206,9 @@
                 });
             });
             });
-    
-            fetch(api + '/manager/api/v1/get_cliente/?cr=' + cr)
-            .then(res=>{
-                res.json()
-                .then(res=>{
-                    console.log(res)
-                    for(var x = 0; x < res.length; x++){
-                        const tr = document.createElement('tr')
-    
-                        const id = res[x][0]
-                        const cpf = res[x][1]
-                        const nome = res[x][2]
-                        const telefone = res[x][3]
-                        const modelo = res[x][4]
-                        const marca = res[x][5]
-                        const cor = res[x][6]
-                        const endereco = res[x][7]
-                        const obs = res[x][8]
-    
-                        const idTd = document.createElement('td')
-                        idTd.textContent = id
-                        
-                        const cpfTd = document.createElement('td')
-                        cpfTd.classList.add('text-truncate')
-                        cpfTd.textContent = cpf
-                        
-                        const nomeTd = document.createElement('td')
-                        nomeTd.classList.add('text-truncate')
-                        nomeTd.textContent = nome
-                        
-                        const telefoneTd = document.createElement('td')
-                        telefoneTd.classList.add('text-truncate')
-                        telefoneTd.textContent = telefone
-                        
-                        const modeloTd = document.createElement('td')
-                        modeloTd.classList.add('text-truncate')
-                        modeloTd.textContent = modelo
-                        
-                        const marcaTd = document.createElement('td')
-                        marcaTd.classList.add('text-truncate')
-                        marcaTd.textContent = marca
-    
-                        const corTd = document.createElement('td')
-                        corTd.classList.add('text-truncate')
-                        corTd.textContent = cor
-    
-                        const enderecoTd = document.createElement('td')
-                        enderecoTd.classList.add('text-truncate')
-                        enderecoTd.textContent = endereco
-                        
-                        // const obsTd = document.createElement('td')
-                        // obsTd.textContent = obs
-    
-                        const btnWhats = document.createElement('button')
-                        btnWhats.classList.add('btn')
-                        btnWhats.classList.add('btn-sm')
-                        btnWhats.classList.add('btn-success')
-                        var icon = document.createElement('i')
-                        icon.classList.add('bi')
-                        icon.classList.add('bi-whatsapp')
-                        btnWhats.appendChild(icon)
-                        btnWhats.addEventListener('click',function(){window.location = `https://api.whatsapp.com/send/?phone=${telefone}`})
-    
-                        const btnEditar = document.createElement('button')
-                        btnEditar.classList.add('btn')
-                        btnEditar.classList.add('btn-sm')
-                        btnEditar.classList.add('btn-secondary')
-                        var icon = document.createElement('i')
-                        icon.classList.add('bi')
-                        icon.classList.add('bi-box-arrow-up-right')
-                        btnEditar.appendChild(icon)
-    
-                        const btnRemov = document.createElement('button')
-                        btnRemov.classList.add('btn')
-                        btnRemov.classList.add('btn-sm')
-                        btnRemov.classList.add('btn-danger')
-                        var icon = document.createElement('i')
-                        icon.classList.add('bi')
-                        icon.classList.add('bi-trash-fill')
-                        btnRemov.appendChild(icon)
-    
-                        const btngp = document.createElement('div')
-                        btngp.classList.add('btn-group')
-                        btngp.appendChild(btnEditar)
-                        btngp.appendChild(btnWhats)
-                        btngp.appendChild(btnRemov)
-    
-                        const btns = document.createElement('td')
-                        btns.appendChild(btngp)
-    
-                        tr.appendChild(idTd)
-                        tr.appendChild(cpfTd)
-                        tr.appendChild(nomeTd)
-                        tr.appendChild(telefoneTd)
-                        tr.appendChild(modeloTd)
-                        tr.appendChild(marcaTd)
-                        tr.appendChild(corTd)
-                        tr.appendChild(enderecoTd)
-                        // tr.appendChild(obsTd)
-                        tr.appendChild(btns)
-    
-                        document.getElementById('tableClientes').appendChild(tr)
-                    }
-                })
-            })
+
+            get_clientes()
+            getMarcasClientes()
         </script>
     </div>
 </body>
