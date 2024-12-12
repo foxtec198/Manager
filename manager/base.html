@@ -33,11 +33,11 @@
     
     <div class="d-flex gap-2 p-2 h-100" style="margin-bottom: 90px;">
         <div class="card overflow-hidden mobile-hide" style="min-width: 180px;">
-            <span class="d-flex w-100 align-items-center justify-content-center p-4">
-                <img src="../src/img/logo.svg" class="logo">
+            <span class="d-flex flex-column w-100 align-items-center justify-content-center mt-3">
+                <img id="logoBase" class="logo">
+                <p class="fw-bold p-2 mb-5 text-center rounded-pill placeholder" id="nomeLoja" style="font-size: 14px;"></p>
             </span>
             <br>
-            <p class="fw-bold p-2 mb-5 text-center rounded-pill placeholder" id="nomeLoja" style="font-size: 14px;"></p>
             <button onclick="changeWin('/manager/caixa.html')" class="btnM"><i class="bi bi-box-seam-fill"></i> Caixa</button>
             <button class="btnM" onclick="changeWin('/manager/vendas.html')"><i class="bi bi-graph-up-arrow"></i> Vendas</button>
             <button onclick="changeWin('/manager/os.html')" class="btnM"><i class="bi bi-file-earmark-zip-fill"></i> OS's</button>
@@ -87,10 +87,8 @@
     </div>
     
     <script>
-        var label = document.getElementById('nomeLoja')
+        getLoja()
 
-        label.textContent = getNameLoja()
-        label.classList.remove('placeholder')
     </script>
 </body>
 </html>

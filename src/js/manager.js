@@ -101,8 +101,18 @@ function inform(msg){
     document.getElementById('alertt-msg').textContent = decodeURI(msg)
 }
 
-function getNameLoja(){
-    return 'Oficina do Celular'
+function getLoja(){
+    request('/manager/api/v1/get_loja/')
+    .then(res=>{
+        res.json()
+        .then(loja=>{
+            var label = document.getElementById('nomeLoja')
+
+                label.textContent = loja['nome']
+            label.classList.remove('placeholder')
+            document.getElementById('logoBase').src = `https://apihubbix.freeddns.org/` + loja['logo']
+        })
+    })
 }
 
 async function conferCpf(inp){

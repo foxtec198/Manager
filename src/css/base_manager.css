@@ -12,7 +12,8 @@ body, html{
     --brow: #bc6c25;
 }
 .logo{
-    width: 8em;
+    /* width: 6em; */
+    height: 10vh;
 }
 nav{
     background: var(--cinza2);
