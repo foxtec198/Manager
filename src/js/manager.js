@@ -574,7 +574,7 @@ async function getDadosOs() {
                 document.getElementById("imei").value = imei
                 document.getElementById("modelo").value = modelo
                 document.getElementById("cor").value = cor
-                document.getElementById("marca").value = marca
+                document.getElementById("noMarca").value = marca
                 document.getElementById("ligar").checked = true
                 var date = new Date()
                 var day = date.getDay()
@@ -596,14 +596,6 @@ async function getDadosOs() {
         li.textContent = 'Nenhum cliente cadastrado, bora começar ?'
         ul.appendChild(li)
 
-    }
-
-    const res3 = await request('/manager/api/v1/get_tipos/')
-    const js3 = await res3.json()
-    for(var x = 0; x < js3.length; x++){
-        var sl = document.createElement('option')
-        sl.textContent = js3[x][0]
-        document.getElementById('tipo').appendChild(sl)
     }
 
     const res4 = await request('/manager/api/v1/get_status/')
@@ -1107,7 +1099,6 @@ async function getAllOs(){
 
         const act = document.createElement('td')
         act.appendChild(btngp)
-
         
         // Add items table
         tr.appendChild(numOs)
@@ -1131,7 +1122,6 @@ async function getAllOs(){
 async function getMarcasOs(){
     const res2 = await request('/manager/api/v1/get_marcas/')
     const js2 = await res2.json()
-    console.log(js2)
     for(var x = 0; x < js2.length; x++){
         const sl = document.createElement('option')
         sl.textContent = js2[x][0]
@@ -1144,7 +1134,6 @@ async function getMarcasOs(){
     }
 }
 
-
 function abrirOS(t){
     var dados = `{
         "id": ${parseInt(document.getElementById("CPF").value)},
@@ -1153,7 +1142,7 @@ function abrirOS(t){
         "imei" : "${document.getElementById("imei").value}",
         "modelo" : "${document.getElementById("modelo").value}",
         "cor" : "${document.getElementById("cor").value}",
-        "marca" : "${document.getElementById("marca").value}",
+        "marca" : "${document.getElementById("noMarca").value}",
         "status":"${statusM}",
         "tipo":"${tipo}",
         "ligar" : ${document.getElementById("ligar").checked},
@@ -1168,7 +1157,7 @@ function abrirOS(t){
         if(document.getElementById("endereco").value){
             if(document.getElementById("modelo").value){
                 if(document.getElementById("cor").value){
-                    if(document.getElementById("marca").value){
+                    if(document.getElementById("noMarca").value){
                         if(document.getElementById("valor").value){
                             if(document.getElementById("matricula").value){
                                 t.innerHTML = spinner
