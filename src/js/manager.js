@@ -646,10 +646,6 @@ async function getOsAbertas(){
         aparelho.classList.add('text-truncate')
         aparelho.textContent = js[x][2]
 
-        // const servico = document.createElement('td')
-        // servico.classList.add('text-truncate')
-        // servico.textContent = js[x][3]
-
         const valor = document.createElement('td')
         valor.classList.add('text-truncate')
         valor.textContent = `R$ ${js[x][4]}`
@@ -659,8 +655,10 @@ async function getOsAbertas(){
         const badge = document.createElement('span')
         badge.classList.add('badge')
         badge.classList.add('rounded-pill')
-        badge.style.background = '#023047'
-        badge.textContent = capitalize(js[x][5])
+        const status = js[x][5]
+        if(status === 'ABERTA'){badge.style.background = '#023047'}
+        else if(status === 'ORÇAMENTO'){badge.style.background = '#9c6644'}
+        badge.textContent = capitalize()
         st.appendChild(badge)
 
         const atendente = document.createElement('td')
@@ -1150,7 +1148,8 @@ function abrirOS(t){
         "relato" : "${document.getElementById("relato").value}",
         "retirada" : "${document.getElementById("retirada").value}",
         "valor" : ${parseFloat(document.getElementById("valor").value)},
-        "matricula" : "${document.getElementById("matricula").value}"
+        "matricula" : "${document.getElementById("matricula").value}",
+        "status" : "${document.getElementById("noTipoOs").value}"
     }`
     
     if(document.getElementById("Telefone").value){
@@ -1261,6 +1260,7 @@ function editarOs(t){
     var marca = document.getElementById('eosMarca').value
     var imei = document.getElementById('eosImei').value
     var valor = document.getElementById('eosValor').value
+    var tipoOs = document.getElementById('noTipoOs').value
 
     var dados = `{
         "id": "${id}",
@@ -1269,6 +1269,7 @@ function editarOs(t){
         "marca": "${marca}",
         "imei": "${imei}",
         "valor": ${parseFloat(valor)},
+        "status": "${tipo},"
         "cpf": "${cpf}"
     }`
 
