@@ -95,6 +95,7 @@ function changeWin(win){
     changer.src = win
 }
 
+
 function inform(msg){
     var d = document.getElementById('alertt')
     d.hidden = ''
