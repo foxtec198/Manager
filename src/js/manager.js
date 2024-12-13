@@ -1269,9 +1269,9 @@ function editarOs(t){
         "servico": "${servico}",
         "cpf": "${cpf}"
     }`
-    console.log(dados)
 
     if(modelo && marca && cor && valor){
+        t.innerHTML = spinner
         request('/manager/api/v1/editar_os/', 'POST', dados)
         .then(res=>{res.json().then(js=>{
             alert(js)
