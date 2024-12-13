@@ -1256,6 +1256,7 @@ function editarOs(t){
     var imei = document.getElementById('eosImei').value
     var valor = document.getElementById('eosValor').value
     var tipoOs = document.getElementById('eoTipoOs').value
+    var servico = document.getElementById('eosTipoServico').value
 
     var dados = `{
         "id": "${id}",
@@ -1265,6 +1266,7 @@ function editarOs(t){
         "imei": "${imei}",
         "valor": ${parseFloat(valor)},
         "statusOS": "${tipoOs}",
+        "servico": "${servico}",
         "cpf": "${cpf}"
     }`
     console.log(dados)
