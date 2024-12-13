@@ -1012,9 +1012,6 @@ async function getAllOs(){
         aparelho.classList.add('text-truncate')
         aparelho.textContent = js[x][2]
 
-        // const servico = document.createElement('td')
-        // servico.textContent = js[x][3]
-
         const valor = document.createElement('td')
         valor.classList.add('text-truncate')
         valor.textContent = `R$ ${js[x][4]}`
@@ -1025,17 +1022,13 @@ async function getAllOs(){
         badge.classList.add('badge')
         badge.classList.add('rounded-pill')
 
-        if(js[x][5] === 'SEM CONSERTO'){
-            badge.style.background = '#8338ec'
-        }else if(js[x][5] === 'ENTREGUE'){
-            badge.classList.add('text-bg-success')
-        }else if(js[x][5] === 'FINALIZADA'){
-            badge.style.background = '#fb8500'
-        }else if(js[x][5] === 'CANCELADA'){
-            badge.classList.add('text-bg-danger')
-        }else if(js[x][5] === 'ABERTA'){
-            badge.style.background = '#023047'
-        }
+        // Cores dos status!
+        if(js[x][5] === 'SEM CONSERTO'){badge.style.background = '#8338ec'}
+        else if(js[x][5] === 'ENTREGUE'){badge.classList.add('text-bg-success')}
+        else if(js[x][5] === 'FINALIZADA'){badge.style.background = '#fb8500'}
+        else if(js[x][5] === 'CANCELADA'){badge.classList.add('text-bg-danger')}
+        else if(js[x][5] === 'ABERTA'){badge.style.background = '#023047'}
+        else if(js[x][5] === 'ORÇAMENTO'){badge.style.background = '#9c6644'}
 
         badge.textContent = capitalize(js[x][5])
         st.appendChild(badge)
