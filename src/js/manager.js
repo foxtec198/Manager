@@ -625,6 +625,7 @@ async function getOsAbertas(){
         const id = js[x][0]
         const nomeOS = js[x][1]
         const modeloOs = js[x][2]
+        const tipoServico = js[x][3]
         const valorOs = js[x][4]
 
         const marcaOs = js[x][9]
@@ -717,6 +718,7 @@ async function getOsAbertas(){
             document.getElementById('eosCpf').value = cpfOs
             document.getElementById('eosImei').value = imeiOs
             document.getElementById('eoTipoOs').value = statusOS
+            document.getElementById('eosTipoServico').value = tipoServico
 
 
             const modalEditar = new bootstrap.Modal(document.getElementById('editarOsModal'), {show:'true'})
@@ -813,7 +815,9 @@ async function getOsAbertas(){
         const id = js2[x][0]
         const nomeOS = js2[x][1]
         const modeloOs = js2[x][2]
+        const tipoServico = js2[x][3]
         const valorOs = js2[x][4]
+        const statusOS = capitalize(js[x][5])
 
         const marcaOs = js2[x][9]
         const corOs = js2[x][10]
@@ -901,6 +905,8 @@ async function getOsAbertas(){
             document.getElementById('eosCor').value = corOs
             document.getElementById('eosCpf').value = cpfOs
             document.getElementById('eosImei').value = imeiOs
+            document.getElementById('eoTipoOs').value = statusOS
+            document.getElementById('eosTipoServico').value = tipoServico
 
 
             const modalEditar = new bootstrap.Modal(document.getElementById('editarOsModal'), {show:'true'})
