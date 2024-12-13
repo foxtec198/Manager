@@ -631,6 +631,7 @@ async function getOsAbertas(){
         const corOs = js[x][10]
         const imeiOs = js[x][11]
         const cpfOs = js[x][12]
+        const statusOS = capitalize(js[x][5])
 
         const tr = document.createElement('tr')
 
@@ -658,7 +659,7 @@ async function getOsAbertas(){
         const status = js[x][5]
         if(status === 'ABERTA'){badge.style.background = '#023047'}
         else if(status === 'ORÇAMENTO'){badge.style.background = '#9c6644'}
-        badge.textContent = capitalize()
+        badge.textContent = capitalize(status)
         st.appendChild(badge)
 
         const atendente = document.createElement('td')
@@ -715,6 +716,7 @@ async function getOsAbertas(){
             document.getElementById('eosCor').value = corOs
             document.getElementById('eosCpf').value = cpfOs
             document.getElementById('eosImei').value = imeiOs
+            document.getElementById('eoTipoOs').value = statusOS
 
 
             const modalEditar = new bootstrap.Modal(document.getElementById('editarOsModal'), {show:'true'})
@@ -1149,7 +1151,7 @@ function abrirOS(t){
         "retirada" : "${document.getElementById("retirada").value}",
         "valor" : ${parseFloat(document.getElementById("valor").value)},
         "matricula" : "${document.getElementById("matricula").value}",
-        "status" : "${document.getElementById("noTipoOs").value}"
+        "statusOS" : "${document.getElementById("noTipoOs").value}"
     }`
     
     if(document.getElementById("Telefone").value){
@@ -1260,7 +1262,7 @@ function editarOs(t){
     var marca = document.getElementById('eosMarca').value
     var imei = document.getElementById('eosImei').value
     var valor = document.getElementById('eosValor').value
-    var tipoOs = document.getElementById('noTipoOs').value
+    var tipoOs = document.getElementById('eoTipoOs').value
 
     var dados = `{
         "id": "${id}",
@@ -1269,9 +1271,10 @@ function editarOs(t){
         "marca": "${marca}",
         "imei": "${imei}",
         "valor": ${parseFloat(valor)},
-        "status": "${tipo},"
+        "statusOS": "${tipoOs}",
         "cpf": "${cpf}"
     }`
+    console.log(dados)
 
     if(modelo && marca && cor && valor){
         request('/manager/api/v1/editar_os/', 'POST', dados)
