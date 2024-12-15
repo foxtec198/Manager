@@ -108,10 +108,12 @@ function getLoja(){
         res.json()
         .then(loja=>{
             var label = document.getElementById('nomeLoja')
-
-                label.textContent = loja['nome']
+            label.textContent = loja['nome']
             label.classList.remove('placeholder')
-            document.getElementById('logoBase').src = `https://apihubbix.freeddns.org/` + loja['logo']
+
+            var img = document.getElementById('logoBase')
+            img.src = `https://apihubbix.freeddns.org/` + loja['logo']
+            img.classList.remove('placeholder')
         })
     })
 }
@@ -1600,4 +1602,16 @@ async function getProdutos() {
             }
         })
     })   
+}
+
+
+
+// =============== Estoque
+function estoque_negativo(t){
+    console.log(t.checked)
+
+}
+
+function trocar_fuso(t){
+    console.log(t.value)
 }

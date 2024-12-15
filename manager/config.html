@@ -28,6 +28,26 @@
 <body data-bs-theme="dark">
     <div class="p-2">
         <h1 class="">Configurações</h1>
+        <hr>
+        <div class="d-flex flex-column p-4">
+            <div class="d-flex justify-content-between mb-3">
+                <span class="fs-5 w-50">Fuso horário</span>
+                <select class="form-control w-50" onchange="trocar_fuso(this)">
+                    <option value="-2">GMT -2</option>
+                    <option value="-3">GMT -3</option>
+                    <option value="-4">GMT -4</option>
+                    <option value="-5">GMT -5</option>
+                </select>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between mb-3">
+                <span class="fs-5 w-50">Controlar Estoque Negativo</span>
+                <div class="form-check form-switch ">
+                    <input class="form-check-input" type="checkbox" onchange="estoque_negativo(this)" role="switch" id="flexSwitchCheckDefault">
+                </div>
+            </div>
+            <hr>
+        </div>
     </div>
 </body>
 </html>
