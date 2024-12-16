@@ -1604,9 +1604,7 @@ async function getProdutos() {
     })   
 }
 
-
-
-// =============== Estoque
+// =============== Configurações
 function estoque_negativo(t){
     console.log(t.checked)
 
