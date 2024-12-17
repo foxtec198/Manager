@@ -1579,7 +1579,7 @@ async function getProdutos() {
             if (conf){
                 btnRemov.innerHTML = spinner
                 request('/manager/api/v1/excluir_prod/?id=' + idProd)
-                window.reload()
+                location.reload()
             }
         })
 
