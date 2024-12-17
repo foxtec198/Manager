@@ -5,7 +5,7 @@ var tipo = []
 var spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 
 var api = 'https://apihubbix.freeddns.org'
-// var api = 'http://10.0.0.105:5432'
+// var api = 'http://127.0.0.1:5432'
 
 var cr = localStorage.getItem('cr')
 var gc = localStorage.getItem('gc')
@@ -1156,10 +1156,9 @@ function abrirOS(t){
     }`
     
     if(document.getElementById("Telefone").value){
-        if(document.getElementById("endereco").value){
-            if(document.getElementById("modelo").value){
-                if(document.getElementById("cor").value){
-                    if(document.getElementById("noMarca").value){
+        if(document.getElementById("modelo").value){
+            if(document.getElementById("cor").value){
+                if(document.getElementById("noMarca").value){
                         if(document.getElementById("valor").value){
                             if(document.getElementById("matricula").value){
                                 t.innerHTML = spinner
@@ -1176,7 +1175,6 @@ function abrirOS(t){
                     }else{alert('Não indicamos trabalhar com aparelho sem marca!')}
                 }else{alert('Registre a cor do aparelho!')}
             }else{alert('Modelo não deve estar vazio!')}
-        }else{alert('Endereço não deve estar vazio!')}
     }else{alert('Telefone não deve estar vazio!')}
 }
 
@@ -1526,82 +1524,88 @@ function editarCliente(t){
 
 // =============== Estoque
 async function getProdutos() {
-    request('/manager/api/v1/get_prods/')
-    .then(res=>{
-        res.json()
-        .then(res=>{
-            for(var x = 0; x < res.length; x++){
-                const tr = document.createElement('tr')
+    const res = await request('/manager/api/v1/get_prods/')
+    const js = await res.json()
     
-                const id = document.createElement('td')
-                id.textContent = res[x][0]
-                id.classList.add('text-truncate')
-                
-                const nome = document.createElement('td')
-                nome.classList.add('text-truncate')
-                nome.textContent = res[x][1]
-    
-                const custo = document.createElement('td')
-                custo.textContent = res[x][2]
-                
-                const valor = document.createElement('td')
-                valor.textContent = res[x][3]
-    
-                const alerta = document.createElement('td')
-                alerta.textContent = res[x][4]
-    
-                const quantidade = document.createElement('td')
-                quantidade.textContent = res[x][5]
-    
-                const btngp = document.createElement('div')
-                btngp.classList.add('btn-group')
-                const btns = document.createElement('td')
-                btns.appendChild(btngp)
-    
-                // Buttons
-                const btnEditar = document.createElement('button')
-                btnEditar.classList.add('btn')
-                btnEditar.classList.add('btn-sm')
-                btnEditar.classList.add('btn-secondary')
-                var icon = document.createElement('i')
-                icon.classList.add('bi')
-                icon.classList.add('bi-box-arrow-up-right')
-                btnEditar.appendChild(icon)
-    
-                const btnRemov = document.createElement('button')
-                btnRemov.classList.add('btn')
-                btnRemov.classList.add('btn-sm')
-                btnRemov.classList.add('btn-danger')
-                var icon = document.createElement('i')
-                icon.classList.add('bi')
-                icon.classList.add('bi-trash-fill')
-                btnRemov.appendChild(icon)
-    
-                const btnEntrada = document.createElement('button')
-                btnEntrada.classList.add('btn')
-                btnEntrada.classList.add('btn-sm')
-                btnEntrada.classList.add('btn-success')
-                var icon = document.createElement('i')
-                icon.classList.add('bi')
-                icon.classList.add('bi-plus-circle-fill')
-                btnEntrada.appendChild(icon)
-    
-                btngp.appendChild(btnEditar)
-                btngp.appendChild(btnRemov)
-                btngp.appendChild(btnEntrada)
-    
-                tr.appendChild(id)
-                tr.appendChild(nome)
-                tr.appendChild(custo)
-                tr.appendChild(valor)
-                tr.appendChild(alerta)
-                tr.appendChild(quantidade)
-                tr.appendChild(btns)
-    
-                document.getElementById('tbody').appendChild(tr)
+    for(var x = 0; x < js.length; x++){
+        const tr = document.createElement('tr')
+        const idProd = js[x][0]
+
+        const id = document.createElement('td')
+        id.textContent = idProd
+        id.classList.add('text-truncate')
+        
+        const nome = document.createElement('td')
+        nome.classList.add('text-truncate')
+        nome.textContent = js[x][1]
+
+        const custo = document.createElement('td')
+        custo.textContent = js[x][2]
+        
+        const valor = document.createElement('td')
+        valor.textContent = js[x][3]
+
+        const alerta = document.createElement('td')
+        alerta.textContent = js[x][4]
+
+        const quantidade = document.createElement('td')
+        quantidade.textContent = js[x][5]
+
+        const btngp = document.createElement('div')
+        btngp.classList.add('btn-group')
+        const btns = document.createElement('td')
+        btns.appendChild(btngp)
+
+        // Buttons
+        const btnEditar = document.createElement('button')
+        btnEditar.classList.add('btn')
+        btnEditar.classList.add('btn-sm')
+        btnEditar.classList.add('btn-secondary')
+        var icon = document.createElement('i')
+        icon.classList.add('bi')
+        icon.classList.add('bi-box-arrow-up-right')
+        btnEditar.appendChild(icon)
+
+        const btnRemov = document.createElement('button')
+        btnRemov.classList.add('btn')
+        btnRemov.classList.add('btn-sm')
+        btnRemov.classList.add('btn-danger')
+        var icon = document.createElement('i')
+        icon.classList.add('bi')
+        icon.classList.add('bi-trash-fill')
+        btnRemov.appendChild(icon)
+        btnRemov.addEventListener('click', function(){
+            var conf = confirm('Tem certeza que deseja excluir?')
+            if (conf){
+                btnRemov.innerHTML = spinner
+                request('/manager/api/v1/excluir_prod/?id=' + idProd)
+                window.reload()
             }
         })
-    })   
+
+        const btnEntrada = document.createElement('button')
+        btnEntrada.classList.add('btn')
+        btnEntrada.classList.add('btn-sm')
+        btnEntrada.classList.add('btn-success')
+        var icon = document.createElement('i')
+        icon.classList.add('bi')
+        icon.classList.add('bi-plus-circle-fill')
+        btnEntrada.appendChild(icon)
+
+        btngp.appendChild(btnEditar)
+        btngp.appendChild(btnRemov)
+        btngp.appendChild(btnEntrada)
+
+        tr.appendChild(id)
+        tr.appendChild(nome)
+        tr.appendChild(custo)
+        tr.appendChild(valor)
+        tr.appendChild(alerta)
+        tr.appendChild(quantidade)
+        tr.appendChild(btns)
+
+        document.getElementById('tbody').appendChild(tr)
+    }
 }
 
 // =============== Configurações
