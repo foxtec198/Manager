@@ -1613,9 +1613,13 @@ async function getProdutos() {
 
         spn.classList.add('badge')
         spn.classList.add('rounded-pill')
-        if(porcentLucro >= 50){
+        if(porcentLucro >= 75){
+            spn.classList.add('text-bg-success')
+        }else if(porcentLucro >= 50){
             spn.classList.add('bg-blue')
-        }else{
+        }else if(porcentLucro >= 25){
+            spn.classList.add('bg-orange')
+        }else if(porcentLucro >= 50){
             spn.classList.add('text-bg-danger')
         }
         spn.textContent = porcentLucro.toFixed(2) + '%'
