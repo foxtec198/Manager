@@ -1619,7 +1619,7 @@ async function getProdutos() {
             spn.classList.add('bg-blue')
         }else if(porcentLucro >= 25){
             spn.classList.add('bg-orange')
-        }else if(porcentLucro >= 50){
+        }else if(porcentLucro < 25){
             spn.classList.add('text-bg-danger')
         }
         spn.textContent = porcentLucro.toFixed(2) + '%'
