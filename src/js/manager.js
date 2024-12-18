@@ -1579,7 +1579,7 @@ async function getProdutos() {
         const esMinProd = js[x][4]
         const quantProd = js[x][5]
         const lucro = js[x][6]
-        const imgProd = js[x][7]
+        const imgProd2 = js[x][7]
         const fornProd = js[x][8]
         const eanProd = js[x][9]
         const descProd = js[x][10]
@@ -1636,8 +1636,8 @@ async function getProdutos() {
         icon.classList.add('bi-box-arrow-up-right')
         btnEditar.appendChild(icon)
         btnEditar.addEventListener('click', function(){
-            console.log(imgProd)
-            document.getElementById('edImgProd').src =  'https://apihubbix.freeddns.org/img/' + imgProd
+            console.log(imgProd2)
+            document.getElementById('edImgProd').src =  'https://apihubbix.freeddns.org/img/' + imgProd2
             document.getElementById('edIdProd').value = idProd
             document.getElementById('edEan').value = eanProd
             document.getElementById('edNome').value = nomeProd
