@@ -1675,6 +1675,9 @@ function criar_prod(t){
     var img = document.getElementById('imgProd')
     
     sendImage('/manager/api/v1/criar_produto/', img.files[0])
+    .then(res=>res.then(js=>{
+        console.log(js)
+    }))
 
 
     // if(nome){
