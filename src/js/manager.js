@@ -34,6 +34,49 @@ function request(url, method='GET', json){
     return fetch(api + url, options)
 }
 
+function sendForm(url, form){
+    if(!form){
+        var options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'cr' : `${cr}`,
+                'gc' : `${gc}`
+            }
+        };
+    }else{
+        var options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'cr' : `${cr}`,
+                'gc' : `${gc}`
+            },
+            body: form
+        };
+    }
+    return fetch(api + url, options)
+}
+
+function sendImage(url, img){
+    const form = new FormData();
+    form.append("imgProd", "C:\\Users\\Guilherme Breve\\Downloads\\download-removebg-preview.png");
+    // form.append("image", img);
+
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'multipart/form-data; boundary=---011000010111000001101001',
+            'User-Agent': 'insomnia/10.2.0',
+            cr: '2 - PR - TECNOBREVE',
+            gc: 'PR - TECNOBREVE'
+        },
+        body: form
+    };
+
+    return fetch(api + url, options)
+}
+
 function ldg(){
     div.hidden = ''
     div.style.width = '100%'
@@ -1605,6 +1648,74 @@ async function getProdutos() {
         tr.appendChild(btns)
 
         document.getElementById('tbody').appendChild(tr)
+    }
+}
+
+async function getFornecedores() {
+    const res = await request('/manager/api/v1/get_fornecedores/')
+    const js = await res.json()
+
+    for(item in js){
+        const opt = document.createElement('option')
+        opt.textContent = js[item][1]
+        document.getElementById('npForn').appendChild(opt)
+    }
+}
+
+function criar_prod(t){
+    var ean = document.getElementById('npEan').value
+    var nome = document.getElementById('npNome').value
+    var custo = document.getElementById('npCusto').value
+    var valor = document.getElementById('npValor').value
+    var esmin = document.getElementById('npEsMin').value
+    var quant = document.getElementById('npQuant').value
+    var desc = document.getElementById('npDesc').value
+    var lucro = document.getElementById('npLucro').value
+    var forn = document.getElementById('npForn').value
+    var img = document.getElementById('imgProd')
+    
+    sendImage('/manager/api/v1/criar_produto/', img.files[0])
+
+
+    // if(nome){
+    //     if(custo){
+    //         if(valor){
+    //             if(quant){
+    //                 if(desc){
+    //                     if(lucro){
+    //                         if(forn){
+    //                             t.innerHTML = spinner
+    //                             var dados = `{
+    //                                 "ean": "${ean}",
+    //                                 "nome": "${nome}",
+    //                                 "custo": "${custo}",
+    //                                 "valor": "${valor}",
+    //                                 "esmin": "${esmin}",
+    //                                 "quant": "${quant}",
+    //                                 "desc": "${desc}",
+    //                                 "lucro": "${lucro}",
+    //                                 "forn": "${forn}",
+    //                                 "img": "${img}"
+    //                             }`
+                            
+    //                             request('/manager/api/v1/criar_produto/', 'POST', dados)
+    //                         }else{alert('Qual o fornecedor ?')}
+    //                     }else{alert('Lucro nao informado ou calculado!')}
+    //                 }else{alert('Margem de desconto necessário!')}
+    //             }else{alert('Quantidade não especificada!')}
+    //         }else{alert('Valor obrigatório!')}
+    //     }else{alert('Custo obrigatório!')}
+    // }else{alert('Nome obrigatório!!')}
+}
+
+function calc_lucro(){
+    var valor = document.getElementById('npValor').value
+    var custo = document.getElementById('npCusto').value
+    if(valor && custo){
+        var lucro = parseFloat(valor) - parseFloat(custo) 
+        document.getElementById('npLucro').value = lucro.toFixed(2)
+    }else{
+        document.getElementById('npLucro').value = 0
     }
 }
 

@@ -26,16 +26,106 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body data-bs-theme="dark">
+    <!-- Modal Novo Produto -->
+    <div class="modal fade" id="novoProdModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Cadastro de Produtos</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- EAN, NOME, CUSTO, VALOR, ESTOQUEMIN, QUNATIDADE, DESCONTO, LUCRO, FORNECEDOR, IMG  -->
+                    <div class="d-flex flex-column p-2 gap-2">
+                        <div class="d-flex gap-2 flex-wrap">
+                            <input id="npEan" type="text" class="form-control" placeholder="EAN" style="flex-grow: 1; flex-basis: 200px;">
+                            <input id="npNome" type="text" class="form-control" id="npNome" placeholder="Nome*" style="flex-grow: 1; flex-basis: 200px;">
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <input id="npCusto" oninput="calc_lucro()" type="number" class="form-control" placeholder="Custo*" style="flex-grow: 1; flex-basis: 200px;">
+                            <input id="npValor" oninput="calc_lucro()" type="number" class="form-control" placeholder="Valor*" style="flex-grow: 1; flex-basis: 200px;">
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <input id="npEsMin" type="number" class="form-control" placeholder="Estoque Minimo" style="flex-grow: 1; flex-basis: 200px;">
+                            <input id="npQuant" type="number" class="form-control" placeholder="Quantidade*" style="flex-grow: 1; flex-basis: 200px;">
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <input id="npDesc" type="number" class="form-control" placeholder="Margem de Desconto*" style="flex-grow: 1; flex-basis: 200px;">
+                            <input id="npLucro" type="number" class="form-control" placeholder="Lucro*" style="flex-grow: 1; flex-basis: 200px;" disabled>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap align-items-center">
+                            <span>Fornecedor *</span>
+                            <select class="form-control" id="npForn" style="flex-grow: 1; flex-basis: 200px;">
+                                <option>NÃO INFORMADO</option>
+                            </select>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap align-items-center">
+                            <span>imagem do Produto:</span>
+                            <input type="file" name="imgProd" id="imgProd" class="form-control" style="flex-grow: 1; flex-basis: 200px;" accept="image/*">
+                        </div>
+                        <p class="fs-6 text-end">Itens com * são obrigatórios!</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-success" onclick="criar_prod(this)">Criar Produto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Novo Fornecedor -->
+    <div class="modal fade" id="novoFornModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal entrada -->
+    <div class="modal fade" id="addProdModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div class="p-2">
         <div class="d-flex justify-content-between align-items-center">
             <p class="fs-2 fw-bold">Estoque</p>
             <div class="dropdown">
-                <button class="btn btn-success btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn btn-success btn-sm dropdown-toggle mobile-hide" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-node-plus-fill"></i> Novo
                 </button>
+                <button class="btn btn-success btn-sm fs-5 dropdown-toggle mobile" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-node-plus-fill"></i>
+                </button>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Fornecedor</a></li>
-                    <li><a class="dropdown-item" href="#">Produto</a></li>
+                    <li><a class="dropdown-item itemDP" href="#" data-bs-toggle="modal" data-bs-target="#novoProdModal">Produto</a></li>
+                    <li><a class="dropdown-item itemDP" href="#" data-bs-toggle="modal" data-bs-target="#novoFornModal">Fornecedor</a></li>
                 </ul>
               </div>
         </div>
@@ -72,6 +162,7 @@
             });
         });
         getProdutos()
+        getFornecedores()
     </script>
 </body>
 </html>

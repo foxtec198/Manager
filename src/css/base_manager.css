@@ -46,6 +46,9 @@ nav{
 .dp-item-exit:hover{
     background-color: var(--red);
 }
+.itemDP:hover{
+    background-color: var(--green);
+}
 .dp-item:hover{
     background-color: var(--green);
 }
