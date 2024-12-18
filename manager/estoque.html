@@ -35,9 +35,9 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- EAN, NOME, CUSTO, VALOR, ESTOQUEMIN, QUNATIDADE, DESCONTO, LUCRO, FORNECEDOR, IMG  -->
                     <div class="d-flex flex-column p-2 gap-2">
-                        <div class="d-flex gap-2 flex-wrap">
+                        <div class="d-flex gap-2 flex-wrap align-items-end">
+                            <img class="img-fluid img-thumbnail" src="https://apihubbix.freeddns.org/img/blank.png" width="100px" height="100px">
                             <input id="npEan" type="text" class="form-control" placeholder="EAN" style="flex-grow: 1; flex-basis: 200px;">
                             <input id="npNome" type="text" class="form-control" id="npNome" placeholder="Nome*" style="flex-grow: 1; flex-basis: 200px;">
                         </div>
@@ -59,16 +59,12 @@
                                 <option>NÃO INFORMADO</option>
                             </select>
                         </div>
-                        <div class="d-flex gap-2 flex-wrap align-items-center">
-                            <span>imagem do Produto:</span>
-                            <input type="file" name="imgProd" id="imgProd" class="form-control" style="flex-grow: 1; flex-basis: 200px;" accept="image/*">
-                        </div>
                         <p class="fs-6 text-end">Itens com * são obrigatórios!</p>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                    <button type="button" class="btn btn-success" onclick="criar_prod(this)">Criar Produto</button>
+                    <button type="button" class="btn btn-success" onclick="criar_prod(this)"><i class="bi bi-floppy2"></i> Criar Produto</button>
                 </div>
             </div>
         </div>
@@ -79,15 +75,20 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Fornecedores</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    ...
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <div class="d-flex flex-column gap-4 p-2">
+                        <span>Cadastrar Fornecedor</span>
+                        <div class="input-group">
+                            <input id="nomeForn" type="text" class="form-control" placeholder="Nome">
+                            <input id="telForn" type="tel" class="form-control" placeholder="Número">
+                            <button class="form-control" onclick="cadastrar_forn(this)"><i class="bi bi-floppy2"></i></button>
+                        </div>
+                        <span>Lista de Fornecedores</span>
+                        <ul class="list-group" id="listForn"></ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -95,23 +96,91 @@
 
     <!-- Modal entrada -->
     <div class="modal fade" id="addProdModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Entrada de Produtos</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    ...
+                    <input type="number" id="prodIdEntrada" hidden>
+                    <div class="d-flex flex-column gap-2 p-2">
+                        <span id="prodNome"></span>
+                        <span id="prodQuant"></span>
+                        <span id="prodCusto"></span>
+                        <span id="prodValor"></span>
+                        <div class="input-group align-items-center">
+                            <span class="form-control text-truncate">Nova Quantidade: *</span>
+                            <input id="newQuant" type="number" class="form-control">
+                        </div>
+                        <div class="input-group align-items-center">
+                            <span class="form-control">Novo Custo:</span>
+                            <input id="newCusto" type="number" class="form-control">
+                        </div>
+                        <div class="input-group align-items-center">
+                            <span class="form-control">Novo Valor:</span>
+                            <input id="newValor" type="number" class="form-control">
+                        </div>
+                        <p class="fs-6 text-end">Itens com * são obrigatórios!</p>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-success" onclick="entrada_produtos(this)"><i class="bi bi-floppy2"></i> Entrada</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Modal Editar -->
+    <div class="modal fade" id="editProdModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Produto</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex flex-column p-2 gap-2">
+                        <div class="d-flex gap-2 flex-wrap align-items-end">
+                            <img id="edImgProd" class="img-fluid img-thumbnail" width="100px" height="100px">
+                            <div class="d-flex gap-2 flex-wrap align-items-center">
+                                <form class="input-group" action="http://localhost:5432/manager/api/v1/atualizar_img_prod/" method="post" enctype="multipart/form-data">
+                                    <input type="file" name="imgProd" id="imgProd" class="form-control" style="flex-grow: 1; flex-basis: 200px;" accept="image/*">
+                                    <button class="form-control text-truncate">Atualizar Imagem</button>
+                                </div>
+                                <input id="edIdProd" name="idProd" type="number" class="form-control" placeholder="Id" style="flex-grow: 1; flex-basis: 200px;" readonly>
+                            </form>
+                            <input id="edEan" type="text" class="form-control" placeholder="EAN" style="flex-grow: 1; flex-basis: 200px;">
+                            <input id="edNome" type="text" class="form-control" id="npNome" placeholder="Nome*" style="flex-grow: 1; flex-basis: 200px;">
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <input id="edCusto" oninput="ed_calc_lucro()" type="number" class="form-control" placeholder="Custo*" style="flex-grow: 1; flex-basis: 200px;">
+                            <input id="edValor" oninput="ed_calc_lucro()" type="number" class="form-control" placeholder="Valor*" style="flex-grow: 1; flex-basis: 200px;">
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <input id="edEsMin" type="number" class="form-control" placeholder="Estoque Minimo" style="flex-grow: 1; flex-basis: 200px;">
+                            <input id="edQuant" type="number" class="form-control" placeholder="Quantidade*" style="flex-grow: 1; flex-basis: 200px;">
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <input id="edDesc" type="number" class="form-control" placeholder="Margem de Desconto*" style="flex-grow: 1; flex-basis: 200px;">
+                            <input id="edLucro" type="number" class="form-control" placeholder="Lucro*" style="flex-grow: 1; flex-basis: 200px;" disabled>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap align-items-center">
+                            <span>Fornecedor *</span>
+                            <select class="form-control" id="edForn" style="flex-grow: 1; flex-basis: 200px;">
+                                <option>NÃO INFORMADO</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-success" onclick="editar_produto(this)"><i class="bi bi-floppy2"></i> Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="p-2">
         <div class="d-flex justify-content-between align-items-center">
@@ -135,14 +204,15 @@
                 <input id="busca" type="text" class="form-control" placeholder="Busque por um elemento da tabela" aria-label="Username" aria-describedby="basic-addon1">
             </div>
             <div class="card table-responsive-sm p-2 overflow-auto">
-                <table class="table" id="table">
-                    <thead>
+                <table class="table table table-hover" id="table">
+                    <thead class="text-center">
                         <th>Id</th>
                         <th>Nome</th>
                         <th>Custo</th>
                         <th>Valor</th>
                         <th>Alerta</th>
                         <th>Quantidade</th>
+                        <th>Lucro</th>
                         <th>Ação</th>
                     </thead>
                     <tbody id="tbody">
@@ -152,6 +222,7 @@
             </div>
         </div>
     </div>
+
     <script>
         $(document).ready(function(){
             $("#busca").on("keyup", function() {

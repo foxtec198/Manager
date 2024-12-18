@@ -5,7 +5,7 @@ var tipo = []
 var spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 
 var api = 'https://apihubbix.freeddns.org'
-// var api = 'http://127.0.0.1:5432'
+var api = 'http://127.0.0.1:5432'
 
 var cr = localStorage.getItem('cr')
 var gc = localStorage.getItem('gc')
@@ -39,7 +39,7 @@ function sendForm(url, form){
         var options = {
             method: 'POST',
             headers: {
-                'Content-Type': 'multipart/form-data',
+                // 'Content-Type': 'multipart/form-data',
                 'cr' : `${cr}`,
                 'gc' : `${gc}`
             }
@@ -48,7 +48,7 @@ function sendForm(url, form){
         var options = {
             method: 'POST',
             headers: {
-                'Content-Type': 'multipart/form-data',
+                // 'Content-Type': 'multipart/form-data',
                 'cr' : `${cr}`,
                 'gc' : `${gc}`
             },
@@ -1573,6 +1573,18 @@ async function getProdutos() {
     for(var x = 0; x < js.length; x++){
         const tr = document.createElement('tr')
         const idProd = js[x][0]
+        const nomeProd = js[x][1]
+        const custoProd = js[x][2]
+        const valorProd = js[x][3]
+        const esMinProd = js[x][4]
+        const quantProd = js[x][5]
+        const lucro = js[x][6]
+        const imgProd = js[x][7]
+        const fornProd = js[x][8]
+        const eanProd = js[x][9]
+        const descProd = js[x][10]
+        var porcentLucro =  lucro/valorProd*100
+
 
         const id = document.createElement('td')
         id.textContent = idProd
@@ -1580,19 +1592,34 @@ async function getProdutos() {
         
         const nome = document.createElement('td')
         nome.classList.add('text-truncate')
-        nome.textContent = js[x][1]
+        nome.textContent = nomeProd
 
         const custo = document.createElement('td')
-        custo.textContent = js[x][2]
+        custo.textContent = 'R$ ' + custoProd
+        custo.classList.add('text-truncate')
         
         const valor = document.createElement('td')
-        valor.textContent = js[x][3]
+        valor.textContent = 'R$ ' + valorProd
+        valor.classList.add('text-truncate')
 
         const alerta = document.createElement('td')
         alerta.textContent = js[x][4]
 
         const quantidade = document.createElement('td')
-        quantidade.textContent = js[x][5]
+        quantidade.textContent = quantProd
+
+        const lucrol = document.createElement('td')
+        const spn = document.createElement('span')
+
+        spn.classList.add('badge')
+        spn.classList.add('rounded-pill')
+        if(porcentLucro >= 50){
+            spn.classList.add('bg-blue')
+        }else{
+            spn.classList.add('text-bg-danger')
+        }
+        spn.textContent = porcentLucro.toFixed(2) + '%'
+        lucrol.appendChild(spn)
 
         const btngp = document.createElement('div')
         btngp.classList.add('btn-group')
@@ -1608,6 +1635,24 @@ async function getProdutos() {
         icon.classList.add('bi')
         icon.classList.add('bi-box-arrow-up-right')
         btnEditar.appendChild(icon)
+        btnEditar.addEventListener('click', function(){
+            console.log(imgProd)
+            document.getElementById('edImgProd').src =  'https://apihubbix.freeddns.org/img/' + imgProd
+            document.getElementById('edIdProd').value = idProd
+            document.getElementById('edEan').value = eanProd
+            document.getElementById('edNome').value = nomeProd
+            document.getElementById('edCusto').value = custoProd
+            document.getElementById('edValor').value = valorProd
+            document.getElementById('edEsMin').value = esMinProd
+            document.getElementById('edQuant').value = quantProd
+            document.getElementById('edForn').value = fornProd
+            document.getElementById('edDesc').value = descProd
+            document.getElementById('edLucro').value = lucro
+
+
+            const toast = new bootstrap.Modal(document.getElementById('editProdModal'), {'show':true})
+            toast.show()
+        })
 
         const btnRemov = document.createElement('button')
         btnRemov.classList.add('btn')
@@ -1634,6 +1679,16 @@ async function getProdutos() {
         icon.classList.add('bi')
         icon.classList.add('bi-plus-circle-fill')
         btnEntrada.appendChild(icon)
+        btnEntrada.addEventListener('click', function(){
+            document.getElementById('prodIdEntrada').value = idProd
+            document.getElementById('prodNome').textContent = nomeProd
+            document.getElementById('prodQuant').textContent = `QUANTIDADE ATUAL: ${quantProd}`
+            document.getElementById('prodCusto').textContent = `CUSTO ATUAL: R$${custoProd}`
+            document.getElementById('prodValor').textContent = `VALOR ATUAL: R$${valorProd}`
+
+            const toast = new bootstrap.Modal(document.getElementById('addProdModal'), {'show':true})
+            toast.show()
+        })
 
         btngp.appendChild(btnEditar)
         btngp.appendChild(btnRemov)
@@ -1645,6 +1700,7 @@ async function getProdutos() {
         tr.appendChild(valor)
         tr.appendChild(alerta)
         tr.appendChild(quantidade)
+        tr.appendChild(lucrol)
         tr.appendChild(btns)
 
         document.getElementById('tbody').appendChild(tr)
@@ -1659,6 +1715,45 @@ async function getFornecedores() {
         const opt = document.createElement('option')
         opt.textContent = js[item][1]
         document.getElementById('npForn').appendChild(opt)
+
+        const opt2 = document.createElement('option')
+        opt2.textContent = js[item][1]
+        document.getElementById('edForn').appendChild(opt2)
+        
+        const id = js[item][0]
+        const nome = js[item][1]
+
+        const li = document.createElement('li')
+        const btnExcluiForn = document.createElement('button')
+        const spn = document.createElement('spn')
+
+        spn.textContent = nome
+        li.classList.add('list-group-item')
+        li.classList.add('d-flex')
+        li.classList.add('justify-content-between')
+        li.classList.add()
+        btnExcluiForn.classList.add('btn')
+        btnExcluiForn.classList.add('btn-danger')
+        btnExcluiForn.classList.add('btn-sm')
+        btnExcluiForn.innerHTML = '<i class="bi bi-trash-fill"></i>'
+        btnExcluiForn.addEventListener('click', function(){
+            const conf = confirm('Deseja realmente exluir?')
+            if(conf){
+                request('/manager/api/v1/excluir_fornecedor/?id=' + id, 'POST')
+                .then(res=>{
+                    res.json().then(res=>{
+                        alert(res)
+                        location.reload()
+                    })
+                })
+            }
+        })
+
+        li.appendChild(spn)
+        li.appendChild(btnExcluiForn)
+
+        document.getElementById('listForn').appendChild(li)
+
     }
 }
 
@@ -1672,43 +1767,43 @@ function criar_prod(t){
     var desc = document.getElementById('npDesc').value
     var lucro = document.getElementById('npLucro').value
     var forn = document.getElementById('npForn').value
-    var img = document.getElementById('imgProd')
-    
-    sendImage('/manager/api/v1/criar_produto/', img.files[0])
-    .then(res=>{
-        res.json().then(js=>{
-            console.log(js)
-        })
-    })
-    // if(nome){
-    //     if(custo){
-    //         if(valor){
-    //             if(quant){
-    //                 if(desc){
-    //                     if(lucro){
-    //                         if(forn){
-    //                             t.innerHTML = spinner
-    //                             var dados = `{
-    //                                 "ean": "${ean}",
-    //                                 "nome": "${nome}",
-    //                                 "custo": "${custo}",
-    //                                 "valor": "${valor}",
-    //                                 "esmin": "${esmin}",
-    //                                 "quant": "${quant}",
-    //                                 "desc": "${desc}",
-    //                                 "lucro": "${lucro}",
-    //                                 "forn": "${forn}",
-    //                                 "img": "${img}"
-    //                             }`
-                            
-    //                             request('/manager/api/v1/criar_produto/', 'POST', dados)
-    //                         }else{alert('Qual o fornecedor ?')}
-    //                     }else{alert('Lucro nao informado ou calculado!')}
-    //                 }else{alert('Margem de desconto necessário!')}
-    //             }else{alert('Quantidade não especificada!')}
-    //         }else{alert('Valor obrigatório!')}
-    //     }else{alert('Custo obrigatório!')}
-    // }else{alert('Nome obrigatório!!')}
+    var img = 'img/blank.png'
+
+    if(nome){
+        if(custo){
+            if(valor){
+                if(quant){
+                    if(desc){
+                        if(lucro){
+                            if(forn){
+                                t.innerHTML = spinner
+
+                                var form = new FormData()
+                                form.append('ean', ean)
+                                form.append('nome', nome.toUpperCase())
+                                form.append('custo', custo)
+                                form.append('valor', valor)
+                                form.append('esmin', esmin)
+                                form.append('quant', quant)
+                                form.append('desc', desc)
+                                form.append('lucro', lucro)
+                                form.append('forn', forn)
+                                form.append('img', img)
+
+                                sendForm('/manager/api/v1/criar_produto/', form)
+                                .then(res=>{
+                                    res.json().then(js=>{
+                                        alert(js)
+                                        location.reload()
+                                    })
+                                })
+                            }else{alert('Qual o fornecedor ?')}
+                        }else{alert('Lucro nao informado ou calculado!')}
+                    }else{alert('Margem de desconto necessário!')}
+                }else{alert('Quantidade não especificada!')}
+            }else{alert('Valor obrigatório!')}
+        }else{alert('Custo obrigatório!')}
+    }else{alert('Nome obrigatório!!')}
 }
 
 function calc_lucro(){
@@ -1720,6 +1815,103 @@ function calc_lucro(){
     }else{
         document.getElementById('npLucro').value = 0
     }
+}
+
+function ed_calc_lucro(){
+    var valor = document.getElementById('edValor').value
+    var custo = document.getElementById('edCusto').value
+    if(valor && custo){
+        var lucro = parseFloat(valor) - parseFloat(custo) 
+        document.getElementById('edLucro').value = lucro.toFixed(2)
+    }else{
+        document.getElementById('edLucro').value = 0
+    }
+}
+
+function cadastrar_forn(t){
+    const nome = document.getElementById('nomeForn').value
+    const tel = document.getElementById('telForn').value
+    if(nome && tel){
+        t.innerHTML = spinner
+        request('/manager/api/v1/cadastrar_fornecedor/', 'POST', `{"nome":"${nome.toUpperCase()}", "telefone":"${tel}"}`)
+        .then(res=>{res.json().then(js=>{
+            alert(js)
+            location.reload()
+        })})
+    }
+}
+
+function entrada_produtos(t){
+    var id = document.getElementById('prodIdEntrada').value
+    var quant = document.getElementById('newQuant').value
+    var custo = document.getElementById('newCusto').value
+    var valor = document.getElementById('newValor').value
+
+    if(quant){
+        t.innerHTML = spinner
+        var dados = `{
+            "id": "${id}",
+            "quant": "${quant}",
+            "custo": "${custo}",
+            "valor": "${valor}"
+        }`
+        console.log(dados)
+
+        request('/manager/api/v1/entrada_produtos/', 'POST', dados)
+        .then(res=>{res.json().then(js=>{
+            alert(js)
+            location.reload()
+        })})
+    }
+}
+
+function editar_produto(t){
+    var id = document.getElementById('edIdProd').value
+    var ean = document.getElementById('edEan').value
+    var nome = document.getElementById('edNome').value
+    var custo = document.getElementById('edCusto').value
+    var valor = document.getElementById('edValor').value
+    var esmin = document.getElementById('edEsMin').value
+    var quant = document.getElementById('edQuant').value
+    var forn = document.getElementById('edForn').value
+    var desc = document.getElementById('edDesc').value
+    var lucro = document.getElementById('edLucro').value
+
+    if(nome){
+        if(custo){
+            if(valor){
+                if(quant){
+                    if(desc){
+                        if(lucro){
+                            if(forn){
+                                t.innerHTML = spinner
+
+                                var form = new FormData()
+                                form.append('id', id)
+                                form.append('ean', ean)
+                                form.append('nome', nome.toUpperCase())
+                                form.append('custo', custo)
+                                form.append('valor', valor)
+                                form.append('esmin', esmin)
+                                form.append('quant', quant)
+                                form.append('desc', desc)
+                                form.append('lucro', lucro)
+                                form.append('forn', forn)
+
+                                sendForm('/manager/api/v1/editar_produto/', form)
+                                .then(res=>{
+                                    res.json().then(js=>{
+                                        alert(js)
+                                        location.reload()
+                                    })
+                                })
+                            }else{alert('Qual o fornecedor ?')}
+                        }else{alert('Lucro nao informado ou calculado!')}
+                    }else{alert('Margem de desconto necessário!')}
+                }else{alert('Quantidade não especificada!')}
+            }else{alert('Valor obrigatório!')}
+        }else{alert('Custo obrigatório!')}
+    }else{alert('Nome obrigatório!!')}
 }
 
 // =============== Configurações
