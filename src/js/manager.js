@@ -1583,7 +1583,7 @@ async function getProdutos() {
         const fornProd = js[x][8]
         const eanProd = js[x][9]
         const descProd = js[x][10]
-        var porcentLucro =  lucro/valorProd*100
+        var porcentLucro =  (lucro/custoProd)*100
 
 
         const id = document.createElement('td')
