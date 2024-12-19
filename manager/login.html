@@ -11,6 +11,83 @@
 
     <!-- Local Arch -->
     <link rel="stylesheet" href="../src/css/base_manager.css">
+    <style>
+        .form {
+        --bg-light: #efefef;
+        --bg-dark: #707070;
+        --clr: #58bc82;
+        --clr-alpha: #9c9c9c60;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        width: 100%;
+        max-width: 250px;
+        }
+
+        .form .input-span {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        }
+
+        .form input[type="number"],
+        .form input[type="password"] {
+        border-radius: 0.5rem;
+        padding: 1rem 0.75rem;
+        width: 100%;
+        height: 40px;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: var(--clr-alpha);
+        outline: 2px solid var(--bg-dark);
+        }
+
+        .form input[type="number"]:focus,
+        .form input[type="password"]:focus {
+        outline: 2px solid var(--clr);
+        }
+
+        .label {
+        align-self: flex-start;
+        color: var(--clr);
+        font-weight: 600;
+        }
+
+        .form .submit {
+        padding: 1rem 0.75rem;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-radius: 3rem;
+        background-color: var(--bg-dark);
+        color: var(--bg-light);
+        border: none;
+        cursor: pointer;
+        transition: all 300ms;
+        font-weight: 600;
+        font-size: 0.9rem;
+        }
+
+        .form .submit:hover {
+        background-color: var(--clr);
+        /* color: var(--bg-dark); */
+        color: white;
+        }
+
+        .span {
+        text-decoration: none;
+        color: var(--bg-dark);
+        }
+
+        .span a {
+        color: var(--clr);
+        }
+    </style>
 </head>
 <body data-bs-theme="dark">
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
@@ -30,7 +107,7 @@
     </nav>
     <script src="../src/js/manager.js"></script>
     <div class="d-flex justify-content-center align-items-center h-100">
-        <div class="card">
+        <!-- <div class="card">
             <form>
                 <div class="card-header">
                     <p class="fs-5 fw-bold text-center">Realizar Login</p>
@@ -44,15 +121,32 @@
                     <button type="button" class="btn btn-success w-100" onclick="logar()"><i class="bi bi-toggle-on"></i> Login</button>
                 </div>
             </form>
-        </div>
+        </div> -->
+        <form class="form">
+            <span class="input-span">
+                <label for="email" class="label">Matrícula</label>
+                <input type="number" name="matricula" id="mat"/>
+            </span>
+            <span class="input-span">
+                <label for="password" class="label">Senha</label>
+                <input type="password" name="pwd" id="pwd"/>
+            </span>
+            <!-- <span class="span"><a href="#">Esqueceu a senha?</a></span> -->
+            <br>
+            <input class="submit" type="button" value="Entrar" onclick="logar()"/>
+            <span class="span">Não tem conta? <a href="#">Crie uma</a></span>
+        </form>
+
+    
     </div>
     <script>
         function logar(){
             var m = document.getElementById('mat')
             var p = document.getElementById('pwd')
-
+            
             if(m.value && p.value){
                 ldg()
+                console.log(m.value, p.value)
                 request(`/manager/api/v1/login/?mat=${m.value}&pw=${p.value}`, 'POST')
                 .then(res=>{
                     res.json()

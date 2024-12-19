@@ -73,6 +73,9 @@ nav{
 .btnM:hover{
     background: var(--green);
 }
+.btnM:focus{
+    background: var(--green);
+}
 .btnM-exit:hover{
     background: var(--red);
 }
@@ -81,7 +84,6 @@ nav{
     min-width: 150px;
     height: 95px;
 }
-
 
 .bg-blue{
     background: var(--blue);
