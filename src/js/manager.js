@@ -1,12 +1,11 @@
 var div = document.createElement('div')
 var cart = []
 var statusM = []
-var tipo = []
 var spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 
 var api = 'https://api.hubbix.com.br'
 // var api = 'https://apihubbix.freeddns.org'
-// var api = 'http://127.0.0.1:5432'
+var api = 'http://127.0.0.1:5432'
 
 var cr = localStorage.getItem('cr')
 var gc = localStorage.getItem('gc')
@@ -1180,25 +1179,40 @@ async function getMarcasOs(){
 }
 
 function abrirOS(t){
-    var dados = `{
-        "id": ${parseInt(document.getElementById("CPF").value)},
-        "telefone" : "${document.getElementById("Telefone").value}",
-        "endereco" : "${document.getElementById("endereco").value}",
-        "imei" : "${document.getElementById("imei").value}",
-        "modelo" : "${document.getElementById("modelo").value}",
-        "cor" : "${document.getElementById("cor").value}",
-        "marca" : "${document.getElementById("noMarca").value}",
-        "status":"${statusM}",
-        "tipo":"${tipo}",
-        "ligar" : ${document.getElementById("ligar").checked},
-        "obs" : "${document.getElementById("obs").value}",
-        "relato" : "${document.getElementById("relato").value}",
-        "retirada" : "${document.getElementById("retirada").value}",
-        "valor" : ${parseFloat(document.getElementById("valor").value)},
-        "matricula" : "${document.getElementById("matricula").value}",
-        "statusOS" : "${document.getElementById("noTipoOs").value}"
-    }`
+    var id = parseInt(document.getElementById("CPF").value)
+    var telefone = document.getElementById("Telefone").value
+    var endereco = document.getElementById('endereco').value
+    var imei = document.getElementById('imei').value
+    var modelo = document.getElementById('modelo').value
+    var cor = document.getElementById('cor').value
+    var marca = document.getElementById('noMarca').value
+    var ligar = document.getElementById('ligar').checked
+    var tipo = document.getElementById('tipoOS').value
+    var obs = document.getElementById('obs').value
+    var relato = document.getElementById('relato').value
+    var retirada = document.getElementById('retirada').value
+    var valor = parseFloat(document.getElementById('valor').value)
+    var matricula = document.getElementById('matricula').value
+    var statusOS = document.getElementById('noTipoOs').value 
+    var form = new FormData()
     
+    form.append('id', id)
+    form.append('telefone', telefone)
+    form.append('endereco', endereco)
+    form.append('imei', imei)
+    form.append('modelo', modelo)
+    form.append('cor', cor)
+    form.append('marca', marca)
+    form.append('status', statusM)
+    form.append('tipo', tipo)
+    form.append('ligar', ligar)
+    form.append('obs', obs)
+    form.append('relato', relato)
+    form.append('retirada', retirada)
+    form.append('valor', valor)
+    form.append('matricula', matricula)
+    form.append('statusOS', statusOS)
+
     if(document.getElementById("Telefone").value){
         if(document.getElementById("modelo").value){
             if(document.getElementById("cor").value){
@@ -1206,7 +1220,7 @@ function abrirOS(t){
                         if(document.getElementById("valor").value){
                             if(document.getElementById("matricula").value){
                                 t.innerHTML = spinner
-                                request('/manager/api/v1/abrir_os/', 'POST', dados)
+                                sendForm('/manager/api/v1/abrir_os/', form)
                                 .then(res=>{
                                     res.json()
                                     .then(js=>{
@@ -1307,29 +1321,25 @@ function editarOs(t){
     var valor = document.getElementById('eosValor').value
     var tipoOs = document.getElementById('eoTipoOs').value
     var servico = document.getElementById('eosTipoServico').value
+    var form = new FormData()
 
-    var dados = `{
-        "id": "${id}",
-        "modelo": "${modelo}",
-        "cor": "${cor}",
-        "marca": "${marca}",
-        "imei": "${imei}",
-        "valor": ${parseFloat(valor)},
-        "statusOS": "${tipoOs}",
-        "servico": "${servico}",
-        "cpf": "${cpf}"
-    }`
+    form.append('id', id)
+    form.append('cpf', cpf)
+    form.append('cor', cor)
+    form.append('marca', marca)
+    form.append('imei', imei)
+    form.append('valor', valor)
+    form.append('statusOS', tipoOs)
+    form.append('servico', servico)
 
     if(modelo && marca && cor && valor){
         t.innerHTML = spinner
-        request('/manager/api/v1/editar_os/', 'POST', dados)
+        sendForm('/manager/api/v1/editar_os/', form)
         .then(res=>{res.json().then(js=>{
             alert(js)
             location.reload()
         })})
-    }else{
-        alert('Preencha todos os dados!')
-    }
+    }else{alert('Preencha todos os dados!')}
 
 }
 
