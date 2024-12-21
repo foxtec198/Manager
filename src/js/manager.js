@@ -1327,6 +1327,7 @@ function editarOs(t){
     form.append('cpf', cpf)
     form.append('cor', cor)
     form.append('marca', marca)
+    form.append('modelo', modelo)
     form.append('imei', imei)
     form.append('valor', valor)
     form.append('statusOS', tipoOs)
