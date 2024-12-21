@@ -5,7 +5,7 @@ var spinner = '<span class="spinner-border spinner-border-sm text-light" role="s
 
 var api = 'https://api.hubbix.com.br'
 // var api = 'https://apihubbix.freeddns.org'
-var api = 'http://127.0.0.1:5432'
+// var api = 'http://127.0.0.1:5432'
 
 var cr = localStorage.getItem('cr')
 var gc = localStorage.getItem('gc')
