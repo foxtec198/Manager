@@ -1931,6 +1931,27 @@ function editar_produto(t){
 }
 
 // =============== Configurações
+async function get_infos(){
+    const res = await request('/manager/api/v1/get_infos_dash/')
+    const js = await res.json()
+
+    if(js){
+        console.log(js)
+        document.getElementById('brutoAnual').textContent = js['BT_ANUAL']
+        document.getElementById('mediaMes').textContent = js['BT_MES']
+        document.getElementById('quantMes').textContent = js['QT_MES']
+        document.getElementById('quantMes2').textContent = js['QT_MES']
+        document.getElementById('liqAnual').textContent = js['LQ_ANUAL']
+        document.getElementById('liqMes').textContent = js['LQ_MES']
+        document.getElementById('ticketMedio').textContent = js['TC_MEDIO']
+        document.getElementById('ticket').textContent = js['TC_PROD']
+        document.getElementById('custoProd').textContent = js['CT_PROD']
+        document.getElementById('winUsername').textContent = js['VD_AT'][0]
+        document.getElementById('winScore').textContent = js['VD_AT'][1]
+    }
+} 
+
+// =============== Configurações
 function estoque_negativo(t){
     console.log(t.checked)
 

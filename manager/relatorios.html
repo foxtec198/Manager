@@ -35,8 +35,8 @@
                     </span>
                 </div>
                 <div class="d-flex gap-2">
-                    <span class="fs-4 fw-bold"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
-                    <span class="fs-6"><span class="spinner-border spinner-border-sm text-light" role="status"></span></span>
+                    <span class="fs-4 fw-bold" id="brutoAnual"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
+                    <span class="fs-6" id="quantMes"><span class="spinner-border spinner-border-sm text-light" role="status"></span></span>
                 </div>
             </div>
             <div class="d-flex flex-column align-items-center p-3 bd-gray2" style="flex-grow: 1; flex-basis: 150px;">
@@ -46,18 +46,19 @@
                     </span>
                 </div>
                 <div class="d-flex gap-2">
-                    <span class="fs-4 fw-bold"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
+                    <span class="fs-4 fw-bold" id="mediaMes"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
+                    <span class="fs-6" id="quantMes2"><span class="spinner-border spinner-border-sm text-light" role="status"></span></span>
                 </div>
             </div>
             <div class="d-flex flex-column align-items-center p-3 bd-green" style="flex-grow: 1; flex-basis: 150px;">
                 <div class="d-flex gap-2">
                     <span class="fs-6">
                         <i class="bi bi-percent"></i>
-                        Liquído Mês
+                        Liquído Ano
                     </span>
                 </div>
                 <div class="d-flex gap-2">
-                    <span class="fs-4 fw-bold"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
+                    <span class="fs-4 fw-bold" id="liqAnual"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
                 </div>
             </div>
             <div class="d-flex flex-column align-items-center p-3 bd-blue" style="flex-grow: 1; flex-basis: 150px;">
@@ -68,7 +69,7 @@
                     </span>
                 </div>
                 <div class="d-flex gap-2">
-                    <span class="fs-4 fw-bold"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
+                    <span class="fs-4 fw-bold" id="liqMes"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
                 </div>
             </div>
         </div>
@@ -81,7 +82,7 @@
                     </span>
                 </div>
                 <div class="d-flex gap-2">
-                    <span class="fs-4 fw-bold"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
+                    <span class="fs-4 fw-bold" id="ticketMedio"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
                 </div>
             </div>
             <div class="d-flex flex-column align-items-center p-3 bd-orange" style="flex-grow: 1; flex-basis: 150px;">
@@ -91,7 +92,7 @@
                     </span>
                 </div>
                 <div class="d-flex gap-2">
-                    <span class="fs-4 fw-bold"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
+                    <span class="fs-4 fw-bold" id="ticket"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
                 </div>
             </div>
             <div class="d-flex flex-column align-items-center p-3 bd-violet" style="flex-grow: 1; flex-basis: 150px;">
@@ -102,7 +103,7 @@
                     </span>
                 </div>
                 <div class="d-flex gap-2">
-                    <span class="fs-4 fw-bold"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
+                    <span class="fs-4 fw-bold" id="custoProd"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
                 </div>
             </div>
         </div>
@@ -270,5 +271,8 @@
             </div>
         </div>
     </div>
+    <script>
+        get_infos()
+    </script>
 </body>
 </html>
