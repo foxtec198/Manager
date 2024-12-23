@@ -10,6 +10,19 @@ var api = 'https://api.hubbix.com.br'
 var cr = localStorage.getItem('cr')
 var gc = localStorage.getItem('gc')
 
+// function openCalc(){
+//     const divCalc = document.getElementById('divCalc')
+//     const btnCalc = document.getElementById('btnCalc')
+ 
+//     if(divCalc.hidden){
+//         divCalc.hidden = ''
+//         btnCalc.innerHTML = '<i class="bi bi-caret-right-fill"></i>'
+//     }else{
+//         divCalc.hidden = 'none'
+//         btnCalc.innerHTML = '<i class="bi bi-caret-left-fill"></i>'
+//     }
+// }
+
 function request(url, method='GET', json){
     if(!json){
         var options = {

@@ -27,15 +27,59 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body data-bs-theme="dark">
-    <div class="m-2 alert alert-success alert-dismissible fade show" role="alert" hidden>
+    <!-- <div class="d-flex justify-content-center align-items-center" style="position: absolute; z-index: 2; background: #333; right: 0px; top: 20%; border-top-left-radius: 20px; border-bottom-left-radius: 20px;">
+        <div class="p-2">
+            <button id="btnCalc" style="border: none; background: none;" onclick="openCalc()">
+                <i class="bi bi-caret-left-fill"></i>
+            </button>
+        </div>
+        <div id="divCalc" class="p-4">
+            <div id="cal-body">
+                <div class="input">
+                    <input type="text">
+                </div>
+                <div style="padding-top: 40px;">
+                    <div class="buttons">
+                        <button>1</button>
+                        <button>2</button>
+                        <button>3</button>
+                        <button>+</button>
+                    </div>
+                    <div class="buttons">
+                        <button>4</button>
+                        <button>5</button>
+                        <button>6</button>
+                        <button>-</button>
+                    </div>
+                    <div class="buttons">
+                        <button>7</button>
+                        <button>8</button>
+                        <button>9</button>
+                        <button>*</button>
+                    </div>
+                    <div class="buttons">
+                        <button>.</button>
+                        <button>0</button>
+                        <button style="width: 140px;">=</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <div class="m-2 alert alert-success alert-dismissible fade show" role="alert">
         <span>
             <!-- <i class="bi bi-exclamation-triangle-fill"></i> -->
-            Sistema Atualizado e funcionando novamente!
+            Nossa equipe deseja um feliz natal e boas festas! 🎅🏻🍒
         </span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
     <div class="d-flex gap-2 p-2 h-100" style="margin-bottom: 90px;">
+        <div style="position: absolute;">
+            <img src="../src/img/gorro.svg" alt="gorro papai noel" class="gorro">
+        </div>
+
         <div class="card overflow-hidden mobile-hide" style="min-width: 180px;">
             <span class="d-flex gap-2 flex-column w-100 align-items-center justify-content-center mt-3">
                 <img id="logoBase" class="logo img-fluid object-fit-contain placeholder">
