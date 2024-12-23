@@ -5,7 +5,7 @@ var spinner = '<span class="spinner-border spinner-border-sm text-light" role="s
 
 var api = 'https://api.hubbix.com.br'
 // var api = 'https://apihubbix.freeddns.org'
-// var api = 'http://127.0.0.1:5432'
+var api = 'http://127.0.0.1:5432'
 
 var cr = localStorage.getItem('cr')
 var gc = localStorage.getItem('gc')
@@ -151,7 +151,6 @@ function changeWin(win){
     changer.src = win
 }
 
-
 function inform(msg){
     var d = document.getElementById('alertt')
     d.hidden = ''
@@ -168,7 +167,7 @@ function getLoja(){
             label.classList.remove('placeholder')
 
             var img = document.getElementById('logoBase')
-            img.src = `https://apihubbix.freeddns.org/` + loja['logo']
+            img.src = `${api}/img/` + loja['logo']
             img.classList.remove('placeholder')
         })
     })
@@ -2058,6 +2057,64 @@ async function get_infos(){
 }
 
 // =============== Configurações
+async function get_config() {
+    const res = await request('/manager/api/v1/get_config/')
+    const js = await res.json()
+    if(js){
+        var esc = document.getElementById('slEscala')
+
+        document.getElementById('slFuso').value = js['fuso']
+        document.getElementById('ckEstoque').checked = js['ct_es']
+        document.getElementById('ckPeca').checked = js['peca']
+        document.getElementById('config_logo').src = api + '/img/' + js['logo']
+
+        for(var x = 1; x < 51; x++){
+            const opt = document.createElement('option')
+            opt.textContent = x
+            esc.appendChild(opt)
+        }
+        esc.value = js['escala']
+
+        for(item in js['funcs']){
+            const nome = js['funcs'][item][0]
+            const perm = js['funcs'][item][1]
+            const li = document.createElement('li')
+            const sp = document.createElement('span') 
+            const btnRemove = document.createElement('button')
+            const btnPmvAdmin = document.createElement('button')
+            const btnGp = document.createElement('div')
+
+            li.classList.add('list-group-item')
+            li.classList.add('d-flex')
+            li.classList.add('justify-content-between')
+
+            btnRemove.classList.add('btn')
+            btnRemove.classList.add('btn-danger')
+            btnRemove.innerHTML = '<i class="bi bi-trash-fill"></i>'
+
+            btnPmvAdmin.classList.add('btn')
+            btnPmvAdmin.classList.add('btn-light')
+            btnPmvAdmin.innerHTML = '<i class="bi bi-shield-fill-check"></i>'
+
+            btnGp.classList.add('btn-group')
+            
+            sp.textContent = nome
+            
+            li.appendChild(sp)
+            
+            if(perm === 'USER'){
+                btnGp.appendChild(btnPmvAdmin)
+            }
+            btnGp.appendChild(btnRemove)
+
+            li.appendChild(btnGp)
+
+            document.getElementById('listFuncs').appendChild(li)
+        }
+
+    }
+}
+
 function estoque_negativo(t){
     console.log(t.checked)
 

@@ -11,6 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    
 
     <!-- Favicon -->
     <link rel="icon" href="../src/img/newFav.png">
@@ -27,12 +28,12 @@
 </head>
 <body data-bs-theme="dark">
     <div class="p-2">
-        <h1 class="">Configurações</h1>
+        <h1 class="">Configurações.</h1>
         <hr>
         <div class="d-flex flex-column p-4">
-            <div class="d-flex justify-content-between mb-3">
-                <span class="fs-5 w-50">Fuso horário</span>
-                <select class="form-control w-50" onchange="trocar_fuso(this)">
+            <div class="d-flex justify-content-between mb-3 flex-wrap gap-4">
+                <span class="fs-5 fw-bold w-50">Fuso horário</span>
+                <select class="form-control w-50" onchange="trocar_fuso(this)" id="slFuso" style="flex-grow: 1; flex-basis: 200px;"> 
                     <option value="-2">GMT -2</option>
                     <option value="-3">GMT -3</option>
                     <option value="-4">GMT -4</option>
@@ -40,14 +41,48 @@
                 </select>
             </div>
             <hr>
-            <div class="d-flex justify-content-between mb-3">
-                <span class="fs-5 w-50">Controlar Estoque Negativo</span>
-                <div class="form-check form-switch ">
-                    <input class="form-check-input" type="checkbox" onchange="estoque_negativo(this)" role="switch" id="flexSwitchCheckDefault">
+            <div class="d-flex justify-content-between mb-3 flex-wrap gap-4">
+                <span class="fs-5 fw-bold w-50" style="flex-grow: 1; flex-basis: 200px;">Controle Estoque</span>
+                <div class="d-flex justify-content-end" style="flex-grow: 1; flex-basis: 200px;">
+                    <label class="switch">
+                        <input class="toggle" type="checkbox" id="ckEstoque">
+                        <span class="slider"></span>
+                        <span class="card-side"></span>
+                    </label>
                 </div>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between mb-3 flex-wrap gap-4">
+                <span class="fs-5 fw-bold w-50" style="flex-grow: 1; flex-basis: 200px;">Controle de Peças</span>
+                <div class="d-flex justify-content-end" style="flex-grow: 1; flex-basis: 200px;">
+                    <label class="switch">
+                        <input class="toggle" type="checkbox" id="ckPeca">
+                        <span class="slider"></span>
+                        <span class="card-side"></span>
+                    </label>
+                </div>
+            </div>
+            <hr>
+            <div class="d-flex align-items-top justify-content-between flex-wrap gap-4">
+                <span class="fs-5 fw-bold w-50" style="flex-grow: 1; flex-basis: 200px;">Escala da Logo</span>
+                <div class="d-flex flex-column gap-1 align-items-end" style="flex-grow: 1; flex-basis: 200px;">
+                    <img class="img-fluid img-thumbnail" alt="Logo" width="100wh" id="config_logo">
+                    <select class="form-control w-50" onchange="trocar_fuso(this)" id="slEscala"></select>
+                    <span style="font-size: 12px; font-style: italic;">
+                        Só altere caso a logo esteja consumindo muito espaço na Ordem de Serviço
+                    </span>
+                </div>
+            </div>
+            <hr>
+            <div class="d-flex align-items-top justify-content-between flex-wrap gap-4" style="max-height: 500px; overflow-y: auto;">
+                <span class="fs-5 fw-bold w-50" style="flex-grow: 1; flex-basis: 200px;">Controle de Funcionários</span>
+                <ul class="list-group w-50" id="listFuncs" style="flex-grow: 1; flex-basis: 200px;"></ul>
             </div>
             <hr>
         </div>
     </div>
+    <script>
+        get_config()
+    </script>
 </body>
 </html>
