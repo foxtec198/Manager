@@ -4,8 +4,7 @@ var statusM = []
 var spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 
 var api = 'https://api.hubbix.com.br'
-// var api = 'https://apihubbix.freeddns.org'
-var api = 'http://127.0.0.1:5432'
+// var api = 'http://127.0.0.1:5432'
 
 var cr = localStorage.getItem('cr')
 var gc = localStorage.getItem('gc')
@@ -1664,7 +1663,6 @@ async function getProdutos() {
         btnEditar.appendChild(icon)
         btnEditar.addEventListener('click', function(){
             console.log(imgProd2)
-            document.getElementById('edImgProd').src =  'https://apihubbix.freeddns.org/img/' + imgProd2
             document.getElementById('edIdProd').value = idProd
             document.getElementById('edEan').value = eanProd
             document.getElementById('edNome').value = nomeProd
