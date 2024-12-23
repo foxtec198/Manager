@@ -1597,7 +1597,6 @@ async function getProdutos() {
         const descProd = js[x][10]
         var porcentLucro =  (lucro/custoProd)*100
 
-
         const id = document.createElement('td')
         id.textContent = idProd
         id.classList.add('text-truncate')
@@ -1783,7 +1782,7 @@ function criar_prod(t){
     var desc = document.getElementById('npDesc').value
     var lucro = document.getElementById('npLucro').value
     var forn = document.getElementById('npForn').value
-    var img = 'img/blank.png'
+    var img = 'blank.png'
 
     if(nome){
         if(custo){
@@ -1930,26 +1929,120 @@ function editar_produto(t){
     }else{alert('Nome obrigatório!!')}
 }
 
-// =============== Configurações
+// =============== Relatorios
 async function get_infos(){
     const res = await request('/manager/api/v1/get_infos_dash/')
     const js = await res.json()
 
     if(js){
-        console.log(js)
-        document.getElementById('brutoAnual').textContent = js['BT_ANUAL']
-        document.getElementById('mediaMes').textContent = js['BT_MES']
+        // var green = '#a7c957'
+        // var red = '#e63946'
+        var green = '#344e41'
+        var red = '#a3b18a'
+
+        document.getElementById('brutoAnual').textContent = 'R$' + js['BT_ANUAL']
+        document.getElementById('mediaMes').textContent = 'R$' +  js['BT_MES']
         document.getElementById('quantMes').textContent = js['QT_MES']
         document.getElementById('quantMes2').textContent = js['QT_MES']
-        document.getElementById('liqAnual').textContent = js['LQ_ANUAL']
-        document.getElementById('liqMes').textContent = js['LQ_MES']
-        document.getElementById('ticketMedio').textContent = js['TC_MEDIO']
+        document.getElementById('liqAnual').textContent = 'R$' +  js['LQ_ANUAL']
+        document.getElementById('liqMes').textContent = 'R$' +  js['LQ_MES']
+        document.getElementById('ticketMedio').textContent = 'R$' + js['TC_MEDIO']
         document.getElementById('ticket').textContent = js['TC_PROD']
-        document.getElementById('custoProd').textContent = js['CT_PROD']
+        document.getElementById('custoProd').textContent = 'R$' + js['CT_PROD']
         document.getElementById('winUsername').textContent = js['VD_AT'][0]
         document.getElementById('winScore').textContent = js['VD_AT'][1]
+
+        var prodMes = js['PROD_MES']
+        var dashVendas = document.createElement('canvas')
+        new Chart(dashVendas, {
+            type: 'line',
+            data: {
+            labels: prodMes['dia'],
+            
+            datasets: [{
+                data: prodMes['cont'],
+                label: 'Total',
+                fill: {
+                    target: 'origin',
+                },
+                borderWidth: 1,
+                borderColor: red,
+            },{
+                data: prodMes['valor'],
+                label: 'Valor R$',
+                fill: {
+                    target: 'start',
+                },
+                borderWidth: 2,
+                borderColor: green,
+            }]
+            },
+            options: {
+            indexAxis: 'x', 
+            responsive: true,
+            scales: {
+                x: {
+                    beginAtZero: false
+                }
+            },
+            plugins: {
+                title: {
+                  display: true,
+                  text: 'PRODUTOS POR DIA'
+                }
+            },
+            }
+        })
+        var dv = document.getElementById('divDashVendas')
+        dv.innerHTML = ''
+        dv.appendChild(dashVendas)
+
+        var osMes = js['OS_MES']
+        var dashOs = document.createElement('canvas')
+        new Chart(dashOs, {
+            type: 'line',
+            data: {
+            labels: osMes['dia'],
+            
+            datasets: [{
+                data: osMes['cont'],
+                label: 'Total',
+                fill: {
+                    target: 'origin',
+                },
+                borderWidth: 1,
+                borderColor: red,
+            },{
+                data: osMes['valor'],
+                label: 'Valor R$',
+                fill: {
+                    target: 'start',
+                },
+                borderWidth: 2,
+                borderColor: green,
+            }]
+            },
+            options: {
+            indexAxis: 'x', 
+            responsive: true,
+            scales: {
+                x: {
+                    beginAtZero: false
+                }
+            },
+            plugins: {
+                title: {
+                  display: true,
+                  text: 'ORDENS POR DIA'
+                }
+            },
+            }
+        })
+        var dv2 = document.getElementById('divDashOs')
+        dv2.innerHTML = ''
+        dv2.appendChild(dashOs)
     }
-} 
+}
 
 // =============== Configurações
 function estoque_negativo(t){

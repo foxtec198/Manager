@@ -42,7 +42,7 @@
             <div class="d-flex flex-column align-items-center p-3 bd-gray2" style="flex-grow: 1; flex-basis: 150px;">
                 <div class="d-flex gap-2">
                     <span class="fs-6">
-                        <i class="bi bi-calendar-fill"></i> Media Mês
+                        <i class="bi bi-calendar-fill"></i> Media Mensal
                     </span>
                 </div>
                 <div class="d-flex gap-2">
@@ -54,7 +54,7 @@
                 <div class="d-flex gap-2">
                     <span class="fs-6">
                         <i class="bi bi-percent"></i>
-                        Liquído Ano
+                        Líquido Anual
                     </span>
                 </div>
                 <div class="d-flex gap-2">
@@ -65,7 +65,7 @@
                 <div class="d-flex gap-2">
                     <span class="fs-6">
                         <i class="bi bi-calendar-check"></i>
-                        Média Mês
+                        Média Mensal
                     </span>
                 </div>
                 <div class="d-flex gap-2">
@@ -88,7 +88,7 @@
             <div class="d-flex flex-column align-items-center p-3 bd-orange" style="flex-grow: 1; flex-basis: 150px;">
                 <div class="d-flex gap-2">
                     <span class="fs-6">
-                        <i class="bi bi-calendar-fill"></i> Ticket por Cupom
+                        <i class="bi bi-calendar-fill"></i> Ticket p/ Cupom
                     </span>
                 </div>
                 <div class="d-flex gap-2">
@@ -109,15 +109,15 @@
         </div>
             
         <div class="d-flex gap-2 flex-wrap-reverse">
-            <div class="card p-2 d-flex flex-row" style="flex: 5; flex-basis: 150px; height: 270px;">
-                <div id="dashVendas" class="d-flex align-items-center justify-content-center" style="flex-grow: 1; flex-basis: 150px;">
+            <div class="card p-2 d-flex flex-row flex-wrap justify-content-center" style="flex: 5; flex-basis: 150px;">
+                <div id="divDashVendas" class="d-flex align-items-center justify-content-center" style="width: 400px;">
                     <span class="spinner-border spinner-border-sm text-light" role="status"></span>
                 </div>
-                <div id="dashOS" class="d-flex align-items-center justify-content-center" style="flex-grow: 1; flex-basis: 150px;">
+                <div id="divDashOs" class="d-flex align-items-center justify-content-center" style="width: 400px;">
                     <span class="spinner-border spinner-border-sm text-light" role="status"></span>
                 </div>
             </div>
-            <div class="card p-2 align-items-center justify-content-center" style="height: 270px; flex: 1; flex-basis: 360px;">
+            <div class="card p-2 align-items-center justify-content-center" style="flex: 1; flex-basis: 300px;">
                 <div class="cards">
                 <div class="outlinePage">
                     <svg
@@ -159,19 +159,6 @@
                     </svg>
                     <p class="ranking_number">1<span class="ranking_word">st</span></p>
                     <div class="splitLine"></div>
-                    <!-- <svg
-                    class="icon userAvatar"
-                    viewBox="0 0 1024 1024"
-                    version="1.1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="25"
-                    height="25"
-                    >
-                    <path
-                        d="M512 0C228.693 0 0 228.693 0 512s228.693 512 512 512 512-228.693 512-512S795.307 0 512 0z m0 69.973c244.053 0 442.027 197.973 442.027 442.027 0 87.04-25.6 168.96-69.973 237.227-73.387-78.507-170.667-133.12-281.6-151.893 69.973-34.133 119.467-105.813 119.467-187.733 0-116.053-93.867-209.92-209.92-209.92s-209.92 93.867-209.92 209.92c0 83.627 47.787 155.307 119.467 187.733-110.933 20.48-208.213 75.093-281.6 153.6-44.373-68.267-69.973-150.187-69.973-238.933 0-244.053 197.973-442.027 442.027-442.027z"
-                        fill="#8a8a8a"
-                    ></path>
-                    </svg> -->
                     <p class="userName" id="winUsername">
                         <span class="spinner-border spinner-border-sm text-light" role="status"></span>
                     </p>
@@ -271,6 +258,7 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <script>
         get_infos()
     </script>
