@@ -1,8 +1,8 @@
 {
-  "name": "Hubbix",
+  "name": "Hubbix Manager",
   "theme_color": "#5e8b60",
   "background_color": "#000000",
-  "short_name": "Hubbix",
+  "short_name": "HBX Manager",
   "description": "Um novo conceito de Gestão",
   "display_override": [
     "standalone",
@@ -14,7 +14,7 @@
   "categories": [
     "utilities"
   ],
-  "start_url": "https://hubbix.com.br",
+  "start_url": "https://manager.hubbix.com.br",
   "icons": [
     {
       "src": "windows11/SmallTile.scale-100.png",
