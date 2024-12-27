@@ -2088,10 +2088,12 @@ async function get_config() {
 
             btnRemove.classList.add('btn')
             btnRemove.classList.add('btn-danger')
+            btnRemove.classList.add('btn-sm')
             btnRemove.innerHTML = '<i class="bi bi-trash-fill"></i>'
 
             btnPmvAdmin.classList.add('btn')
             btnPmvAdmin.classList.add('btn-light')
+            btnPmvAdmin.classList.add('btn-sm')
             btnPmvAdmin.innerHTML = '<i class="bi bi-shield-fill-check"></i>'
 
             btnGp.classList.add('btn-group')
@@ -2100,9 +2102,10 @@ async function get_config() {
             
             li.appendChild(sp)
             
-            if(perm === 'USER'){
-                btnGp.appendChild(btnPmvAdmin)
+            if(perm === 'ADMIN'){
+                btnPmvAdmin.disabled = true
             }
+            btnGp.appendChild(btnPmvAdmin)
             btnGp.appendChild(btnRemove)
 
             li.appendChild(btnGp)
