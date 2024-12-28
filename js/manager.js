@@ -4,7 +4,7 @@ var statusM = []
 var spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 
 var api = 'https://api.hubbix.com.br'
-// var api = 'http://127.0.0.1:5432'
+var api = 'http://127.0.0.1:5432'
 
 var cr = localStorage.getItem('cr')
 var gc = localStorage.getItem('gc')
@@ -1662,7 +1662,6 @@ async function getProdutos() {
         icon.classList.add('bi-box-arrow-up-right')
         btnEditar.appendChild(icon)
         btnEditar.addEventListener('click', function(){
-            console.log(imgProd2)
             document.getElementById('edIdProd').value = idProd
             document.getElementById('edEan').value = eanProd
             document.getElementById('edNome').value = nomeProd
@@ -1673,6 +1672,7 @@ async function getProdutos() {
             document.getElementById('edForn').value = fornProd
             document.getElementById('edDesc').value = descProd
             document.getElementById('edLucro').value = lucro
+            document.getElementById('edImgProd').src = api + '/img/' + imgProd2
 
 
             const toast = new bootstrap.Modal(document.getElementById('editProdModal'), {'show':true})
@@ -2063,9 +2063,9 @@ async function get_config() {
 
         document.getElementById('slFuso').value = js['fuso']
         document.getElementById('ckEstoque').checked = js['ct_es']
-        document.getElementById('ckPeca').checked = js['peca']
+        document.getElementById('ckPeca').checked = js['pecas']
         document.getElementById('config_logo').src = api + '/img/' + js['logo']
-
+        document.getElementById('inputCR').value = cr
         for(var x = 1; x < 51; x++){
             const opt = document.createElement('option')
             opt.textContent = x
@@ -2076,6 +2076,7 @@ async function get_config() {
         for(item in js['funcs']){
             const nome = js['funcs'][item][0]
             const perm = js['funcs'][item][1]
+            const mat = js['funcs'][item][2]
             const li = document.createElement('li')
             const sp = document.createElement('span') 
             const btnRemove = document.createElement('button')
@@ -2090,11 +2091,35 @@ async function get_config() {
             btnRemove.classList.add('btn-danger')
             btnRemove.classList.add('btn-sm')
             btnRemove.innerHTML = '<i class="bi bi-trash-fill"></i>'
+            btnRemove.addEventListener('click', function(){
+                var conf = confirm(`Deseja realmente excluir ${capitalize(nome)}?`)
+                if(conf){
+                    request('/manager/api/v1/remover_user/?mat='+mat, 'POST')
+                    .then(res=>{
+                        if(res.ok){
+                            location.reload()
+                        }
+                    })
+                }
+
+            })
 
             btnPmvAdmin.classList.add('btn')
             btnPmvAdmin.classList.add('btn-light')
             btnPmvAdmin.classList.add('btn-sm')
             btnPmvAdmin.innerHTML = '<i class="bi bi-shield-fill-check"></i>'
+            btnPmvAdmin.addEventListener('click', function(){
+                var conf = confirm(`Deseja tornar ${capitalize(nome)} um ADMIN ?`)
+                if (conf){
+                    console.log(mat)
+                    request('/manager/api/v1/alterar_permissao/?mat='+mat, 'POST')
+                    .then(res=>{
+                        if(res.ok){
+                            location.reload()
+                        }
+                    })
+                }
+            })
 
             btnGp.classList.add('btn-group')
             
@@ -2122,5 +2147,45 @@ function estoque_negativo(t){
 }
 
 function trocar_fuso(t){
-    console.log(t.value)
+    var dd = `{
+        "fuso":${t.value}
+    }`
+    request('/manager/api/v1/alterar_fuso/', 'POST', dd)
+}
+
+function alterar_estoque(t){
+    var dd = `{
+        "valor":${t.checked}
+    }`
+    request('/manager/api/v1/alterar_estoque/', 'POST', dd)
+}
+
+function alterar_pecas(t){
+    var dd = `{
+        "valor":${t.checked}
+    }`
+    request('/manager/api/v1/alterar_pecas/', 'POST', dd)
+}
+
+function trocar_escala(t){
+    var dd = `{
+        "valor":${t.value}
+    }`
+    request('/manager/api/v1/alterar_escala/', 'POST', dd)
+
+}
+
+function newFunc(t){
+    var name = document.getElementById('nomeFunc').value
+
+    if (name){
+        t.innerHTML = spinner
+        request('/manager/api/v1/cadastrar_funcionario/?nome='+name, 'POST')
+        .then(res=>{
+            res.json().then(js=>{
+                alert('Sua nova matricula é ' + js)
+                location.reload()
+            })
+        })
+    }
 }

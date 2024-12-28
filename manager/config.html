@@ -45,7 +45,7 @@
                 <span class="fs-5 fw-bold w-50" style="flex-grow: 1; flex-basis: 200px;">Controle Estoque</span>
                 <div class="d-flex justify-content-end" style="flex-grow: 1; flex-basis: 200px;">
                     <label class="switch">
-                        <input class="toggle" type="checkbox" id="ckEstoque">
+                        <input class="toggle" type="checkbox" id="ckEstoque" onchange="alterar_estoque(this)">
                         <span class="slider"></span>
                         <span class="card-side"></span>
                     </label>
@@ -56,7 +56,7 @@
                 <span class="fs-5 fw-bold w-50" style="flex-grow: 1; flex-basis: 200px;">Controle de Peças</span>
                 <div class="d-flex justify-content-end" style="flex-grow: 1; flex-basis: 200px;">
                     <label class="switch">
-                        <input class="toggle" type="checkbox" id="ckPeca">
+                        <input class="toggle" type="checkbox" id="ckPeca" onchange="alterar_pecas(this)">
                         <span class="slider"></span>
                         <span class="card-side"></span>
                     </label>
@@ -64,19 +64,37 @@
             </div>
             <hr>
             <div class="d-flex align-items-top justify-content-between flex-wrap gap-4">
-                <span class="fs-5 fw-bold w-50" style="flex-grow: 1; flex-basis: 200px;">Escala da Logo</span>
+                <span class="fs-5 fw-bold" style="flex-grow: 1; flex-basis: 200px;">Escala da Logo</span>
                 <div class="d-flex flex-column gap-1 align-items-end" style="flex-grow: 1; flex-basis: 200px;">
-                    <img class="img-fluid img-thumbnail" alt="Logo" width="100wh" id="config_logo">
-                    <select class="form-control w-50" onchange="trocar_fuso(this)" id="slEscala"></select>
-                    <span style="font-size: 12px; font-style: italic;">
-                        Só altere caso a logo esteja consumindo muito espaço na Ordem de Serviço
+                    <div class="d-flex gap-2">
+                        <img class="img-fluid img-thumbnail" alt="Logo" width="130wh" id="config_logo">
+                        <form action="http://localhost:5432/manager/api/v1/atualizar_logo/" method="post" enctype="multipart/form-data" class="d-flex flex-column gap-2 justify-content-around">
+                            <input type="text" name="cr" id="inputCR" hidden>
+                            <input type="file" name="logoImg" class="form-control" accept="image/*">
+                            <button class="btn btn-success" >Alterar Imagem</button>
+                            <div class="d-flex gap-2 justify-content-around align-items-center">
+                                <span class="fs-6 fw-bold">Escala: </span>
+                                <select class="form-control" onchange="trocar_escala(this)" id="slEscala"></select>
+                            </div>
+                        </form>
+                    </div>
+                    <span class="text-end" style="font-size: 12px; font-style: italic;">
+                        Só altere a escala da logo, caso esteja consumindo muito espaço na Ordem de Serviço.
+                        <br>
+                        Quanto maior a escala, menor a logo!
                     </span>
                 </div>
             </div>
             <hr>
             <div class="d-flex align-items-top justify-content-between flex-wrap gap-4" style="max-height: 500px; overflow-y: auto;">
-                <span class="fs-5 fw-bold w-50" style="flex-grow: 1; flex-basis: 200px;">Controle de Funcionários</span>
-                <ul class="list-group w-50" id="listFuncs" style="flex-grow: 1; flex-basis: 200px;"></ul>
+                <span class="fs-5 fw-bold" style="flex-grow: 1; flex-basis: 200px;">Controle de Funcionários</span>
+                <div class="d-flex flex-column w-100 gap-2" style="flex-grow: 1; flex-basis: 200px;">
+                    <div class="input-group" id="nweFunc">
+                        <input type="text" id="nomeFunc" class="form-control w-75" placeholder="Nome do Funcionario(a)">
+                        <button onclick="newFunc(this)" class="form-control w-25">Adicionar</button>
+                    </div>
+                    <ul class="list-group" id="listFuncs"></ul>
+                </div>
             </div>
             <hr>
         </div>
