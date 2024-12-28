@@ -425,17 +425,20 @@ async function getSaidas(){
         new bootstrap.Tooltip(btnCancel, {title:'Excluir venda!'})
 
         btnCancel.addEventListener('click',function(){
-            request(`/manager/api/v1/excluir_venda/?id=${id}&idVenda=${idVenda}`, 'POST')
-            .then(res=>{
-                btnCancel.innerHTML = `
-                <div class="spinner-border spinner-border-sm" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                `
-                if(res.ok){
-                    location.reload()
-                }
-            })
+            var conf = confirm('Deseja excluir permanentemente esta venda?')
+            if(conf){
+                request(`/manager/api/v1/excluir_venda/?id=${id}&idVenda=${idVenda}`, 'POST')
+                .then(res=>{
+                    btnCancel.innerHTML = `
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    `
+                    if(res.ok){
+                        location.reload()
+                    }
+                })
+            }
         })
 
         const btnCancelItem = document.createElement('button')
@@ -450,17 +453,20 @@ async function getSaidas(){
         new bootstrap.Tooltip(btnCancelItem, {title:'Excluir item!'})
 
         btnCancelItem.addEventListener('click',function(){
-            request(`/manager/api/v1/excluir_saida/?id=${id}&idVenda=${idVenda}`, 'POST')
-            .then(res=>{
-                btnCancelItem.innerHTML = `
-                <div class="spinner-border spinner-border-sm" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                `
-                if(res.ok){
-                    location.reload()
-                }
-            })
+            var conf = confirm('Deseja excluir permanentemente este item?')
+            if (conf){
+                request(`/manager/api/v1/excluir_saida/?id=${id}&idVenda=${idVenda}`, 'POST')
+                .then(res=>{
+                    btnCancelItem.innerHTML = `
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    `
+                    if(res.ok){
+                        location.reload()
+                    }
+                })
+            }
         })
 
         btngp.appendChild(btnCancelItem)
@@ -2082,6 +2088,7 @@ async function get_config() {
         document.getElementById('slFuso').value = js['fuso']
         document.getElementById('ckEstoque').checked = js['ct_es']
         document.getElementById('ckPeca').checked = js['pecas']
+        document.getElementById('config_logo').classList.remove('placeholder')
         document.getElementById('config_logo').src = api + '/img/' + js['logo']
         document.getElementById('inputCR').value = cr
         for(var x = 1; x < 51; x++){

@@ -67,7 +67,7 @@
                 <span class="fs-5 fw-bold" style="flex-grow: 1; flex-basis: 200px;">Escala da Logo</span>
                 <div class="d-flex flex-column gap-1 align-items-end" style="flex-grow: 1; flex-basis: 200px;">
                     <div class="d-flex gap-2">
-                        <img class="img-fluid img-thumbnail" alt="Logo" width="130wh" id="config_logo">
+                        <img class="img-fluid img-thumbnail object-fit-contain placeholder" alt="Logo" width="130wh" id="config_logo">
                         <form action="http://localhost:5432/manager/api/v1/atualizar_logo/" method="post" enctype="multipart/form-data" class="d-flex flex-column gap-2 justify-content-around">
                             <input type="text" name="cr" id="inputCR" hidden>
                             <input type="file" name="logoImg" class="form-control" accept="image/*">
