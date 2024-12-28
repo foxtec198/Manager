@@ -205,7 +205,6 @@ async function conferCaixa(){
         status.classList.add('text-bg-danger')
         
         status.textContent = `Caixa Fechado - R$ 0`
-        document.getElementById('btnAbrirCaixa').disabled = false
     }
 }
 
@@ -250,11 +249,12 @@ async function statusCaixa(){
     return resJ
 }
 
-function abrirCaixa(){
+function abrirCaixa(t){
     var mat = document.getElementById('mattroco').value
     var troco = document.getElementById('troco').value
 
     if(mat !== '' && troco !== ''){
+        t.innerHTML = spinner
         request(`/manager/api/v1/abrir_caixa/?valor=${troco}&mat=${mat}`, 'POST')   
         .then(res=>{
             if(res.ok){
@@ -265,9 +265,10 @@ function abrirCaixa(){
     }
 }
 
-function fecharCaixa(){
+function fecharCaixa(t){
     var mat = document.getElementById('fecharMat').value
     if(mat !== ''){
+        t.innerHTML = spinner
         request(`/manager/api/v1/fechar_caixa/?mat=${mat}`, 'POST')
         .then(res=>{
             res.json()
@@ -279,7 +280,7 @@ function fecharCaixa(){
     }
 }
 
-function retirarValor(){
+function retirarValor(t){
     var mat = document.getElementById('retirarMat').value
     var motivo = document.getElementById('retirarMotivo').value
     var desc = document.getElementById('motivoIn').value
@@ -287,6 +288,7 @@ function retirarValor(){
 
     
     if(mat !== '' && valor !== '' && motivo !==  ''){
+        t.innerHTML = spinner
         request(`/manager/api/v1/retirar_valor/?valor=${valor}&mat=${mat}&motivo=${motivo}&motivoDet=${desc}`, 'POST')   
         .then(res=>{
             if(res.ok){
@@ -300,11 +302,12 @@ function retirarValor(){
     }
 }
 
-function aplicarVlr(){
+function aplicarVlr(t){
     var mat = document.getElementById('aplicarMat').value
     var valor = document.getElementById('aplicarValor').value
 
     if(mat !== '' && valor !== ''){
+        t.innerHTML = spinner
         request(`/manager/api/v1/aplicar_valor/?valor=${valor}&mat=${mat}`, 'post')   
         .then(res=>{
             res.json()
@@ -324,24 +327,39 @@ function motivoF(sl){
 }
 
 function conferTroco(mat){
-    conferMatricula(document.getElementById('mattroco'))
-    if(mat.value){
-        request(`/manager/api/v1/mat_verify/?mat=${mat.value}`)
-        .then(res=>{
-            res.json()
-            .then(res=>{
-                if(res){
-                    request('/manager/api/v1/get_valor_caixa/')
+    const btn = document.getElementById('btnAbrirCaixa')
+    conferMatricula(mat)
+    statusCaixa()
+    .then(res=>{
+        if(!res){
+            if(mat.value){
+                btn.innerHTML = spinner
+                request(`/manager/api/v1/mat_verify/?mat=${mat.value}`)
+                .then(res=>{
+                    res.json()
                     .then(res=>{
-                        res.json()
-                        .then(res=>{
-                            document.getElementById('troco').value = res[0]
-                        })
+                        if(res){
+                            request('/manager/api/v1/get_valor_caixa/')
+                            .then(res=>{
+                                res.json()
+                                .then(res=>{
+                                    document.getElementById('troco').value = res[0]
+                                    btn.textContent = 'Abrir'
+                                    btn.disabled = false
+                                })
+                            })
+                        }
                     })
-                }
-            })
-        })
-    }else{document.getElementById('troco').value = ''}
+                })
+            }else{
+                document.getElementById('troco').value = ''
+            }
+        }else{
+            alert('Caixa já aberto!')
+            location.reload()
+        }
+    })
+
 }
 
 // =============== Vendas
