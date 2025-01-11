@@ -662,7 +662,11 @@ async function getDadosOs() {
     
                 if(day < 10){day = '0' + day}
                 if(month < 10){month = '0' + month}
-                document.getElementById("retirada").value = `${date.getFullYear()}-${month}-${day}`
+                var dateEnd = `${date.getFullYear()}-${month}-${day}`
+
+                console.log(dateEnd)
+                
+                document.getElementById("retirada").value = dateEnd
             })
     
             li.appendChild(s)

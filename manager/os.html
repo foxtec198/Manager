@@ -69,24 +69,24 @@
                     <input id="imei" class="form-control" placeholder="333536321455875">
                   </div>
                   <div class="d-flex align-items-center gap-2 w-100">
-                    <label for="">Modelo*</label>
+                    <label for="">*Modelo</label>
                     <input id="modelo" class="form-control" placeholder="A10, A30s, S21F...">
                   </div>
                 </div>
                 <div class="d-flex gap-2">
                   <div class="d-flex align-items-center gap-2 w-100">
-                    <label>Cor*</label>
+                    <label>*Cor</label>
                     <input id="cor" class="form-control" placeholder="Branca, Preto...">
                   </div>
                   <div class="d-flex align-items-center gap-2 w-100">
-                    <label>Marca*</label>
+                    <label>*Marca</label>
                     <select id="noMarca" class="form-select"></select>
                   </div>
                 </div>
               </div>
               <div class="d-flex flex-wrap gap-2">
                 <div class="card d-flex p-4 gap-4" style="flex-grow: 1; flex-basis: 200px;">
-                  <span class="fs-6 text-sub">Status do Serviço*</span>
+                  <span class="fs-6 text-sub">Status do Serviço</span>
                   <div class="d-flex">
                     <select class="form-select" id="status"></select>
                     <button class="btn" onclick="addStatus()">+</button>
@@ -94,17 +94,17 @@
                   <ul class="list-group" id="ul-status"></ul>
                 </div>
                 <div class="card d-flex p-4 gap-4" style="flex-grow: 1; flex-basis: 200px;">
-                  <span class="fs-6 text-sub">Tipo de Serviço*</span>
+                  <span class="fs-6 text-sub">Tipo de Serviço</span>
                   <textarea class="form-control" id="tipoOS" rows="4"></textarea>
                 </div>
               </div>
               <div class="d-flex flex-wrap gap-2">
                 <div class="card d-flex flex-column p-4 gap-4" style="flex-grow: 1; flex-basis: 200px;">
-                  <span class="fs-6 text-sub">Observação*</span>
+                  <span class="fs-6 text-sub">Observação</span>
                   <textarea class="form-control" id="obs" rows="4"></textarea>
                 </div>
                 <div class="card d-flex flex-column p-4 gap-4" style="flex-grow: 1; flex-basis: 200px;">
-                  <span class="fs-6 text-sub">Relato do Cliente*</span>
+                  <span class="fs-6 text-sub">Relato do Cliente</span>
                   <textarea class="form-control" id="relato" rows="4"></textarea>
                 </div>
               </div>
@@ -114,11 +114,11 @@
                   <label for="">Ligar Avisando?</label>
                 </div>
                 <div class="d-flex gap-2 align-items-center justify-content-end">
-                  <label class="text-truncation w-100 text-end">Data de Retirada</label>
+                  <label class="text-truncation w-100 text-end">* Data de Retirada</label>
                   <input class="form-control" type="date" id="retirada">
                 </div>
                 <div class="d-flex gap-2 align-items-center justify-content-end">
-                  <label class="text-truncation w-100 text-end">Tipo da Ordem</label>
+                  <label class="text-truncation w-100 text-end">* Tipo da Ordem</label>
                   <select class="form-control" id="noTipoOs">
                     <option>Orçamento</option>
                     <option>Aberta</option>
@@ -127,11 +127,11 @@
                 <hr>
                 <div class="d-flex flex-column gap-2 justify-content-around">
                   <div class="d-flex gap-2 align-items-center">
-                    <label class="w-100 text-end">Valor R$:</label>
+                    <label class="w-100 text-end">* Valor R$:</label>
                     <input class="form-control" type="number" id="valor" placeholder="Somente num.">
                   </div>
                   <div class="d-flex gap-2 align-items-center">
-                    <label class="w-100 text-end">Matricula</label>
+                    <label class="w-100 text-end">* Matricula</label>
                     <input class="form-control" id="matricula" onblur="conferMatricula(this)" type="number">
                   </div>
                 </div>
@@ -142,7 +142,7 @@
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
               <button type="button" onclick="abrirOS(this)" class="btn btn-success">
                 <i class="bi bi-printer-fill"></i> 
-                Imprimir OS
+                Abrir Ordem
               </button>
           </div>
       </div>
