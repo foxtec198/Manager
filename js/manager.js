@@ -817,7 +817,7 @@ async function getOsAbertas(){
         new bootstrap.Tooltip(btnDown, {title:'Download!'})
         btnDown.addEventListener('click', function(){
             btnDown.innerHTML = spinner
-            window.location = api + '/manager/api/v1/get_os_ind/?os=' + id
+            window.location = api + `/manager/api/v1/get_os_ind/?os=${id}&&cr=${cr}`
         })
             
         // Botao sem conserto
@@ -1005,7 +1005,7 @@ async function getOsAbertas(){
         new bootstrap.Tooltip(btnDown, {title:'Download!'})
         btnDown.addEventListener('click', function(){
             btnDown.innerHTML = spinner
-            window.location = api + '/manager/api/v1/get_os_ind/?os=' + id
+            window.location = api + `/manager/api/v1/get_os_ind/?os=${id}&&cr=${cr}`
         })
             
         // Botao sem conserto
@@ -1167,7 +1167,7 @@ async function getAllOs(){
         new bootstrap.Tooltip(btnReabrir, {title:'Download!'})
         btnReabrir.addEventListener('click', function(){
             btnReabrir.innerHTML = spinner
-            window.location = api + '/manager/api/v1/get_os_ind/?os=' + id
+            window.location = api + `/manager/api/v1/get_os_ind/?os=${id}&&cr=${cr}`
         })
 
         if(js[x][5] == 'CANCELADA'){
