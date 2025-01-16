@@ -1,6 +1,7 @@
 var div = document.createElement('div')
 var cart = []
 var statusM = []
+var cont_status = 0
 var spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 
 var api = 'https://api.hubbix.com.br'
@@ -684,6 +685,7 @@ async function getDadosOs() {
     const js4 = await res4.json()
     for(var x = 0; x < js4.length; x++){
         var sl = document.createElement('option')
+        sl.id = `opt_${x}`
         sl.textContent = js4[x][0]
         document.getElementById('status').appendChild(sl)
     }
@@ -1322,30 +1324,37 @@ function addTipo(){
 }
 
 function addStatus(){
-    const tp = document.getElementById('status').value
-    var ul = document.getElementById('ul-status')
-    const li = document.createElement('li')
-    li.classList.add('d-flex')
-    li.classList.add('list-group-item')
-    li.classList.add('justify-content-between')
-
-    var s = document.createElement('spam')
-    s.textContent = tp
-
-    var btnExcluir = document.createElement('button')
-    btnExcluir.classList.add('btn')
-    btnExcluir.classList.add('btn-sm')
-    btnExcluir.classList.add('btn-danger')
-    btnExcluir.innerHTML = `<i class="bi bi-trash-fill"></i>`
-    btnExcluir.addEventListener('click', function(){
-        ul.removeChild(li)
-        statusM.splice(statusM.indexOf(tp), 1)
-    })
-
-    li.appendChild(s)
-    li.appendChild(btnExcluir)
-    ul.appendChild(li)
-    statusM.push(tp)
+    if(cont_status < 21){
+        const tp = document.getElementById('status').value
+        var ul = document.getElementById('ul-status')
+        const li = document.createElement('li')
+        li.classList.add('d-flex')
+        li.classList.add('list-group-item')
+        li.classList.add('justify-content-between')
+    
+        var s = document.createElement('spam')
+        s.textContent = tp
+    
+        var btnExcluir = document.createElement('button')
+        btnExcluir.classList.add('btn')
+        btnExcluir.classList.add('btn-sm')
+        btnExcluir.classList.add('btn-danger')
+        btnExcluir.innerHTML = `<i class="bi bi-trash-fill"></i>`
+        btnExcluir.addEventListener('click', function(){
+            ul.removeChild(li)
+            statusM.splice(statusM.indexOf(tp), 1)
+            cont_status -= 1
+            document.getElementById('cont_status').textContent = `${cont_status}/21`
+        })
+        li.appendChild(s)
+        li.appendChild(btnExcluir)
+        ul.appendChild(li)
+        statusM.push(tp)
+        cont_status += 1
+        document.getElementById('cont_status').textContent = `${cont_status}/21`
+    }else{
+        alert('Máximo de ' + cont_status + 'atingido!')
+    }
 }
 
 function editarOs(t){
