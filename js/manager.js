@@ -524,7 +524,7 @@ async function getProds(){
         const btn = document.createElement('button')
         btn.classList.add('btn')
         btn.classList.add('btn-dark')
-        btn.textContent = '+'
+        btn.innerHTML = '<i class="bi bi-plus-square-dotted"></i>'
         btn.addEventListener('click', function(){
             const vl = document.getElementById('valorProd')
             let newvl = 0
@@ -565,7 +565,7 @@ async function getProds(){
 async function conferCPFNewVenda(inp) {
     var cpf = await inp.value
     
-    if(cpf.length >= 10){
+    if(cpf.length > 11){
         var l = document.getElementById('ldgCPF')
         l.hidden = ''
         request(`/manager/api/v1/conferir_cpf/?id=${cpf}`)
@@ -584,6 +584,9 @@ async function conferCPFNewVenda(inp) {
                 }
             })
         })
+    }else{
+        alert('CPF Incorreto!')
+        inp.value = ''
     }
 }
 
@@ -689,6 +692,61 @@ async function getDadosOs() {
         sl.textContent = js4[x][0]
         document.getElementById('status').appendChild(sl)
     }
+
+    const resProds = await request('/manager/api/v1/get_prods/')
+    const jsProd = await resProds.json()
+
+    jsProd.forEach(res => {
+        const tr = document.createElement('tr')
+
+        const idProd = res[0]
+        const nome = res[1]
+        const valor = res[3]
+
+        const nomeTd = document.createElement('td')
+        nomeTd.textContent = nome
+        
+        const btnTd = document.createElement('td')
+        const btn = document.createElement('button')
+        btn.classList.add('btn')
+        btn.classList.add('btn-dark')
+        btn.innerHTML = '<i class="bi bi-plus-square-dotted"></i>'
+        btn.addEventListener('click', function(){
+            const vl = document.getElementById('valor')
+            let newvl = 0
+            if(vl.value){
+                newvl = (parseFloat(vl.value) + parseFloat(valor)).toFixed(1)
+            }else{
+                newvl = parseFloat(valor)
+            }
+            vl.value = newvl
+            const li = document.createElement('li')
+            li.classList.add('list-group-item')
+            li.classList.add('d-flex')
+            li.classList.add('justify-content-between')
+            li.classList.add('align-items-center')
+            li.textContent = nome
+            const btnRemoveItem = document.createElement('button')
+            btnRemoveItem.classList.add('btn')
+            btnRemoveItem.classList.add('btn-danger')
+            btnRemoveItem.innerHTML = '<i class="bi bi-trash-fill"></i>'
+            btnRemoveItem.addEventListener('click', function(){
+                document.getElementById('listProdAddsOs').removeChild(li)
+                vl.value = (parseFloat(vl.value) - parseFloat(valor)).toFixed(1)
+                cart.splice(cart.indexOf(nome), 1)
+            })
+
+            li.appendChild(btnRemoveItem)
+            document.getElementById('listProdAddsOs').appendChild(li)
+            cart.push(nome)
+        })
+        btnTd.appendChild(btn)
+        tr.appendChild(nomeTd)
+        tr.appendChild(btnTd)
+
+        document.getElementById('listProdOs').appendChild(tr)
+    });
+
 
 }
 
@@ -1346,6 +1404,7 @@ function addStatus(){
             cont_status -= 1
             document.getElementById('cont_status').textContent = `${cont_status}/21`
         })
+
         li.appendChild(s)
         li.appendChild(btnExcluir)
         ul.appendChild(li)
