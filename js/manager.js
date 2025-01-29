@@ -4,6 +4,9 @@ var statusM = []
 var cont_status = 0
 var spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 
+sessionStorage.setItem('filterRes', 'hoje')
+var filterRes = sessionStorage.getItem('filterRes')
+
 var api = 'https://api.hubbix.com.br'
 // var api = 'http://localhost:5432'
 
@@ -2035,36 +2038,59 @@ function editar_produto(t){
 
 // =============== Relatorios
 async function get_infos(){
-    const res = await request('/manager/api/v1/get_infos_dash/')
+    const res = await request('/manager/api/v1/get_infos_dash/?filter='+filterRes)
     const js = await res.json()
 
     if(js){
-        // var green = '#a7c957'
-        // var red = '#e63946'
         var green = '#344e41'
         var red = '#a3b18a'
+        
+        document.getElementById('total_vendas').textContent = `R$ ${js['TOTAL'].toFixed(2)}`
+        document.getElementById('vendas_prod').textContent = `R$ ${js['PRODUTOS'].toFixed(2)}`
+        document.getElementById('vendas_os').textContent = `R$ ${js['OS'].toFixed(2)}`
 
-        document.getElementById('brutoAnual').textContent = 'R$' + js['BT_ANUAL']
-        document.getElementById('mediaMes').textContent = 'R$' +  js['BT_MES']
-        document.getElementById('quantMes').textContent = js['QT_MES']
-        document.getElementById('quantMes2').textContent = js['QT_MES']
-        document.getElementById('liqAnual').textContent = 'R$' +  js['LQ_ANUAL']
-        document.getElementById('liqMes').textContent = 'R$' +  js['LQ_MES']
-        document.getElementById('ticketMedio').textContent = 'R$' + js['TC_MEDIO']
-        document.getElementById('ticket').textContent = js['TC_PROD']
-        document.getElementById('custoProd').textContent = 'R$' + js['CT_PROD']
-        document.getElementById('winUsername').textContent = js['VD_AT'][0]
-        document.getElementById('winScore').textContent = js['VD_AT'][1]
+        document.getElementById('vendas_bruto').textContent = `R$ ${js['BRUTO'].toFixed(2)}`
+        document.getElementById('vendas_liq').textContent = `R$ ${js['LIQUIDO'].toFixed(2)}`
+        document.getElementById('vendas_med').textContent = `${js['MEDIA_VENDAS'].toFixed(2)}`
+        
+        document.getElementById('tc_med').textContent = `R$ ${js['TICKET_MEDIO'].toFixed(2)}`
+        document.getElementById('tc_cp').textContent = `${js['TICKET_PROD'].toFixed(2)} Un.`
+        document.getElementById('ct_prod').textContent = `R$ ${js['CUSTO_PROD']}`
 
-        var prodMes = js['PROD_MES']
+        js['VD_AT'].forEach(res=>{
+            document.getElementById('top3func').innerHTML = ''
+            const li = document.createElement('li')
+            li.classList.add('list-group-item')
+            li.textContent = res[0] + ' - ' + res[1]
+            document.getElementById('top3func').appendChild(li)
+            
+        })
+        js['VD_PROD'].forEach(res=>{
+            document.getElementById('top3prod').innerHTML = ''
+            const li = document.createElement('li')
+            li.classList.add('list-group-item')
+            li.textContent = res[0] + ' - ' + res[1]
+            document.getElementById('top3prod').appendChild(li)
+
+        })
+        js['VD_MARCAS'].forEach(res=>{
+            document.getElementById('top3marcas').innerHTML = ''
+            const li = document.createElement('li')
+            li.classList.add('list-group-item')
+            li.textContent = res[0] + ' - ' + res[1]
+            document.getElementById('top3marcas').appendChild(li)
+
+        })
+
+
         var dashVendas = document.createElement('canvas')
         new Chart(dashVendas, {
             type: 'line',
             data: {
-            labels: prodMes['dia'],
+            labels: js['PROD_MES']['dia'],
             
             datasets: [{
-                data: prodMes['cont'],
+                data: js['PROD_MES']['cont'],
                 label: 'Total',
                 fill: {
                     target: 'origin',
@@ -2072,7 +2098,7 @@ async function get_infos(){
                 borderWidth: 1,
                 borderColor: red,
             },{
-                data: prodMes['valor'],
+                data: js['PROD_MES']['valor'],
                 label: 'Valor R$',
                 fill: {
                     target: 'start',
@@ -2099,6 +2125,7 @@ async function get_infos(){
         })
         var dv = document.getElementById('divDashVendas')
         dv.innerHTML = ''
+        dv.style.height = '300px'
         dv.appendChild(dashVendas)
 
         var osMes = js['OS_MES']
@@ -2144,8 +2171,52 @@ async function get_infos(){
         })
         var dv2 = document.getElementById('divDashOs')
         dv2.innerHTML = ''
+        dv2.style.height = '300px'
         dv2.appendChild(dashOs)
+
+        var pag = js['VENDA_PAGAMENTO']
+        var pagDash = document.createElement('canvas')
+        new Chart(pagDash, {
+            type: 'doughnut',
+            data: {
+            labels: pag['tipo'],
+            
+            datasets: [{
+                data: pag['valor'],
+                label: 'Total R$',
+            }]
+            },options: {
+                indexAxis: 'x', 
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                      display: true,
+                      text: 'VENDAS POR TIPO'
+                    }
+                },
+                }
+        })
+        var dv3 = document.getElementById('divDashVendasPorTipo')
+        dv3.style.height = '300px'
+        dv3.innerHTML = ''
+        dv3.appendChild(pagDash)
     }
+}
+
+
+function trocarFiltroRes(t){
+    var btnAntigo = document.getElementById(`btn-${filterRes}`)
+    btnAntigo.classList.remove('btn-success')
+    btnAntigo.classList.add('btn-outline-success')
+    
+    t.classList.add('btn-success')
+    t.classList.remove('btn-outline-success')
+    sessionStorage.setItem('filterRes', t.value)
+    filterRes = sessionStorage.getItem('filterRes')
+    get_infos()
 }
 
 // =============== Configurações
