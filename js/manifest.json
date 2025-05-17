@@ -4,6 +4,7 @@
   "background_color": "#000000",
   "short_name": "HBX Manager",
   "description": "Um novo conceito de Gestão",
+  "start_url": "https://manager.hubbix.com.br",
   "display_override": [
     "standalone",
     "minimal-ui",
@@ -14,7 +15,6 @@
   "categories": [
     "utilities"
   ],
-  "start_url": "https://manager.hubbix.com.br",
   "icons": [
     {
       "src": "windows11/SmallTile.scale-100.png",

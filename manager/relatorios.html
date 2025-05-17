@@ -3,262 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta theme-color="#2B3035">
-    <title>Hubbix Manager</title>
-    <script src="../js/manager.js"></script>
     
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <!-- Favicon -->
     <link rel="icon" href="../img/newFav.png">
 
     <!-- Local Arch -->
     <link rel="stylesheet" href="../css/base_manager.css">
-    
-    <!-- Outros Modulos (JQUERY, CHARTJS) -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
-    <!-- Jquery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body data-bs-theme="dark">
-    <!-- <div class="d-flex flex-column justify-content-center p-2 gap-2">
-        <div class="d-flex gap-2 flex-wrap">
-            <div class="d-flex flex-column align-items-center p-3 bd-green2" style="flex-grow: 1; flex-basis: 150px;">
-                <div class="d-flex gap-2">
-                    <span class="fs-6">
-                        <i class="bi bi-bag-fill"></i> Bruto Anual
-                    </span>
-                </div>
-                <div class="d-flex gap-2">
-                    <span class="fs-4 fw-bold" id="brutoAnual"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
-                    <span class="fs-6" id="quantMes"><span class="spinner-border spinner-border-sm text-light" role="status"></span></span>
-                </div>
-            </div>
-            <div class="d-flex flex-column align-items-center p-3 bd-gray2" style="flex-grow: 1; flex-basis: 150px;">
-                <div class="d-flex gap-2">
-                    <span class="fs-6">
-                        <i class="bi bi-calendar-fill"></i> Media Mensal
-                    </span>
-                </div>
-                <div class="d-flex gap-2">
-                    <span class="fs-4 fw-bold" id="mediaMes"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
-                    <span class="fs-6" id="quantMes2"><span class="spinner-border spinner-border-sm text-light" role="status"></span></span>
-                </div>
-            </div>
-            <div class="d-flex flex-column align-items-center p-3 bd-green" style="flex-grow: 1; flex-basis: 150px;">
-                <div class="d-flex gap-2">
-                    <span class="fs-6">
-                        <i class="bi bi-percent"></i>
-                        Líquido Anual
-                    </span>
-                </div>
-                <div class="d-flex gap-2">
-                    <span class="fs-4 fw-bold" id="liqAnual"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
-                </div>
-            </div>
-            <div class="d-flex flex-column align-items-center p-3 bd-blue" style="flex-grow: 1; flex-basis: 150px;">
-                <div class="d-flex gap-2">
-                    <span class="fs-6">
-                        <i class="bi bi-calendar-check"></i>
-                        Média Mensal
-                    </span>
-                </div>
-                <div class="d-flex gap-2">
-                    <span class="fs-4 fw-bold" id="liqMes"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
-                </div>
-            </div>
-        </div>
-
-        <div class="d-flex gap-2 flex-wrap">
-            <div class="d-flex flex-column align-items-center p-3 bd-brow" style="flex-grow: 1; flex-basis: 150px;">
-                <div class="d-flex gap-2">
-                    <span class="fs-6">
-                        <i class="bi bi-bag-fill"></i> Ticket Médio
-                    </span>
-                </div>
-                <div class="d-flex gap-2">
-                    <span class="fs-4 fw-bold" id="ticketMedio"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
-                </div>
-            </div>
-            <div class="d-flex flex-column align-items-center p-3 bd-orange" style="flex-grow: 1; flex-basis: 150px;">
-                <div class="d-flex gap-2">
-                    <span class="fs-6">
-                        <i class="bi bi-calendar-fill"></i> Ticket p/ Cupom
-                    </span>
-                </div>
-                <div class="d-flex gap-2">
-                    <span class="fs-4 fw-bold" id="ticket"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
-                </div>
-            </div>
-            <div class="d-flex flex-column align-items-center p-3 bd-violet" style="flex-grow: 1; flex-basis: 150px;">
-                <div class="d-flex gap-2">
-                    <span class="fs-6">
-                        <i class="bi bi-truck"></i>
-                        Custo de Produtos
-                    </span>
-                </div>
-                <div class="d-flex gap-2">
-                    <span class="fs-4 fw-bold" id="custoProd"><span class="spinner-border spinner-border-sm text-light" role="status"></span> </span>
-                </div>
-            </div>
-        </div>
-            
-        <div class="d-flex gap-2 flex-wrap-reverse">
-            <div class="card p-2 d-flex flex-row flex-wrap justify-content-center" style="flex: 5; flex-basis: 150px;">
-                <div id="divDashVendas" class="d-flex align-items-center justify-content-center" style="width: 400px;">
-                    <span class="spinner-border spinner-border-sm text-light" role="status"></span>
-                </div>
-                <div id="divDashOs" class="d-flex align-items-center justify-content-center" style="width: 400px;">
-                    <span class="spinner-border spinner-border-sm text-light" role="status"></span>
-                </div>
-            </div>
-            <div class="card p-2 align-items-center justify-content-center" style="flex: 1; flex-basis: 300px;">
-                <div class="cards">
-                <div class="outlinePage">
-                    <svg
-                    class="icon trophy"
-                    viewBox="0 0 1024 1024"
-                    version="1.1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="160"
-                    height="160"
-                    >
-                    <path
-                        d="M469.333333 682.666667h85.333334v128h-85.333334zM435.2 810.666667h153.6c4.693333 0 8.533333 3.84 8.533333 8.533333v34.133333h-170.666666v-34.133333c0-4.693333 3.84-8.533333 8.533333-8.533333z"
-                        fill="#283618"
-                        data-spm-anchor-id="a313x.search_index.0.i10.40193a81WcxQiT"
-                        class=""
-                    ></path>
-                    <path
-                        d="M384 853.333333h256a42.666667 42.666667 0 0 1 42.666667 42.666667v42.666667H341.333333v-42.666667a42.666667 42.666667 0 0 1 42.666667-42.666667z"
-                        fill="#3a5a40"
-                        data-spm-anchor-id="a313x.search_index.0.i1.40193a81WcxQiT"
-                        class=""
-                    ></path>
-                    <path
-                        d="M213.333333 256v85.333333a42.666667 42.666667 0 0 0 85.333334 0V256H213.333333zM170.666667 213.333333h170.666666v128a85.333333 85.333333 0 1 1-170.666666 0V213.333333zM725.333333 256v85.333333a42.666667 42.666667 0 0 0 85.333334 0V256h-85.333334z m-42.666666-42.666667h170.666666v128a85.333333 85.333333 0 1 1-170.666666 0V213.333333z"
-                        fill="#3a5a40"
-                        data-spm-anchor-id="a313x.search_index.0.i9.40193a81WcxQiT"
-                        class=""
-                    ></path>
-                    <path
-                        d="M298.666667 85.333333h426.666666a42.666667 42.666667 0 0 1 42.666667 42.666667v341.333333a256 256 0 1 1-512 0V128a42.666667 42.666667 0 0 1 42.666667-42.666667z"
-                        fill="#5E8B60"
-                        data-spm-anchor-id="a313x.search_index.0.i5.40193a81WcxQiT"
-                        class=""
-                    ></path>
-                    <path
-                        d="M512 469.333333l-100.309333 52.736 19.157333-111.701333-81.152-79.104 112.128-16.298667L512 213.333333l50.176 101.632 112.128 16.298667-81.152 79.104 19.157333 111.701333z"
-                        fill="#a7c957"
-                    ></path>
-                    </svg>
-                    <p class="ranking_number">1<span class="ranking_word">st</span></p>
-                    <div class="splitLine"></div>
-                    <p class="userName" id="winUsername">
-                        <span class="spinner-border spinner-border-sm text-light" role="status"></span>
-                    </p>
-                </div>
-                <div class="detailPage">
-                    <svg
-                    class="icon medals slide-in-top"
-                    viewBox="0 0 1024 1024"
-                    version="1.1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="80"
-                    height="80"
-                    >
-                    <path
-                        d="M896 42.666667h-128l-170.666667 213.333333h128z"
-                        fill="#FF4C4C"
-                    ></path>
-                    <path
-                        d="M768 42.666667h-128l-170.666667 213.333333h128z"
-                        fill="#3B8CFF"
-                    ></path>
-                    <path d="M640 42.666667h-128L341.333333 256h128z" fill="#F1F1F1"></path>
-                    <path
-                        d="M128 42.666667h128l170.666667 213.333333H298.666667z"
-                        fill="#FF4C4C"
-                    ></path>
-                    <path
-                        d="M256 42.666667h128l170.666667 213.333333h-128z"
-                        fill="#3B8CFF"
-                    ></path>
-                    <path
-                        d="M384 42.666667h128l170.666667 213.333333h-128z"
-                        fill="#FBFBFB"
-                    ></path>
-                    <path
-                        d="M298.666667 256h426.666666v213.333333H298.666667z"
-                        fill="#E3A815"
-                    ></path>
-                    <path
-                        d="M512 661.333333m-320 0a320 320 0 1 0 640 0 320 320 0 1 0-640 0Z"
-                        fill="#FDDC3A"
-                    ></path>
-                    <path
-                        d="M512 661.333333m-256 0a256 256 0 1 0 512 0 256 256 0 1 0-512 0Z"
-                        fill="#E3A815"
-                    ></path>
-                    <path
-                        d="M512 661.333333m-213.333333 0a213.333333 213.333333 0 1 0 426.666666 0 213.333333 213.333333 0 1 0-426.666666 0Z"
-                        fill="#F5CF41"
-                    ></path>
-                    <path
-                        d="M277.333333 256h469.333334a21.333333 21.333333 0 0 1 0 42.666667h-469.333334a21.333333 21.333333 0 0 1 0-42.666667z"
-                        fill="#D19A0E"
-                    ></path>
-                    <path
-                        d="M277.333333 264.533333a12.8 12.8 0 1 0 0 25.6h469.333334a12.8 12.8 0 1 0 0-25.6h-469.333334z m0-17.066666h469.333334a29.866667 29.866667 0 1 1 0 59.733333h-469.333334a29.866667 29.866667 0 1 1 0-59.733333z"
-                        fill="#F9D525"
-                    ></path>
-                    <path
-                        d="M512 746.666667l-100.309333 52.736 19.157333-111.701334-81.152-79.104 112.128-16.298666L512 490.666667l50.176 101.632 112.128 16.298666-81.152 79.104 19.157333 111.701334z"
-                        fill="#3a5a40"
-                    ></path>
-                    </svg>
-                    <div class="gradesBox">
-                    <svg
-                        class="icon gradesIcon"
-                        viewBox="0 0 1024 1024"
-                        version="1.1"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="60"
-                        height="60"
-                    >
-                        <path
-                        d="M382.6 805H242.2c-6.7 0-12.2-5.5-12.2-12.2V434.3c0-6.7 5.5-12.2 12.2-12.2h140.4c6.7 0 12.2 5.5 12.2 12.2v358.6c0 6.6-5.4 12.1-12.2 12.1z"
-                        fill="#3a5a40"
-                        data-spm-anchor-id="a313x.search_index.0.i36.40193a81WcxQiT"
-                        class=""
-                        ></path>
-                        <path
-                        d="M591.1 805H450.7c-6.7 0-12.2-5.5-12.2-12.2V254.9c0-6.7 5.5-12.2 12.2-12.2h140.4c6.7 0 12.2 5.5 12.2 12.2v537.9c0 6.7-5.5 12.2-12.2 12.2z"
-                        fill="#5E8B60"
-                        data-spm-anchor-id="a313x.search_index.0.i35.40193a81WcxQiT"
-                        class=""
-                        ></path>
-                        <path
-                        d="M804.4 805H663.9c-6.7 0-12.2-5.5-12.2-12.2v-281c0-6.7 5.5-12.2 12.2-12.2h140.4c6.7 0 12.2 5.5 12.2 12.2v281c0.1 6.7-5.4 12.2-12.1 12.2z"
-                        fill="#3a5a40"
-                        data-spm-anchor-id="a313x.search_index.0.i37.40193a81WcxQiT"
-                        class=""
-                        ></path>
-                    </svg>
-                    <p class="gradesBoxLabel">VENDAS</p>
-                    <p class="gradesBoxNum text-center" id="winScore"><span class="spinner-border spinner-border-sm text-success" role="status"></span></p>
-                    </div>
-                </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
-    
     <span class="fs-1 p-2 fw-bold">Relatórios.</span>
 
     <!-- Filtros -->
@@ -439,8 +195,18 @@
             </div>
         </div>
     </div>
-        
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    
+    <!-- Toast -->
+    <div id="snackbar"></div>
+
+    <!-- Scripts -->
+     
+    <!-- Jquery --> <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"></script>
+    <!-- Chartjs --> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script src="../js/manager.js"></script>
     <script>get_infos()</script>
 </body>
 </html>

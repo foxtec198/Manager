@@ -3,28 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta theme-color="#2B3035">
     <title>Hubbix Manager</title>
-    <script src="../js/manager.js"></script>
     
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="import" href="/manager/caixa.html">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <!-- Favicon -->
     <link rel="icon" href="../img/newFav.png">
 
     <!-- Local Arch -->
     <link rel="stylesheet" href="../css/base_manager.css">
-    
-    <!-- Outros Modulos (JQUERY, CHARTJS) -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
-    <!-- Jquery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body data-bs-theme="dark">
     <!-- <div class="m-2 alert alert-success alert-dismissible fade show" role="alert">
@@ -47,20 +36,20 @@
                 </span>
             </span>
             <br>
-            <button onclick="changeWin('/manager/caixa.html')" class="btnM"><i class="bi bi-box-seam-fill"></i> Caixa</button>
-            <button class="btnM" onclick="changeWin('/manager/vendas.html')"><i class="bi bi-graph-up-arrow"></i> Vendas</button>
-            <button onclick="changeWin('/manager/os.html')" class="btnM"><i class="bi bi-file-earmark-zip-fill"></i> OS's</button>
-            <button onclick="changeWin('/manager/clientes.html')" class="btnM"><i class="bi bi-person-bounding-box"></i> Clientes</button>
-            <button onclick="changeWin('/manager/estoque.html')" class="btnM"><i class="bi bi-archive-fill"></i> Estoque</button>
-            <button hidden onclick="changeWin('/manager/pecas.html')" class="btnM"><i class="bi bi-gear-fill"></i> Peças</button>
-            <button onclick="changeWin('/manager/relatorios.html')" class="btnM"><i class="bi bi-microsoft"></i> Relatórios</button>
+            <button onclick="change_screen('caixa', this)" class="btnM menu-item menu-caixa"><i class="bi bi-box-seam-fill"></i> Caixa</button>
+            <button onclick="change_screen('vendas', this)" class="btnM menu-item menu-vendas"><i class="bi bi-graph-up-arrow"></i> Vendas</button>
+            <button onclick="change_screen('os', this)" class="btnM menu-item menu-os"><i class="bi bi-file-earmark-zip-fill"></i> OS's</button>
+            <button onclick="change_screen('clientes', this)" class="btnM menu-item menu-clientes"><i class="bi bi-person-bounding-box"></i> Clientes</button>
+            <button onclick="change_screen('estoque', this)" class="btnM menu-item menu-estoque"><i class="bi bi-archive-fill"></i> Estoque</button>
+            <button onclick="change_screen('pecas', this)" class="btnM menu-item menu-pecas" hidden><i class="bi bi-gear-fill"></i> Peças</button>
+            <button onclick="change_screen('relatorios', this)" class="btnM menu-item menu-relatorios"><i class="bi bi-microsoft"></i> Relatórios</button>
             <hr>
             <!-- <button onclick="changeWin('/manager/suporte')" class="btnM">Suporte</a> -->
-            <button onclick="changeWin('/manager/config.html')" class="btnM">Configurações</button>
-            <a href="/" class="btnM-exit">Sair</a>
+            <button onclick="change_screen('config', this)" class="btnM menu-item menu-config">Configurações</button>
+            <button onclick="logout()" class="btnM-exit">Sair</button>
             <br>
         </div>
-        <iframe class="card" src="/manager/caixa.html" id="changer" width="100%" height="100%" frameborder="0"></iframe>
+        <iframe class="card" src="/manager/caixa.html" id="frame_screen" width="100%" height="100%" frameborder="0"></iframe>
         
         <br>
     </div>
@@ -69,15 +58,15 @@
 
     <div class="navBot mobile">
         <div class="d-flex flex-row justify-content-around g-4">
-            <a class="d-flex flex-column p-1 align-items-center navBot-item" onclick="changeWin('/manager/caixa.html')">
+            <a class="d-flex flex-column p-1 align-items-center navBot-item" onclick="change_screen('caixa')">
                 <i class="bi bi-box-seam-fill"></i>
                 <p>Caixa</p>
             </a>
-            <a class="d-flex flex-column p-1 align-items-center navBot-item" onclick="changeWin('/manager/vendas.html')">
+            <a class="d-flex flex-column p-1 align-items-center navBot-item" onclick="change_screen('vendas')">
                 <i class="bi bi-graph-up-arrow"></i>
                 <p>Vendas</p>
             </a>
-            <a class="d-flex flex-column p-1 align-items-center navBot-item" onclick="changeWin('/manager/os.html')">
+            <a class="d-flex flex-column p-1 align-items-center navBot-item" onclick="change_screen('os')">
                 <i class="bi bi-file-earmark-zip-fill"></i>
                 <p>Ordens</p>
             </a>
@@ -86,19 +75,27 @@
                 <p>Demais</p>
             </a>
             <ul class="dropdown-menu text-bg-dark">
-                <li><button onclick="changeWin('/manager/clientes.html')" class="dropdown-item dp-item"><i class="bi bi-person-bounding-box"></i> Clientes</a></li>
-                <li><button onclick="changeWin('/manager/estoque.html')" class="dropdown-item dp-item"><i class="bi bi-archive-fill"></i> Estoque</a></li>
-                <li hidden><button onclick="changeWin('/manager/pecas.html')" class="dropdown-item dp-item"><i class="bi bi-gear-fill"></i> Peças</a></li>
-                <li><button onclick="changeWin('/manager/relatorios.html')" class="dropdown-item dp-item"><i class="bi bi-microsoft"></i> Relatórios</a></li>
+                <li><button onclick="change_screen('clientes')" class="dropdown-item dp-item"><i class="bi bi-person-bounding-box"></i> Clientes</a></li>
+                <li><button onclick="change_screen('estoque')" class="dropdown-item dp-item"><i class="bi bi-archive-fill"></i> Estoque</a></li>
+                <li hidden><button onclick="change_screen('pecas')" class="dropdown-item dp-item"><i class="bi bi-gear-fill"></i> Peças</a></li>
+                <li><button onclick="change_screen('relatorios')" class="dropdown-item dp-item"><i class="bi bi-microsoft"></i> Relatórios</a></li>
                 <hr>
-                <li><button onclick="changeWin('/manager/config.html')" class="dropdown-item dp-item">Configurações</a></li>
-                <li><a class="dropdown-item dp-item-exit" href="/">Sair</a></li>
+                <li><button onclick="change_screen('config')" class="dropdown-item dp-item">Configurações</a></li>
+                <li><button class="dropdown-item dp-item-exit" onclick="logout()">Sair</button></li>
             </ul>
         </div>
     </div>
-    
-    <script> 
-        getLoja() 
-    </script>
+
+    <!-- Toast -->
+    <div id="snackbar"></div>
+
+    <!-- Scripts -->
+    <!-- Jquery --> <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"></script>
+    <!-- CHARTJS --> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script src="../js/manager.js"></script>
+    <script> get_loja(); restore_screen() </script>
 </body>
 </html>

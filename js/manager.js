@@ -3,15 +3,17 @@ var cart = []
 var statusM = []
 var cont_status = 0
 var spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
+green = '#5E8B60'
+
 
 sessionStorage.setItem('filterRes', 'hoje')
 var filterRes = sessionStorage.getItem('filterRes')
 
-var api = 'https://api.hubbix.com.br'
-// var api = 'http://localhost:5432'
+// var api = 'https://api.hubbix.com.br/manager/v1/'
+var api = 'http://localhost:9560/manager/v1/'
 
-var cr = localStorage.getItem('cr')
-var gc = localStorage.getItem('gc')
+cr = sessionStorage.getItem('cr')
+gc = sessionStorage.getItem('gc')
 
 // function openCalc(){
 //     const divCalc = document.getElementById('divCalc')
@@ -26,6 +28,47 @@ var gc = localStorage.getItem('gc')
 //     }
 // }
 
+function toast(msg, type=null){
+    tst = document.getElementById("snackbar");
+    tst.textContent = msg
+    tst.className = "show";
+    if(type==='erro'){
+        tst.style.background = '#c1121f'
+    }else if(type='info'){
+        tst.style.background = '#333'
+    }else{
+        tst.style.background = '#3a5a40'
+    }
+    setTimeout(function(){ tst.className = tst.className.replace("show", ""); }, 3000);
+}
+
+async function login(){
+    mat = document.getElementById("mat").value
+    pwd = document.getElementById("pwd").value
+
+    if(mat){
+        if(pwd){
+            ldg()
+            const res = await fetch(api + `login?mat=${mat}&&pwd=${pwd}`, {method:'POST'})
+            const js = await res.json()
+            if(res.ok){
+                sessionStorage.setItem('cr', js['cr'])
+                sessionStorage.setItem('gc', js['gc'])
+                document.location = '/manager/base.html'
+            }else{
+                closeLdg()
+                toast(js)
+            }
+        }else{toast('Senha vazia')}
+    }else{toast("Matricula vazia")}
+
+}
+
+function logout(){
+    sessionStorage.clear()
+    document.location = '/'
+}
+
 function request(url, method='GET', json){
     if(!json){
         var options = {
@@ -37,6 +80,7 @@ function request(url, method='GET', json){
             }
         };
     }else{
+        json = JSON.stringify(json)
         var options = {
             method: method,
             headers: {
@@ -120,26 +164,14 @@ function closeLdg(){
     div.hidden = 'none'
 }
 
-function toast(msg){
-    const toastLiveExample = document.getElementById('toastHbx')
-    document.getElementById('toast-text').textContent = msg
-    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
-    toastBootstrap.show()
-}
-
-function conferMatricula(mat){
+async function conferMatricula(mat){
     if(mat.value){
         mat.disabled = true
-        request(`/manager/api/v1/mat_verify/?mat=${mat.value}`)
-        .then(res=>{
-            res.json()
-            .then(res=>{
-                if(!res){
-                    mat.value = ''
-                    mat.disabled = false
-                }
-            })
-        })
+        req = await request(`mat?mat=${mat.value}`)
+        if(!req.ok){
+            mat.value = ''
+            mat.disabled = false
+        }
     }
 }
 
@@ -154,26 +186,54 @@ function changeWin(win){
     changer.src = win
 }
 
+// Troca e memoriza a screen
+function change_screen(screnn, t=null){
+    others = document.querySelectorAll('.menu-item')
+    others.forEach(element => {
+        element.style.background = null
+    });
+    if(t){t.style.background = green}
+    frame = document.getElementById('frame_screen')
+    sessionStorage.setItem('frame', `/manager/${screnn}.html`)
+    frame.src = `/manager/${screnn}.html`
+}
+
+// Recupera a tela mesmo que atualize a pagina
+function restore_screen(){
+    frame = sessionStorage.getItem('frame')
+    frameWidget = document.getElementById('frame_screen')
+    
+    if(frame){
+        txt1 = frame.replace('/manager/', '')
+        txt2 = txt1.replace('.html', '')
+        frameWidget.src = frame
+        document.querySelector(`.menu-${txt2}`).style.background = green
+    }
+}
+
 function inform(msg){
     var d = document.getElementById('alertt')
     d.hidden = ''
     document.getElementById('alertt-msg').textContent = decodeURI(msg)
 }
 
-function getLoja(){
-    request('/manager/api/v1/get_loja/')
-    .then(res=>{
-        res.json()
-        .then(loja=>{
-            var label = document.getElementById('nomeLoja')
-            label.textContent = loja['nome']
-            label.classList.remove('placeholder')
+function to_real(valor){
+    return valor.toLocaleString('pt-br', {style:'currency', currency:'BRL'})
+}
 
-            var img = document.getElementById('logoBase')
-            img.src = `${api}/img/` + loja['logo']
-            img.classList.remove('placeholder')
-        })
-    })
+async function get_loja(){
+    req = await request('get_loja')
+    res = await req.json()
+    if(req.ok){
+        var label = document.getElementById('nomeLoja')
+        label.textContent = res['nome']
+        label.classList.remove('placeholder')
+        
+        var img = document.getElementById('logoBase')
+        img.src = `https://api.hubbix.com.br/img/${res['logo']}`
+        img.classList.remove('placeholder')
+
+    }
 }
 
 async function conferCpf(inp){
@@ -185,22 +245,24 @@ async function conferCpf(inp){
 
 // =============== Caixa
 async function calc(){
-    const res = await request('/manager/api/v1/calc_fechamento/')
+    const res = await request('fechamento')
     const js = await res.json()
-    for(item in js){
-        document.getElementById(item.toLowerCase()).value += parseFloat(js[item]).toFixed(2)
+    if(res.ok){
+        for(item in js){
+            document.getElementById(item.toLowerCase()).value += to_real(js[item])
+        }
     }
 }
 
-async function conferCaixa(){
+async function conferencia_de_caixa(){
     const js = await statusCaixa()
-    if(js){
+    if(js.status){
         const status = document.getElementById('statusCaixa')
 
         status.classList.remove('placeholder')
         status.classList.add('text-bg-success')
 
-        status.textContent = `Caixa Aberto - R$ ${parseFloat(js).toFixed(2)}`
+        status.textContent = 'Caixa Aberto - ' + to_real(js.valor)
         document.getElementById('btnAbrirCaixa').disabled = true
     }else{
         const status = document.getElementById('statusCaixa')
@@ -212,164 +274,136 @@ async function conferCaixa(){
     }
 }
 
-async function getSaidasCaixa(){
-    const res = await request('/manager/api/v1/get_saidas_caixa/')
-    const resJ = await res.json()
-    for(var x = 0; x < resJ.length; x++){
-        var li = document.createElement('li') 
-        var btn = document.createElement('button')
-        const id = resJ[x][3]
+async function get_despesas(){
+    const req = await request('despesas')
+    const res = await req.json()
+    if(req.ok){
+        res.forEach(item => {
+            const id = item['id']
+            const motivo = item['motivo']
+            const valor = item['valor']
+            const data_alt = new Date(item['data']).toLocaleDateString('pt-br', {'day':'numeric', 'month':'long', 'hour':'2-digit', 'minute':'2-digit'})
 
-        li.classList.add('list-group-item')
-        li.classList.add('d-flex')
-        li.classList.add('justify-content-between')
-        li.classList.add('align-items-center')
-        li.innerHTML = `
-        <span>${resJ[x][0].toUpperCase()} - R$${resJ[x][1]} - ${resJ[x][2]}</span>
-        `
-        btn.classList.add('btn')
-        btn.classList.add('btn-danger')
-        btn.innerHTML = `<i class="bi bi-trash-fill"></i>`
-        btn.addEventListener('click', function(){
-            request(`/manager/api/v1/excluir_saidas/?id=${id}`, 'POST')
-            .then(res=>{
-                if(res.ok){
-                    window.location = '?tst=Excluso com sucesso!'
-                }else{
-                    window.location = '?tst=Caixa ainda fechado!'
-                }
+            var li = document.createElement('li') 
+            var btn = document.createElement('button')
+    
+            li.classList.add('list-group-item')
+            li.classList.add('d-flex')
+            li.classList.add('justify-content-between')
+            li.classList.add('align-items-center')
+            li.innerHTML = `
+            <span>${motivo} - ${to_real(valor)} - ${data_alt}</span>
+            `
+            btn.classList.add('btn')
+            btn.classList.add('btn-danger')
+            btn.innerHTML = `<i class="bi bi-trash-fill"></i>`
+            btn.addEventListener('click', async function(){
+                const req = await request("despesas", "DELETE", {'id':id})
+                const res = await req.json()
+                if(req.ok){location.reload()}
+                else{toast(res)}
             })
+            li.appendChild(btn)
+    
+            document.getElementById('saidasCaixa').appendChild(li)
         })
-        li.appendChild(btn)
-
-        document.getElementById('saidasCaixa').appendChild(li)
     }
 }
 
 async function statusCaixa(){
-    const res = await request(`/manager/api/v1/confer_caixa/`)
+    const res = await request('caixa')
     const resJ = await res.json()
     
     return resJ
 }
 
-function abrirCaixa(t){
+async function abrirCaixa(t){
     var mat = document.getElementById('mattroco').value
     var troco = document.getElementById('troco').value
 
-    if(mat !== '' && troco !== ''){
+    if(mat && troco){
         t.innerHTML = spinner
-        request(`/manager/api/v1/abrir_caixa/?valor=${troco}&mat=${mat}`, 'POST')   
-        .then(res=>{
-            if(res.ok){
-                alert('Caixa aberto com sucesso!')
-                location.reload()
-            }
-        })
+        dados = {'valor': troco, 'mat': mat}
+        const req = await request("caixa", "POST", dados) 
+        const res = await req.json() 
+        if(req.ok){location.reload()}
+        else{toast(res)}
     }
 }
 
-function fecharCaixa(t){
+async function fechar_caixa(t){
     var mat = document.getElementById('fecharMat').value
     if(mat !== ''){
         t.innerHTML = spinner
-        request(`/manager/api/v1/fechar_caixa/?mat=${mat}`, 'POST')
-        .then(res=>{
-            res.json()
-            .then(js=>{
-                alert(js)
-                location.reload()
-            })
-        })
+        const req = await request('caixa', 'DELETE', {'mat': mat})
+        const res = await req.json()
+        if(req.ok){location.reload()}
+        else{toast(res)}
     }
 }
 
-function retirarValor(t){
+async function adicionar_despesa(t){
     var mat = document.getElementById('retirarMat').value
     var motivo = document.getElementById('retirarMotivo').value
     var desc = document.getElementById('motivoIn').value
     var valor = document.getElementById('retirarV').value
 
-    
-    if(mat !== '' && valor !== '' && motivo !==  ''){
+    if(mat && valor && motivo){
+        if(motivo === 'Despesa'){motivo = desc}
         t.innerHTML = spinner
-        request(`/manager/api/v1/retirar_valor/?valor=${valor}&mat=${mat}&motivo=${motivo}&motivoDet=${desc}`, 'POST')   
-        .then(res=>{
-            if(res.ok){
-                res.json()
-                .then(js=>{
-                    alert(js)
-                    location.reload()
-                })
-            }
-        })
-    }
+        dd = {'mat': mat, 'valor': valor, 'motivo': motivo}
+        req = await request("despesas", 'POST', dd)
+        res = await req.json()
+        if(req.ok){location.reload()}
+        else{toast(res); t.textContent = 'Adicionar'}
+    }else(toast("Preencha todos os dados!"))
 }
 
-function aplicarVlr(t){
+async function aplicarVlr(t){
     var mat = document.getElementById('aplicarMat').value
     var valor = document.getElementById('aplicarValor').value
 
-    if(mat !== '' && valor !== ''){
+    if(mat && valor){
         t.innerHTML = spinner
-        request(`/manager/api/v1/aplicar_valor/?valor=${valor}&mat=${mat}`, 'post')   
-        .then(res=>{
-            res.json()
-            .then(js=>{
-                alert(js)
-                location.reload()
-            })
-        })
+        req = await request("caixa", 'PATCH', {'valor':valor, 'mat':mat})   
+        res = await req.json()
+        if(req.ok){location.reload()}
+        else{toast(res)}
     }
 }
 
 function motivoF(sl){
     inn = document.getElementById('motivoIn')
 
-    if(sl.value === 'Outro'){inn.hidden = ''}
+    if(sl.value === 'Despesa'){inn.hidden = ''}
     else{inn.hidden = 'none'}
 }
 
-function conferTroco(mat){
+async function conferTroco(mat){
     const btn = document.getElementById('btnAbrirCaixa')
-    conferMatricula(mat)
-    statusCaixa()
-    .then(res=>{
-        if(!res){
-            if(mat.value){
-                btn.innerHTML = spinner
-                request(`/manager/api/v1/mat_verify/?mat=${mat.value}`)
-                .then(res=>{
-                    res.json()
-                    .then(res=>{
-                        if(res){
-                            request('/manager/api/v1/get_valor_caixa/')
-                            .then(res=>{
-                                res.json()
-                                .then(res=>{
-                                    document.getElementById('troco').value = res[0]
-                                    btn.textContent = 'Abrir'
-                                    btn.disabled = false
-                                })
-                            })
-                        }
-                    })
-                })
-            }else{
-                document.getElementById('troco').value = ''
+    const res = await conferMatricula(mat)
+    const caixa = await statusCaixa()
+    if(!caixa.status){
+        if(mat.value){
+            btn.innerHTML = spinner
+            const req = await request(`mat?mat=${mat.value}`)
+            const res = await req.json()
+            if(req.ok){
+                const req = await request('valor_troco')
+                const res = await req.json()
+                document.getElementById('troco').value = res
+                btn.textContent = 'Abrir'
+                btn.disabled = false
             }
-        }else{
-            alert('Caixa já aberto!')
-            location.reload()
-        }
-    })
+        }else{document.getElementById('troco').value = ''}
+    }else{toast("Caixa já aberto"); mat.value = ''; mat.disabled = ''}
 
 }
 
 // =============== Vendas
 async function getSaidas(){
-    const res = await request('/manager/api/v1/get_saidas/')
-    const js = await res.json()
+    const req = await request('saidas')
+    const res = await req.json()
 
     document.getElementById('divTableVendas').innerHTML = `
     <table class="table table-hover" id="table">
@@ -386,182 +420,174 @@ async function getSaidas(){
         </tbody>
     </table>`
 
-    for(var x = 0; x < js.length; x++){
-        const tr = document.createElement('tr')
-        
-        const nome = document.createElement('td')
-        nome.classList.add('text-truncate')
-        nome.textContent = js[x][0]
-
-        const valor = document.createElement('td')
-        valor.textContent = js[x][1]
-
-        const cliente = document.createElement('td')
-        cliente.classList.add('text-truncate')
-        cliente.textContent = js[x][2]
-
-        const pagamento = document.createElement('td')
-        pagamento.textContent = js[x][3]
-
-        const atendente = document.createElement('td')
-        atendente.textContent = js[x][4]
-
-        const data = document.createElement('td')
-        data.classList.add('text-truncate')
-        data.textContent = js[x][5]
-
-        const id = js[x][6]
-        const idVenda = js[x][7]
-
-        // Buttons
-        const btngp = document.createElement('div')
-        btngp.classList.add('btn-group')
-
-        const btnCancel = document.createElement('button')
-        var icon = document.createElement('i')
-        icon.classList.add('bi')
-        icon.classList.add('bi-trash-fill')
-        btnCancel.appendChild(icon)
-        btnCancel.classList.add('btn')
-        btnCancel.classList.add('btn-sm')
-        btnCancel.classList.add('btn-danger')
-        
-        new bootstrap.Tooltip(btnCancel, {title:'Excluir venda!'})
-
-        btnCancel.addEventListener('click',function(){
-            var conf = confirm('Deseja excluir permanentemente esta venda?')
-            if(conf){
-                request(`/manager/api/v1/excluir_venda/?id=${id}&idVenda=${idVenda}`, 'POST')
-                .then(res=>{
-                    btnCancel.innerHTML = `
-                    <div class="spinner-border spinner-border-sm" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    `
-                    if(res.ok){
-                        location.reload()
-                    }
-                })
-            }
+    if(req.ok){
+        res.forEach(item => {
+            const tr = document.createElement('tr')
+            
+            const nome = document.createElement('td')
+            nome.classList.add('text-truncate')
+            nome.textContent = item['nome']
+    
+            const valor = document.createElement('td')
+            valor.textContent = to_real(item['valor'])
+    
+            const cliente = document.createElement('td')
+            cliente.classList.add('text-truncate')
+            cliente.textContent = item['cliente']
+    
+            const pagamento = document.createElement('td')
+            pagamento.textContent = item['pagamento']
+    
+            const atendente = document.createElement('td')
+            atendente.textContent = item['atendente']
+    
+            const data = document.createElement('td')
+            data.classList.add('text-truncate')
+            data.textContent = new Date(item['data']).toLocaleDateString('pt-br', {'day':'2-digit','month':'long','hour':'2-digit','minute':'2-digit'})
+    
+            const id = item['id']
+            const idVenda = item['idVenda']
+    
+            // Buttons
+            const btngp = document.createElement('div')
+            btngp.classList.add('btn-group')
+    
+            const btnCancel = document.createElement('button')
+            var icon = document.createElement('i')
+            icon.classList.add('bi')
+            icon.classList.add('bi-trash-fill')
+            btnCancel.appendChild(icon)
+            btnCancel.classList.add('btn')
+            btnCancel.classList.add('btn-sm')
+            btnCancel.classList.add('btn-danger')
+            
+            new bootstrap.Tooltip(btnCancel, {title:'Excluir venda!'})
+    
+            btnCancel.addEventListener('click', async function(){
+                var conf = confirm('Deseja excluir permanentemente esta venda?')
+                if(conf){
+                    btnCancel.innerHTML = spinner
+                    const req = await request("vendas", "DELETE", {'id':id,'id_venda':idVenda})
+                    const res = await req.json()
+                    if(req.ok){location.reload()}
+                    else{toast(res)}
+                }
+            })
+    
+            const btnCancelItem = document.createElement('button')
+            var icon = document.createElement('i')
+            icon.classList.add('bi')
+            icon.classList.add('bi-phone')
+            btnCancelItem.appendChild(icon)
+            btnCancelItem.classList.add('btn')
+            btnCancelItem.classList.add('btn-sm')
+            btnCancelItem.classList.add('btn-warning')
+    
+            new bootstrap.Tooltip(btnCancelItem, {title:'Excluir item!'})
+    
+            btnCancelItem.addEventListener('click', async function(){
+                var conf = confirm('Deseja excluir permanentemente este item?')
+                if (conf){
+                    btnCancelItem.innerHTML = spinner
+                    const req = await request("saidas", "DELETE", {'id':id, 'id_venda':idVenda})
+                    const res = await req.json()
+                    if(req.ok){location.reload()}
+                    else{toast(res)}
+                }
+            })
+    
+            btngp.appendChild(btnCancelItem)
+            btngp.appendChild(btnCancel)
+    
+            const act = document.createElement('td')
+            act.appendChild(btngp)
+    
+            tr.appendChild(nome)
+            tr.appendChild(valor)
+            tr.appendChild(cliente)
+            tr.appendChild(pagamento)
+            tr.appendChild(atendente)
+            tr.appendChild(data)
+            tr.appendChild(act)
+    
+            document.getElementById('tbVendas').appendChild(tr)  
         })
-
-        const btnCancelItem = document.createElement('button')
-        var icon = document.createElement('i')
-        icon.classList.add('bi')
-        icon.classList.add('bi-phone')
-        btnCancelItem.appendChild(icon)
-        btnCancelItem.classList.add('btn')
-        btnCancelItem.classList.add('btn-sm')
-        btnCancelItem.classList.add('btn-warning')
-
-        new bootstrap.Tooltip(btnCancelItem, {title:'Excluir item!'})
-
-        btnCancelItem.addEventListener('click',function(){
-            var conf = confirm('Deseja excluir permanentemente este item?')
-            if (conf){
-                request(`/manager/api/v1/excluir_saida/?id=${id}&idVenda=${idVenda}`, 'POST')
-                .then(res=>{
-                    btnCancelItem.innerHTML = `
-                    <div class="spinner-border spinner-border-sm" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    `
-                    if(res.ok){
-                        location.reload()
-                    }
-                })
-            }
-        })
-
-        btngp.appendChild(btnCancelItem)
-        btngp.appendChild(btnCancel)
-
-        const act = document.createElement('td')
-        act.appendChild(btngp)
-
-        tr.appendChild(nome)
-        tr.appendChild(valor)
-        tr.appendChild(cliente)
-        tr.appendChild(pagamento)
-        tr.appendChild(atendente)
-        tr.appendChild(data)
-        tr.appendChild(act)
-
-        document.getElementById('tbVendas').appendChild(tr)  
     }
 }
 
 async function vendasPorTipo(){
-    const res = await request('/manager/api/v1/vendas_por_tipo/')
+    const res = await request('vendas')
     const js = await res.json()
 
-    var credito = Math.round(parseFloat(js['CREDITO']))
-    var debito = Math.round(parseFloat(js['DEBITO']))
-    var pix = Math.round(parseFloat(js['PIX']))
-    var dinheiro = Math.round(parseFloat(js['DINHEIRO']))
-    var dia = Math.round(parseFloat(js['DIA']))
+    var credito = js['CREDITO']
+    var debito = js['DEBITO']
+    var pix = js['PIX']
+    var dinheiro = js['DINHEIRO']
+    var dia = js['DIA']
     var total = dinheiro + pix + debito + credito
 
-    document.getElementById('vendasMes').textContent = 'R$' + total.toLocaleString('pt-BR')
-    document.getElementById('vendasDia').textContent = 'R$' + dia.toLocaleString('pt-BR')
-    document.getElementById('pix').textContent = 'R$' + pix.toLocaleString('pt-BR')
-    document.getElementById('cards').textContent = 'R$' + (debito + credito).toLocaleString('pt-BR')
-    document.getElementById('dinheiro').textContent = 'R$' + dinheiro.toLocaleString('pt-BR')
+    document.getElementById('vendasMes').textContent = to_real(total)
+    document.getElementById('vendasDia').textContent = to_real(dia)
+    document.getElementById('pix').textContent = to_real(pix)
+    document.getElementById('cards').textContent = to_real(debito + credito)
+    document.getElementById('dinheiro').textContent = to_real(dinheiro)
 }
 
 async function getProds(){
-    const res = await request('/manager/api/v1/get_prods/')
+    const res = await request('produtos')
     const js = await res.json()
 
-    for(var x = 0; x < js.length; x++){
-        const tr = document.createElement('tr')
-
-        const idProd = js[x][0]
-        const nome = js[x][1]
-        const valor = js[x][3]
-
-        const nomeTd = document.createElement('td')
-        nomeTd.textContent = nome
+    if(res.ok){
+        js.forEach(item => {
+            const tr = document.createElement('tr')
         
-        const btnTd = document.createElement('td')
-        const btn = document.createElement('button')
-        btn.classList.add('btn')
-        btn.classList.add('btn-dark')
-        btn.innerHTML = '<i class="bi bi-plus-square-dotted"></i>'
-        btn.addEventListener('click', function(){
-            const vl = document.getElementById('valorProd')
-            let newvl = 0
-            if(vl.value){
-                newvl = (parseFloat(vl.value) + parseFloat(valor)).toFixed(1)
-            }else{
-                newvl = parseFloat(valor)
-            }
-            vl.value = newvl
-            const li = document.createElement('li')
-            li.classList.add('list-group-item')
-            li.classList.add('d-flex')
-            li.classList.add('justify-content-between')
-            li.classList.add('align-items-center')
-            li.textContent = nome
-            const btnRemoveItem = document.createElement('button')
-            btnRemoveItem.classList.add('btn')
-            btnRemoveItem.classList.add('btn-danger')
-            btnRemoveItem.innerHTML = '<i class="bi bi-trash-fill"></i>'
-            btnRemoveItem.addEventListener('click', function(){
-                document.getElementById('listProdAdd').removeChild(li)
-                vl.value = (parseFloat(vl.value) - parseFloat(valor)).toFixed(1)
-                cart.splice(cart.indexOf(nome), 1)
+            const idProd = item['id']
+            const nome = item['nome']
+            const valor = item['valor']
+        
+            const nomeTd = document.createElement('td')
+            nomeTd.textContent = nome
+            
+            const btnTd = document.createElement('td')
+            const btn = document.createElement('button')
+            btn.classList.add('btn')
+            btn.classList.add('btn-dark')
+            btn.innerHTML = '<i class="bi bi-plus-square-dotted"></i>'
+            btn.addEventListener('click', function(){
+                const vl = document.getElementById('valorProd')
+                let newvl = 0
+                if(vl.value){
+                    newvl = (parseFloat(vl.value) + parseFloat(valor)).toFixed(1)
+                }else{
+                    newvl = parseFloat(valor)
+                }
+                vl.value = newvl
+                const li = document.createElement('li')
+                li.classList.add('list-group-item')
+                li.classList.add('d-flex')
+                li.classList.add('justify-content-between')
+                li.classList.add('align-items-center')
+                li.textContent = nome
+                const btnRemoveItem = document.createElement('button')
+                btnRemoveItem.classList.add('btn')
+                btnRemoveItem.classList.add('btn-danger')
+                btnRemoveItem.innerHTML = '<i class="bi bi-trash-fill"></i>'
+                btnRemoveItem.addEventListener('click', function(){
+                    document.getElementById('listProdAdd').removeChild(li)
+                    vl.value = (parseFloat(vl.value) - parseFloat(valor)).toFixed(1)
+                    cart.splice(cart.indexOf(nome), 1)
+                })
+        
+                li.appendChild(btnRemoveItem)
+                document.getElementById('listProdAdd').appendChild(li)
+                cart.push(nome)
             })
-
-            li.appendChild(btnRemoveItem)
-            document.getElementById('listProdAdd').appendChild(li)
-            cart.push(nome)
+            btnTd.appendChild(btn)
+            tr.appendChild(nomeTd)
+            tr.appendChild(btnTd)
+        
+            document.getElementById('listProd').appendChild(tr)
         })
-        btnTd.appendChild(btn)
-        tr.appendChild(nomeTd)
-        tr.appendChild(btnTd)
-
-        document.getElementById('listProd').appendChild(tr)
     }
 }
 
@@ -593,31 +619,30 @@ async function conferCPFNewVenda(inp) {
     }
 }
 
-function vender(){
+async function vender(){
     var valorTotal = document.getElementById('valorProd').value
     var mat = document.getElementById('matricula').value
     var cpf = document.getElementById('cpf').value
     var desconto = document.getElementById('desconto').value
     var sel = document.getElementById('selPag').value
 
-    var dd = [valorTotal, mat, cpf, desconto, sel]
+    var dd = {
+        'mat': mat,
+        'valor': valorTotal,
+        'cpf': cpf,
+        'desconto': desconto,
+        'mt_pag': sel,
+        'cart': cart,
+        'tipo': 'PRODUTOS' 
+    }
 
-    statusCaixa()
-    .then(js=>{
-        if(js && mat && valorTotal && sel){
-            document.getElementById('btnVender').innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div>'
-            request(`/manager/api/v1/vender/?dd=${dd}&&cart=${cart}`, 'POST')
-            .then(res=>{    
-                if(res.ok){
-                    location.reload()
-                }
-            })
-        }else if(!js){
-            alert('Caixa ainda fechado!!')
-        }else{
-            alert('Dados incompletos!')
-        }
-    })
+    if(mat && valorTotal && sel){
+            document.getElementById('btnVender').innerHTML = spinner
+            const req = await request("vendas", 'POST', dd)
+            const res = await req.json()
+            if(req.ok){location.reload()}
+            else{toast(res)}
+    }toast('Preencha os dados necessários!')
 }
 
 function zerarcart(){
@@ -628,19 +653,20 @@ function zerarcart(){
 
 // =============== Ordens de Serviço
 async function getDadosOs() {
-    const res = await request('/manager/api/v1/get_cliente/')
-    const js = await res.json()
-    if(js[0]){
-        for(var x = 0; x < js.length; x++){
-            const id = js[x][0]
-            const cpf = js[x][1]
-            const nome = js[x][2]
-            const telefone = js[x][3]
-            const modelo = js[x][4]
-            const marca = js[x][5]
-            const cor = js[x][6]
-            const endereco = js[x][7]
-            const imei = js[x][10]
+    const req = await request('clientes')
+    const res = await req.json()
+
+    if(req.ok){
+        res.forEach(item => {
+            const id = item['id']
+            const cpf = item['cpf']
+            const nome = item['nome']
+            const telefone = item['telefone']
+            const modelo = item['modelo']
+            const marca = item['marca']
+            const cor = item['cor']
+            const endereco = item['endereco']
+            const imei = item['imei']
     
             var ul = document.getElementById('listClient')
     
@@ -670,91 +696,94 @@ async function getDadosOs() {
                 if(day < 10){day = '0' + day}
                 if(month < 10){month = '0' + month}
                 var dateEnd = `${date.getFullYear()}-${month}-${day}`
-
+    
                 document.getElementById("retirada").value = dateEnd
             })
     
             li.appendChild(s)
             li.appendChild(btnAdd)
             ul.appendChild(li)
-        }
+        })
     }else{
         var ul = document.getElementById('listClient')
         var li = document.createElement('li')
         li.classList.add('list-group-item')
         li.textContent = 'Nenhum cliente cadastrado, bora começar ?'
         ul.appendChild(li)
-
     }
 
-    const res4 = await request('/manager/api/v1/get_status/')
+    const res4 = await request('status')
     const js4 = await res4.json()
+    if(res4.ok){
+        js4.forEach(item=>{
+            var sl = document.createElement('option')
+            sl.id = `opt_${item['status']}`
+            sl.textContent = item['status']
+            document.getElementById('status').appendChild(sl)
+        })
+    }
     for(var x = 0; x < js4.length; x++){
-        var sl = document.createElement('option')
-        sl.id = `opt_${x}`
-        sl.textContent = js4[x][0]
-        document.getElementById('status').appendChild(sl)
     }
 
-    const resProds = await request('/manager/api/v1/get_prods/')
-    const jsProd = await resProds.json()
+    // const resProds = await request('/manager/api/v1/get_prods/')
+    // const jsProd = await resProds.json()
 
-    jsProd.forEach(res => {
-        const tr = document.createElement('tr')
+    // jsProd.forEach(res => {
+    //     const tr = document.createElement('tr')
 
-        const idProd = res[0]
-        const nome = res[1]
-        const valor = res[3]
+    //     const idProd = res[0]
+    //     const nome = res[1]
+    //     const valor = res[3]
 
-        const nomeTd = document.createElement('td')
-        nomeTd.textContent = nome
+    //     const nomeTd = document.createElement('td')
+    //     nomeTd.textContent = nome
         
-        const btnTd = document.createElement('td')
-        const btn = document.createElement('button')
-        btn.classList.add('btn')
-        btn.classList.add('btn-dark')
-        btn.innerHTML = '<i class="bi bi-plus-square-dotted"></i>'
-        btn.addEventListener('click', function(){
-            const vl = document.getElementById('valor')
-            let newvl = 0
-            if(vl.value){
-                newvl = (parseFloat(vl.value) + parseFloat(valor)).toFixed(1)
-            }else{
-                newvl = parseFloat(valor)
-            }
-            vl.value = newvl
-            const li = document.createElement('li')
-            li.classList.add('list-group-item')
-            li.classList.add('d-flex')
-            li.classList.add('justify-content-between')
-            li.classList.add('align-items-center')
-            li.textContent = nome
-            const btnRemoveItem = document.createElement('button')
-            btnRemoveItem.classList.add('btn')
-            btnRemoveItem.classList.add('btn-danger')
-            btnRemoveItem.innerHTML = '<i class="bi bi-trash-fill"></i>'
-            btnRemoveItem.addEventListener('click', function(){
-                document.getElementById('listProdAddsOs').removeChild(li)
-                vl.value = (parseFloat(vl.value) - parseFloat(valor)).toFixed(1)
-                cart.splice(cart.indexOf(nome), 1)
-            })
+    //     const btnTd = document.createElement('td')
+    //     const btn = document.createElement('button')
+    //     btn.classList.add('btn')
+    //     btn.classList.add('btn-dark')
+    //     btn.innerHTML = '<i class="bi bi-plus-square-dotted"></i>'
+    //     btn.addEventListener('click', function(){
+    //         const vl = document.getElementById('valor')
+    //         let newvl = 0
+    //         if(vl.value){
+    //             newvl = (parseFloat(vl.value) + parseFloat(valor)).toFixed(1)
+    //         }else{
+    //             newvl = parseFloat(valor)
+    //         }
+    //         vl.value = newvl
+    //         const li = document.createElement('li')
+    //         li.classList.add('list-group-item')
+    //         li.classList.add('d-flex')
+    //         li.classList.add('justify-content-between')
+    //         li.classList.add('align-items-center')
+    //         li.textContent = nome
+    //         const btnRemoveItem = document.createElement('button')
+    //         btnRemoveItem.classList.add('btn')
+    //         btnRemoveItem.classList.add('btn-danger')
+    //         btnRemoveItem.innerHTML = '<i class="bi bi-trash-fill"></i>'
+    //         btnRemoveItem.addEventListener('click', function(){
+    //             document.getElementById('listProdAddsOs').removeChild(li)
+    //             vl.value = (parseFloat(vl.value) - parseFloat(valor)).toFixed(1)
+    //             cart.splice(cart.indexOf(nome), 1)
+    //         })
 
-            li.appendChild(btnRemoveItem)
-            document.getElementById('listProdAddsOs').appendChild(li)
-            cart.push(nome)
-        })
-        btnTd.appendChild(btn)
-        tr.appendChild(nomeTd)
-        tr.appendChild(btnTd)
+    //         li.appendChild(btnRemoveItem)
+    //         document.getElementById('listProdAddsOs').appendChild(li)
+    //         cart.push(nome)
+    //     })
+    //     btnTd.appendChild(btn)
+    //     tr.appendChild(nomeTd)
+    //     tr.appendChild(btnTd)
 
-        document.getElementById('listProdOs').appendChild(tr)
-    });
+    //     document.getElementById('listProdOs').appendChild(tr)
+    // });
 
 
 }
 
 async function getStatusOs() {
-    const res = await request('/manager/api/v1/get_os_status/')
+    const res = await request('os_tipo')
     const js = await res.json()
     document.getElementById('abertas').textContent = js['ABERTA']
     document.getElementById('canceladas').textContent = js['CANCELADA']
@@ -763,518 +792,516 @@ async function getStatusOs() {
 }
 
 async function getOsAbertas(){
-    const res = await request('/manager/api/v1/get_os_abertas/')
-    const js = await res.json()
-    
-    for(var x = 0; x < js.length; x++){
-        const id = js[x][0]
-        const nomeOS = js[x][1]
-        const modeloOs = js[x][2]
-        const tipoServico = js[x][3]
-        const valorOs = js[x][4]
+    const req = await request("os?status='ABERTA','ORCAMENTO'")
+    const js = await req.json()
 
-        const marcaOs = js[x][9]
-        const corOs = js[x][10]
-        const imeiOs = js[x][11]
-        const cpfOs = js[x][12]
-        const statusOS = capitalize(js[x][5])
-
-        const tr = document.createElement('tr')
-
-        const numOs = document.createElement('td')
-        numOs.classList.add('text-truncate')
-        numOs.textContent = js[x][0]
-
-        const cliente = document.createElement('td')
-        cliente.classList.add('text-truncate')
-        cliente.textContent = js[x][1]
-
-        const aparelho = document.createElement('td')
-        aparelho.classList.add('text-truncate')
-        aparelho.textContent = js[x][2]
-
-        const valor = document.createElement('td')
-        valor.classList.add('text-truncate')
-        valor.textContent = `R$ ${js[x][4]}`
-
-        const st = document.createElement('td')
-        st.classList.add('text-truncate')
-        const badge = document.createElement('span')
-        badge.classList.add('badge')
-        badge.classList.add('rounded-pill')
-        const status = js[x][5]
-        if(status === 'ABERTA'){badge.style.background = '#023047'}
-        else if(status === 'ORÇAMENTO'){badge.style.background = '#9c6644'}
-        badge.textContent = capitalize(status)
-        st.appendChild(badge)
-
-        const atendente = document.createElement('td')
-        atendente.style.marginRight = '50px'
-        atendente.classList.add('text-truncate')
-        atendente.textContent = js[x][6]
-        
-        const cadastro = document.createElement('td')
-        cadastro.classList.add('text-truncate')
-        cadastro.textContent = js[x][7]
-
-        const entrega = document.createElement('td')
-        entrega.classList.add('text-truncate')
-        entrega.textContent = js[x][8]
-        
-        // Buttons
-        const btngp = document.createElement('div')
-        btngp.classList.add('btn-group')
-        
-        // Botao para entregar
-        const btnEntregue = document.createElement('button')
-        const iconEntregue = document.createElement('i')
-        iconEntregue.classList.add('bi')
-        iconEntregue.classList.add('bi-patch-check')
-        btnEntregue.appendChild(iconEntregue)
-        btnEntregue.classList.add('btn')
-        btnEntregue.classList.add('btn-sm')
-        btnEntregue.classList.add('btn-success')
-        new bootstrap.Tooltip(btnEntregue, {title:'Marcar como entregue!'})
-
-        btnEntregue.addEventListener('click',function(){
-            document.getElementById('idOsEntrega').value = id
-            const myModal = new bootstrap.Modal(document.getElementById('ModalEntregue'), {show:'true'})
-            myModal.show()
-        })
-
-        // Botao para Editar
-        const btnEditar = document.createElement('button')
-        const iconFinalizar = document.createElement('i')
-        iconFinalizar.classList.add('bi')
-        iconFinalizar.classList.add('bi-box-arrow-up-right')
-        btnEditar.appendChild(iconFinalizar)
-        btnEditar.classList.add('btn')
-        btnEditar.classList.add('btn-sm')
-        btnEditar.classList.add('btn-secondary')
-        new bootstrap.Tooltip(btnEditar, {title:'Editar Ordem!'})
-
-        btnEditar.addEventListener('click',  function(){
-            document.getElementById('eosId').value = id
-            document.getElementById('eosNome').value = nomeOS
-            document.getElementById('eosModelo').value = modeloOs
-            document.getElementById('eosValor').value = valorOs
-            document.getElementById('eosMarca').value = marcaOs
-            document.getElementById('eosCor').value = corOs
-            document.getElementById('eosCpf').value = cpfOs
-            document.getElementById('eosImei').value = imeiOs
-            document.getElementById('eoTipoOs').value = statusOS
-            document.getElementById('eosTipoServico').value = tipoServico
-
-
-            const modalEditar = new bootstrap.Modal(document.getElementById('editarOsModal'), {show:'true'})
-            modalEditar.show()
-        })
-
-        // Botao para download
-        const btnDown = document.createElement('button')
-        const iconsDown = document.createElement('i')
-        iconsDown.classList.add('bi')
-        iconsDown.classList.add('bi-cloud-arrow-down-fill')
-        btnDown.appendChild(iconsDown)
-        btnDown.classList.add('btn')
-        btnDown.classList.add('btn-sm')
-        btnDown.style.background = '#023047'
-        new bootstrap.Tooltip(btnDown, {title:'Download!'})
-        btnDown.addEventListener('click', function(){
-            btnDown.innerHTML = spinner
-            window.location = api + `/manager/api/v1/get_os_ind/?os=${id}&&cr=${cr}`
-        })
+    // Dentro do Prazo
+    if(req.ok){
+        js.forEach(item=>{
+            const id = item['id']
+            const nomeOS = item['nome']
+            const modeloOs = item['modelo']
+            const valorOs = item['valor']
+            const atendenteOS = item['atendente']
+            const marcaOs = item['marca']
+            const corOs = item['cor']
+            const statusOS = item['status']
+            const aberturaOS = new Date(item['abertura']).toLocaleDateString("pt-br",{day:'2-digit',month:'long',hour:'2-digit',minute:'2-digit'})
+            const entregaOS = new Date(item['entrega']).toLocaleDateString("pt-br",{day:'2-digit',month:'long'})
+            const tipoOS = item['tipo']
+            const imeiOS = item['imei']
+            const cpfOS = item['cpf']
             
-        // Botao sem conserto
-        const btnSemConserto = document.createElement('button')
-        const iconSemConserto = document.createElement('i')
-        iconSemConserto.classList.add('bi')
-        iconSemConserto.classList.add('bi-bell-slash-fill')
-        btnSemConserto.appendChild(iconSemConserto)
-        btnSemConserto.classList.add('btn')
-        btnSemConserto.classList.add('btn-sm')
-        new bootstrap.Tooltip(btnSemConserto, {title:'Sem conserto!'})
-        btnSemConserto.classList.add('bg-violet')
-        btnSemConserto.addEventListener('click', function(){
-            btnSemConserto.innerHTML = spinner
-            request(`/manager/api/v1/alter_status_os/?os=${id}&status=SEM CONSERTO`, 'POST')
-            .then(res=>{
-                res.json()
-                .then(js=>{
-                    alert(js)
-                    location.reload()
-                })
-            })
-        })
-
-        // Botao cancelar
-        const btnCancelar = document.createElement('button')
-        const iconCancelar = document.createElement('i')
-        iconCancelar.classList.add('bi')
-        iconCancelar.classList.add('bi-trash-fill')
-        btnCancelar.appendChild(iconCancelar)
-        btnCancelar.classList.add('btn')
-        btnCancelar.classList.add('btn-sm')
-        new bootstrap.Tooltip(btnCancelar, {title:'Cancelar Ordem!!'})
-        btnCancelar.classList.add('btn-danger')
-        btnCancelar.addEventListener('click', function(){
-            btnCancelar.innerHTML = spinner
-            request(`/manager/api/v1/alter_status_os/?os=${id}&status=CANCELADA`, 'POST')
-            .then(res=>{
-                res.json()
-                .then(js=>{
-                    alert(js)
-                    location.reload()
-                })
-            })
-        })
-
         
-        btngp.appendChild(btnDown)
-        btngp.appendChild(btnEditar)
-        btngp.appendChild(btnEntregue)
-        btngp.appendChild(btnSemConserto)
-        btngp.appendChild(btnCancelar)
+            const tr = document.createElement('tr')
         
-        const act = document.createElement('td')
-        act.appendChild(btngp)
-
-        // Add items table
-        tr.appendChild(numOs)
-        tr.appendChild(cliente)
-        tr.appendChild(aparelho)
-        tr.appendChild(valor)
-        tr.appendChild(st)
-        tr.appendChild(atendente)
-        tr.appendChild(entrega)
-        tr.appendChild(cadastro)
-        tr.appendChild(act)
-
-        document.getElementById('tbAbertas').appendChild(tr)  
+            const numOs = document.createElement('td')
+            numOs.classList.add('text-truncate')
+            numOs.textContent = id
+        
+            const cliente = document.createElement('td')
+            cliente.classList.add('text-truncate')
+            cliente.textContent = nomeOS
+        
+            const aparelho = document.createElement('td')
+            aparelho.classList.add('text-truncate')
+            aparelho.textContent = modeloOs
+        
+            const valor = document.createElement('td')
+            valor.classList.add('text-truncate')
+            valor.textContent = to_real(valorOs)
+        
+            const st = document.createElement('td')
+            st.classList.add('text-truncate')
+            const badge = document.createElement('span')
+            badge.classList.add('badge')
+            badge.classList.add('rounded-pill')
+            if(statusOS === 'ABERTA'){badge.style.background = '#023047'}
+            else if(statusOS === 'ORÇAMENTO'){badge.style.background = '#9c6644'}
+            badge.textContent = capitalize(statusOS)
+            st.appendChild(badge)
+        
+            const atendente = document.createElement('td')
+            atendente.style.marginRight = '50px'
+            atendente.classList.add('text-truncate')
+            atendente.textContent = atendenteOS
+            
+            const cadastro = document.createElement('td')
+            cadastro.classList.add('text-truncate')
+            cadastro.textContent = aberturaOS
+        
+            const entrega = document.createElement('td')
+            entrega.classList.add('text-truncate')
+            entrega.textContent = entregaOS
+            
+            // Buttons
+            const btngp = document.createElement('div')
+            btngp.classList.add('btn-group')
+            
+            // Botao para entregar
+            const btnEntregue = document.createElement('button')
+            const iconEntregue = document.createElement('i')
+            iconEntregue.classList.add('bi')
+            iconEntregue.classList.add('bi-patch-check')
+            btnEntregue.appendChild(iconEntregue)
+            btnEntregue.classList.add('btn')
+            btnEntregue.classList.add('btn-sm')
+            btnEntregue.classList.add('btn-success')
+            new bootstrap.Tooltip(btnEntregue, {title:'Marcar como entregue!'})
+        
+            btnEntregue.addEventListener('click',function(){
+                document.getElementById('idOsEntrega').value = id
+                const myModal = new bootstrap.Modal(document.getElementById('ModalEntregue'), {show:'true'})
+                myModal.show()
+            })
+        
+            // Botao para Editar
+            const btnEditar = document.createElement('button')
+            const iconFinalizar = document.createElement('i')
+            iconFinalizar.classList.add('bi')
+            iconFinalizar.classList.add('bi-box-arrow-up-right')
+            btnEditar.appendChild(iconFinalizar)
+            btnEditar.classList.add('btn')
+            btnEditar.classList.add('btn-sm')
+            btnEditar.classList.add('btn-secondary')
+            new bootstrap.Tooltip(btnEditar, {title:'Editar Ordem!'})
+        
+            btnEditar.addEventListener('click',  function(){
+                document.getElementById('eosId').value = id
+                document.getElementById('eosNome').value = nomeOS
+                document.getElementById('eosModelo').value = modeloOs
+                document.getElementById('eosValor').value = valorOs
+                document.getElementById('eosMarca').value = marcaOs
+                document.getElementById('eosCor').value = corOs
+                document.getElementById('eosCpf').value = cpfOS
+                document.getElementById('eosImei').value = imeiOS
+                document.getElementById('eoTipoOs').value = capitalize(statusOS)
+                document.getElementById('eosTipoServico').value = tipoOS
+        
+        
+                const modalEditar = new bootstrap.Modal(document.getElementById('editarOsModal'), {show:'true'})
+                modalEditar.show()
+            })
+        
+            // Botao para download
+            const btnDown = document.createElement('button')
+            const iconsDown = document.createElement('i')
+            iconsDown.classList.add('bi')
+            iconsDown.classList.add('bi-cloud-arrow-down-fill')
+            btnDown.appendChild(iconsDown)
+            btnDown.classList.add('btn')
+            btnDown.classList.add('btn-sm')
+            btnDown.style.background = '#023047'
+            new bootstrap.Tooltip(btnDown, {title:'Download!'})
+            btnDown.addEventListener('click', function(){
+                btnDown.innerHTML = spinner
+                window.location = api + `get_os_ind?os=${id}&&cr=${cr}`
+            })
+                
+            // Botao sem conserto
+            const btnSemConserto = document.createElement('button')
+            const iconSemConserto = document.createElement('i')
+            iconSemConserto.classList.add('bi')
+            iconSemConserto.classList.add('bi-bell-slash-fill')
+            btnSemConserto.appendChild(iconSemConserto)
+            btnSemConserto.classList.add('btn')
+            btnSemConserto.classList.add('btn-sm')
+            new bootstrap.Tooltip(btnSemConserto, {title:'Sem conserto!'})
+            btnSemConserto.classList.add('bg-violet')
+            btnSemConserto.addEventListener('click', async function(){
+                btnSemConserto.innerHTML = spinner
+                const req = await request("alter_status_os", "POST", {'id':id, "status":"SEM CONSERTO"})
+                const res = await req.json()
+                if(req.ok){location.reload()}
+                else{toast(res)}
+            })
+        
+            // Botao cancelar
+            const btnCancelar = document.createElement('button')
+            const iconCancelar = document.createElement('i')
+            iconCancelar.classList.add('bi')
+            iconCancelar.classList.add('bi-trash-fill')
+            btnCancelar.appendChild(iconCancelar)
+            btnCancelar.classList.add('btn')
+            btnCancelar.classList.add('btn-sm')
+            new bootstrap.Tooltip(btnCancelar, {title:'Cancelar Ordem!!'})
+            btnCancelar.classList.add('btn-danger')
+            btnCancelar.addEventListener('click', async function(){
+                btnCancelar.innerHTML = spinner
+                const req = await request("alter_status_os", "POST", {'os':id, 'status':'CANCELADA'})
+                const res = await req.json()
+                if(req.ok){location.reload()}
+                else{toast(res)}
+            })
+        
+            
+            btngp.appendChild(btnDown)
+            btngp.appendChild(btnEditar)
+            btngp.appendChild(btnEntregue)
+            btngp.appendChild(btnSemConserto)
+            btngp.appendChild(btnCancelar)
+            
+            const act = document.createElement('td')
+            act.appendChild(btngp)
+        
+            // Add items table
+            tr.appendChild(numOs)
+            tr.appendChild(cliente)
+            tr.appendChild(aparelho)
+            tr.appendChild(valor)
+            tr.appendChild(st)
+            tr.appendChild(atendente)
+            tr.appendChild(cadastro)
+            tr.appendChild(entrega)
+            tr.appendChild(act)
+        
+            document.getElementById('tbAbertas').appendChild(tr)  
+        })
     }
 
-    const res2 = await request('/manager/api/v1/get_os_expiradas/')
+    // Expiradas
+    const res2 = await request('os?status=EXPIRADA')
     const js2 = await res2.json()
-
-    for(var x = 0; x < js2.length; x++){
-        const id = js2[x][0]
-        const nomeOS = js2[x][1]
-        const modeloOs = js2[x][2]
-        const tipoServico = js2[x][3]
-        const valorOs = js2[x][4]
-        const statusOS = capitalize(js[x][5])
-
-        const marcaOs = js2[x][9]
-        const corOs = js2[x][10]
-        const imeiOs = js2[x][11]
-        const cpfOs = js2[x][12]
-
-        const tr = document.createElement('tr')
-
-        const numOs = document.createElement('td')
-        numOs.classList.add('text-truncate')
-        numOs.textContent = js2[x][0]
-
-        const cliente = document.createElement('td')
-        cliente.classList.add('text-truncate')
-        cliente.textContent = js2[x][1]
-
-        const aparelho = document.createElement('td')
-        aparelho.classList.add('text-truncate')
-        aparelho.textContent = js2[x][2]
-
-        const valor = document.createElement('td')
-        valor.classList.add('text-truncate')
-        valor.textContent = `R$ ${js2[x][4]}`
-
-        const st = document.createElement('td')
-        st.classList.add('text-truncate')
-        const badge = document.createElement('span')
-        badge.classList.add('badge')
-        badge.classList.add('rounded-pill')
-        badge.classList.add('text-bg-danger')
-        badge.textContent = 'EXPIRADA'
-        st.appendChild(badge)
-
-        const atendente = document.createElement('td')
-        atendente.style.marginRight = '50px'
-        atendente.classList.add('text-truncate')
-        atendente.textContent = js2[x][6]
-        
-        const cadastro = document.createElement('td')
-        cadastro.classList.add('text-truncate')
-        cadastro.textContent = js2[x][7]
-
-        const entrega = document.createElement('td')
-        entrega.classList.add('text-truncate')
-        entrega.textContent = js2[x][8]
-        
-        // Buttons
-        const btngp = document.createElement('div')
-        btngp.classList.add('btn-group')
-        
-        // Botao para entregar
-        const btnEntregue = document.createElement('button')
-        const iconEntregue = document.createElement('i')
-        iconEntregue.classList.add('bi')
-        iconEntregue.classList.add('bi-patch-check')
-        btnEntregue.appendChild(iconEntregue)
-        btnEntregue.classList.add('btn')
-        btnEntregue.classList.add('btn-sm')
-        btnEntregue.classList.add('btn-success')
-        new bootstrap.Tooltip(btnEntregue, {title:'Marcar como entregue!'})
-
-        btnEntregue.addEventListener('click',function(){
-            document.getElementById('idOsEntrega').value = id
-            const myModal = new bootstrap.Modal(document.getElementById('ModalEntregue'), {show:'true'})
-            myModal.show()
-        })
-
-        // Botao para Editar
-        const btnEditar = document.createElement('button')
-        const iconFinalizar = document.createElement('i')
-        iconFinalizar.classList.add('bi')
-        iconFinalizar.classList.add('bi-box-arrow-up-right')
-        btnEditar.appendChild(iconFinalizar)
-        btnEditar.classList.add('btn')
-        btnEditar.classList.add('btn-sm')
-        btnEditar.classList.add('btn-secondary')
-        new bootstrap.Tooltip(btnEditar, {title:'Editar Ordem!'})
-
-        btnEditar.addEventListener('click',  function(){
-            document.getElementById('eosId').value = id
-            document.getElementById('eosNome').value = nomeOS
-            document.getElementById('eosModelo').value = modeloOs
-            document.getElementById('eosValor').value = valorOs
-            document.getElementById('eosMarca').value = marcaOs
-            document.getElementById('eosCor').value = corOs
-            document.getElementById('eosCpf').value = cpfOs
-            document.getElementById('eosImei').value = imeiOs
-            document.getElementById('eoTipoOs').value = statusOS
-            document.getElementById('eosTipoServico').value = tipoServico
-
-
-            const modalEditar = new bootstrap.Modal(document.getElementById('editarOsModal'), {show:'true'})
-            modalEditar.show()
-        })
-
-        // Botao para download
-        const btnDown = document.createElement('button')
-        const iconsDown = document.createElement('i')
-        iconsDown.classList.add('bi')
-        iconsDown.classList.add('bi-cloud-arrow-down-fill')
-        btnDown.appendChild(iconsDown)
-        btnDown.classList.add('btn')
-        btnDown.classList.add('btn-sm')
-        btnDown.style.background = '#023047'
-        new bootstrap.Tooltip(btnDown, {title:'Download!'})
-        btnDown.addEventListener('click', function(){
-            btnDown.innerHTML = spinner
-            window.location = api + `/manager/api/v1/get_os_ind/?os=${id}&&cr=${cr}`
-        })
+    if(res2.ok){
+        js2.forEach(item =>{
+                const id = item['id']
+                const nomeOS = item['nome']
+                const modeloOs = item['modelo']
+                const valorOs = item['valor']
+                const statusOS = item['status']
+                const atendenteOS = item['atendente']
+                const cadastroOS = new Date(item['abertura']).toLocaleDateString("pt-br",{day:'2-digit',month:'long',hour:'2-digit',minute:'2-digit'})
+                const entregaOS = new Date(item['entrega']).toLocaleDateString("pt-br",{day:'2-digit',month:'long'})
+                const marcaOs = item['marca']
+                const corOs = item['cor']
+                const imeiOs = item['imei']
+                const tipoServico= item['tipo']
+                const cpfOs = item['cpf']
             
-        // Botao sem conserto
-        const btnSemConserto = document.createElement('button')
-        const iconSemConserto = document.createElement('i')
-        iconSemConserto.classList.add('bi')
-        iconSemConserto.classList.add('bi-bell-slash-fill')
-        btnSemConserto.appendChild(iconSemConserto)
-        btnSemConserto.classList.add('btn')
-        btnSemConserto.classList.add('btn-sm')
-        new bootstrap.Tooltip(btnSemConserto, {title:'Sem conserto!'})
-        btnSemConserto.classList.add('bg-violet')
-        btnSemConserto.addEventListener('click', function(){
-            btnSemConserto.innerHTML = spinner
-            request(`/manager/api/v1/alter_status_os/?os=${id}&status=SEM CONSERTO`, 'POST')
-            .then(res=>{
-                res.json()
-                .then(js=>{
-                    alert(js)
-                    location.reload()
+                const tr = document.createElement('tr')
+            
+                const numOs = document.createElement('td')
+                numOs.classList.add('text-truncate')
+                numOs.textContent = id
+            
+                const cliente = document.createElement('td')
+                cliente.classList.add('text-truncate')
+                cliente.textContent = nomeOS
+            
+                const aparelho = document.createElement('td')
+                aparelho.classList.add('text-truncate')
+                aparelho.textContent = modeloOs
+            
+                const valor = document.createElement('td')
+                valor.classList.add('text-truncate')
+                valor.textContent = to_real(valorOs)
+            
+                const st = document.createElement('td')
+                st.classList.add('text-truncate')
+                const badge = document.createElement('span')
+                badge.classList.add('badge')
+                badge.classList.add('rounded-pill')
+                badge.classList.add('text-bg-danger')
+                badge.textContent = 'EXPIRADA'
+                st.appendChild(badge)
+            
+                const atendente = document.createElement('td')
+                atendente.style.marginRight = '50px'
+                atendente.classList.add('text-truncate')
+                atendente.textContent = atendenteOS
+                
+                const cadastro = document.createElement('td')
+                cadastro.classList.add('text-truncate')
+                cadastro.textContent = cadastroOS
+            
+                const entrega = document.createElement('td')
+                entrega.classList.add('text-truncate')
+                entrega.textContent = entregaOS
+                
+                // Buttons
+                const btngp = document.createElement('div')
+                btngp.classList.add('btn-group')
+                
+                // Botao para entregar
+                const btnEntregue = document.createElement('button')
+                const iconEntregue = document.createElement('i')
+                iconEntregue.classList.add('bi')
+                iconEntregue.classList.add('bi-patch-check')
+                btnEntregue.appendChild(iconEntregue)
+                btnEntregue.classList.add('btn')
+                btnEntregue.classList.add('btn-sm')
+                btnEntregue.classList.add('btn-success')
+                new bootstrap.Tooltip(btnEntregue, {title:'Marcar como entregue!'})
+            
+                btnEntregue.addEventListener('click',function(){
+                    document.getElementById('idOsEntrega').value = id
+                    const myModal = new bootstrap.Modal(document.getElementById('ModalEntregue'), {show:'true'})
+                    myModal.show()
                 })
-            })
-        })
-
-        // Botao cancelar
-        const btnCancelar = document.createElement('button')
-        const iconCancelar = document.createElement('i')
-        iconCancelar.classList.add('bi')
-        iconCancelar.classList.add('bi-trash-fill')
-        btnCancelar.appendChild(iconCancelar)
-        btnCancelar.classList.add('btn')
-        btnCancelar.classList.add('btn-sm')
-        new bootstrap.Tooltip(btnCancelar, {title:'Cancelar Ordem!!'})
-        btnCancelar.classList.add('btn-danger')
-        btnCancelar.addEventListener('click', function(){
-            btnCancelar.innerHTML = spinner
-            request(`/manager/api/v1/alter_status_os/?os=${id}&status=CANCELADA`, 'POST')
-            .then(res=>{
-                res.json()
-                .then(js=>{
-                    alert(js)
-                    location.reload()
+            
+                // Botao para Editar
+                const btnEditar = document.createElement('button')
+                const iconFinalizar = document.createElement('i')
+                iconFinalizar.classList.add('bi')
+                iconFinalizar.classList.add('bi-box-arrow-up-right')
+                btnEditar.appendChild(iconFinalizar)
+                btnEditar.classList.add('btn')
+                btnEditar.classList.add('btn-sm')
+                btnEditar.classList.add('btn-secondary')
+                new bootstrap.Tooltip(btnEditar, {title:'Editar Ordem!'})
+            
+                btnEditar.addEventListener('click',  function(){
+                    document.getElementById('eosId').value = id
+                    document.getElementById('eosNome').value = nomeOS
+                    document.getElementById('eosModelo').value = modeloOs
+                    document.getElementById('eosValor').value = valorOs
+                    document.getElementById('eosMarca').value = marcaOs
+                    document.getElementById('eosCor').value = corOs
+                    document.getElementById('eosCpf').value = cpfOs
+                    document.getElementById('eosImei').value = imeiOs
+                    document.getElementById('eoTipoOs').value = statusOS
+                    document.getElementById('eosTipoServico').value = tipoServico
+            
+            
+                    const modalEditar = new bootstrap.Modal(document.getElementById('editarOsModal'), {show:'true'})
+                    modalEditar.show()
                 })
-            })
+            
+                // Botao para download
+                const btnDown = document.createElement('button')
+                const iconsDown = document.createElement('i')
+                iconsDown.classList.add('bi')
+                iconsDown.classList.add('bi-cloud-arrow-down-fill')
+                btnDown.appendChild(iconsDown)
+                btnDown.classList.add('btn')
+                btnDown.classList.add('btn-sm')
+                btnDown.style.background = '#023047'
+                new bootstrap.Tooltip(btnDown, {title:'Download!'})
+                btnDown.addEventListener('click', function(){
+                    btnDown.innerHTML = spinner
+                    window.location = api + `get_os_ind?os=${id}&&cr=${cr}`
+                })
+                    
+                // Botao sem conserto
+                const btnSemConserto = document.createElement('button')
+                const iconSemConserto = document.createElement('i')
+                iconSemConserto.classList.add('bi')
+                iconSemConserto.classList.add('bi-bell-slash-fill')
+                btnSemConserto.appendChild(iconSemConserto)
+                btnSemConserto.classList.add('btn')
+                btnSemConserto.classList.add('btn-sm')
+                new bootstrap.Tooltip(btnSemConserto, {title:'Sem conserto!'})
+                btnSemConserto.classList.add('bg-violet')
+                btnSemConserto.addEventListener('click', async function(){
+                    btnSemConserto.innerHTML = spinner
+                    const req = await request("alter_status_os", "POST", {'id':id, "status":"SEM CONSERTO"})
+                    const res = await req.json()
+                    if(req.ok){location.reload()}
+                    else{toast(res)}
+                })
+            
+                // Botao cancelar
+                const btnCancelar = document.createElement('button')
+                const iconCancelar = document.createElement('i')
+                iconCancelar.classList.add('bi')
+                iconCancelar.classList.add('bi-trash-fill')
+                btnCancelar.appendChild(iconCancelar)
+                btnCancelar.classList.add('btn')
+                btnCancelar.classList.add('btn-sm')
+                new bootstrap.Tooltip(btnCancelar, {title:'Cancelar Ordem!!'})
+                btnCancelar.classList.add('btn-danger')
+                btnCancelar.addEventListener('click', async function(){
+                    btnCancelar.innerHTML = spinner
+                    const req = await request("alter_status_os", "POST", {'id':id, 'status':"CANCELADA"})
+                    const res = await req.json()
+                    if(req.ok){location.reload()}
+                    else{toast(res)}
+                })
+            
+                
+                btngp.appendChild(btnDown)
+                btngp.appendChild(btnEditar)
+                btngp.appendChild(btnEntregue)
+                btngp.appendChild(btnSemConserto)
+                btngp.appendChild(btnCancelar)
+                
+                const act = document.createElement('td')
+                act.appendChild(btngp)
+            
+                // Add items table
+                tr.appendChild(numOs)
+                tr.appendChild(cliente)
+                tr.appendChild(aparelho)
+                tr.appendChild(valor)
+                tr.appendChild(st)
+                tr.appendChild(atendente)
+                tr.appendChild(cadastro)
+                tr.appendChild(entrega)
+                tr.appendChild(act)
+            
+                document.getElementById('tbExp').appendChild(tr) 
         })
-
-        
-        btngp.appendChild(btnDown)
-        btngp.appendChild(btnEditar)
-        btngp.appendChild(btnEntregue)
-        btngp.appendChild(btnSemConserto)
-        btngp.appendChild(btnCancelar)
-        
-        const act = document.createElement('td')
-        act.appendChild(btngp)
-
-        // Add items table
-        tr.appendChild(numOs)
-        tr.appendChild(cliente)
-        tr.appendChild(aparelho)
-        tr.appendChild(valor)
-        tr.appendChild(st)
-        tr.appendChild(atendente)
-        tr.appendChild(entrega)
-        tr.appendChild(cadastro)
-        tr.appendChild(act)
-
-        document.getElementById('tbExp').appendChild(tr) 
     }
 }
 
 async function getAllOs(){
-    const res = await request('/manager/api/v1/get_os/')
+    const res = await request('os')
     const js = await res.json()
 
-    for(var x = 0; x < js.length; x++){
-        const id = js[x][0]
-
-        const tr = document.createElement('tr')
-
-        const numOs = document.createElement('td')
-        numOs.classList.add('text-truncate')
-        numOs.textContent = js[x][0]
-
-        const cliente = document.createElement('td')
-        cliente.classList.add('text-truncate')
-        cliente.textContent = js[x][1]
-
-        const aparelho = document.createElement('td')
-        aparelho.classList.add('text-truncate')
-        aparelho.textContent = js[x][2]
-
-        const valor = document.createElement('td')
-        valor.classList.add('text-truncate')
-        valor.textContent = `R$ ${js[x][4]}`
-
-        const st = document.createElement('td')
-        st.classList.add('text-truncate')
-        const badge = document.createElement('p')
-        badge.classList.add('badge')
-        badge.classList.add('rounded-pill')
-
-        // Cores dos status!
-        if(js[x][5] === 'SEM CONSERTO'){badge.style.background = '#8338ec'}
-        else if(js[x][5] === 'ENTREGUE'){badge.classList.add('text-bg-success')}
-        else if(js[x][5] === 'FINALIZADA'){badge.style.background = '#fb8500'}
-        else if(js[x][5] === 'CANCELADA'){badge.classList.add('text-bg-danger')}
-        else if(js[x][5] === 'ABERTA'){badge.style.background = '#023047'}
-        else if(js[x][5] === 'ORÇAMENTO'){badge.style.background = '#9c6644'}
-
-        badge.textContent = capitalize(js[x][5])
-        st.appendChild(badge)
-
-        const atendente = document.createElement('td')
-        atendente.classList.add('text-truncate')
-        atendente.textContent = js[x][6]
-
-        const cadastro = document.createElement('td')
-        cadastro.classList.add('text-truncate')
-        cadastro.textContent = js[x][7]
-
-        const entrega = document.createElement('td')
-        entrega.classList.add('text-truncate')
-        entrega.textContent = js[x][8]
+    if(res.ok){
+        js.forEach(item=>{
+            const id = item['id']
+            const nomeOS = item['nome']
+            const modeloOs = item['modelo']
+            const valorOs = item['valor']
         
-        // Buttons
-        const btngp = document.createElement('div')
-        btngp.classList.add('btn-group')
+            const atendenteOS = item['atendente']
+            const marcaOs = item['marca']
+            const corOs = item['cor']
+            const statusOS = item['status']
+            const aberturaOS = new Date(item['abertura']).toLocaleDateString("pt-br")
+            const entregaOS = new Date(item['entrega']).toLocaleDateString("pt-br")
+            const tr = document.createElement('tr')
 
-        const btnCancelar = document.createElement('button')
-        var icon = document.createElement('i')
-        btnCancelar.classList.add('btn')
-        btnCancelar.classList.add('btn-danger')
-        btnCancelar.classList.add('btn-sm')
-        icon.classList.add('bi')
-        icon.classList.add('bi-trash-fill')
-        btnCancelar.appendChild(icon)
-        new bootstrap.Tooltip(btnCancelar, {title:'Cancelar Ordem!'})
-        btnCancelar.addEventListener('click', function(){
-            request(`/manager/api/v1/cancelar_os_entregue/?id=${id}`, 'DELETE')
-            .then(res=>{
-                if(res.ok){
-                    res.json().then(js=>{
-                        alert(js)
-                        location.reload()
-                    })
-                }
+            const numOs = document.createElement('td')
+            numOs.classList.add('text-truncate')
+            numOs.textContent = id
+    
+            const cliente = document.createElement('td')
+            cliente.classList.add('text-truncate')
+            cliente.textContent = nomeOS
+    
+            const aparelho = document.createElement('td')
+            aparelho.classList.add('text-truncate')
+            aparelho.textContent = modeloOs
+    
+            const valor = document.createElement('td')
+            valor.classList.add('text-truncate')
+            valor.textContent = to_real(valorOs)
+    
+            const st = document.createElement('td')
+            st.classList.add('text-truncate')
+            const badge = document.createElement('p')
+            badge.classList.add('badge')
+            badge.classList.add('rounded-pill')
+    
+            // Cores dos status!
+            if(statusOS === 'SEM CONSERTO'){badge.style.background = '#8338ec'}
+            else if(statusOS === 'ENTREGUE'){badge.classList.add('text-bg-success')}
+            else if(statusOS === 'FINALIZADA'){badge.style.background = '#fb8500'}
+            else if(statusOS === 'CANCELADA'){badge.classList.add('text-bg-danger')}
+            else if(statusOS === 'ABERTA'){badge.style.background = '#023047'}
+            else if(statusOS === 'ORÇAMENTO'){badge.style.background = '#9c6644'}
+    
+            badge.textContent = capitalize(statusOS)
+            st.appendChild(badge)
+    
+            const atendente = document.createElement('td')
+            atendente.classList.add('text-truncate')
+            atendente.textContent = atendenteOS
+    
+            const cadastro = document.createElement('td')
+            cadastro.classList.add('text-truncate')
+            cadastro.textContent = aberturaOS
+    
+            const entrega = document.createElement('td')
+            entrega.classList.add('text-truncate')
+            entrega.textContent = entregaOS
+            
+            // Buttons
+            const btngp = document.createElement('div')
+            btngp.classList.add('btn-group')
+    
+            const btnCancelar = document.createElement('button')
+            var icon = document.createElement('i')
+            btnCancelar.classList.add('btn')
+            btnCancelar.classList.add('btn-danger')
+            btnCancelar.classList.add('btn-sm')
+            icon.classList.add('bi')
+            icon.classList.add('bi-trash-fill')
+            btnCancelar.appendChild(icon)
+            new bootstrap.Tooltip(btnCancelar, {title:'Cancelar Ordem!'})
+            btnCancelar.addEventListener('click', async function(){
+                const req = await request("alter_status_os", 'POST', {'id':idOs, 'status':'CANCELADA'})
+                const res = await req.json()
+                if(req.ok){location.reload()}
+                else{toast(res)}
             })
+            
+            const btnReabrir = document.createElement('button')
+            var icon = document.createElement('i')
+            btnReabrir.classList.add('btn')
+            btnReabrir.classList.add('btn-sm')
+            btnReabrir.style.background = '#023047'
+            icon.classList.add('bi')
+            icon.classList.add('bi-cloud-arrow-down-fill')
+            btnReabrir.appendChild(icon)
+            new bootstrap.Tooltip(btnReabrir, {title:'Download!'})
+            btnReabrir.addEventListener('click', function(){
+                btnReabrir.innerHTML = spinner
+                window.location = api + `/manager/api/v1/get_os_ind/?os=${id}&&cr=${cr}`
+            })
+    
+            if(statusOS == 'CANCELADA'){
+                btnCancelar.disabled = true
+            }
+            btngp.appendChild(btnCancelar)
+            btngp.appendChild(btnReabrir)
+    
+            const act = document.createElement('td')
+            act.appendChild(btngp)
+            
+            // Add items table
+            tr.appendChild(numOs)
+            tr.appendChild(cliente)
+            tr.appendChild(aparelho)
+            // tr.appendChild(servico)
+            tr.appendChild(valor)
+            tr.appendChild(st)
+            tr.appendChild(atendente)
+            tr.appendChild(cadastro)
+            tr.appendChild(entrega)
+            tr.appendChild(act)
+    
+            document.getElementById('tbAll').appendChild(tr)  
         })
-        
-        const btnReabrir = document.createElement('button')
-        var icon = document.createElement('i')
-        btnReabrir.classList.add('btn')
-        btnReabrir.classList.add('btn-sm')
-        btnReabrir.style.background = '#023047'
-        icon.classList.add('bi')
-        icon.classList.add('bi-cloud-arrow-down-fill')
-        btnReabrir.appendChild(icon)
-        new bootstrap.Tooltip(btnReabrir, {title:'Download!'})
-        btnReabrir.addEventListener('click', function(){
-            btnReabrir.innerHTML = spinner
-            window.location = api + `/manager/api/v1/get_os_ind/?os=${id}&&cr=${cr}`
-        })
-
-        if(js[x][5] == 'CANCELADA'){
-            btnCancelar.disabled = true
-        }
-        btngp.appendChild(btnCancelar)
-        btngp.appendChild(btnReabrir)
-
-        const act = document.createElement('td')
-        act.appendChild(btngp)
-        
-        // Add items table
-        tr.appendChild(numOs)
-        tr.appendChild(cliente)
-        tr.appendChild(aparelho)
-        // tr.appendChild(servico)
-        tr.appendChild(valor)
-        tr.appendChild(st)
-        tr.appendChild(atendente)
-        tr.appendChild(entrega)
-        tr.appendChild(cadastro)
-        tr.appendChild(act)
-
-        document.getElementById('tbAll').appendChild(tr)  
-
-        
     }
     
 }
 
 async function getMarcasOs(){
-    const res2 = await request('/manager/api/v1/get_marcas/')
+    const res2 = await request('marcas')
     const js2 = await res2.json()
-    for(var x = 0; x < js2.length; x++){
-        const sl = document.createElement('option')
-        sl.textContent = js2[x][0]
-        document.getElementById('noMarca').appendChild(sl)
-
-        const sl2 = document.createElement('option')
-        sl2.textContent = js2[x][0]
-        document.getElementById('eosMarca').appendChild(sl2)
-
+    if(res2.ok){
+        js2.forEach(item => {
+            const sl = document.createElement('option')
+            sl.textContent = item['marca']
+            document.getElementById('noMarca').appendChild(sl)
+    
+            const sl2 = document.createElement('option')
+            sl2.textContent = item['marca']
+            document.getElementById('eosMarca').appendChild(sl2)
+        })
     }
 }
 
@@ -1336,25 +1363,25 @@ function abrirOS(t){
     }else{alert('Telefone não deve estar vazio!')}
 }
 
-function entregarOs(t){
-    statusCaixa()
-    .then(res=>{
-        if(res){
-            t.innerHTML = spinner
-            var idOs = document.getElementById('idOsEntrega').value
-            var custo = document.getElementById('osCusto').value
-            var peca = document.getElementById('osPeca').value
-            var pag = document.getElementById('osPag').value
-        
-            request(`/manager/api/v1/alter_status_os/?os=${idOs}&status=ENTREGUE&custo=${custo}&pag=${pag}&peca=${peca}`, 'POST')
-            .then(res=>{
-                res.json().then(js=>{
-                    alert(js)
-                    location.reload()
-                })
-            })
-        }else{alert('Caixa ainda fechado!')}
-    })
+async function entregarOs(t){
+    t.innerHTML = spinner
+    var idOs = document.getElementById('idOsEntrega').value
+    var custo = document.getElementById('osCusto').value
+    var peca = document.getElementById('osPeca').value
+    var pag = document.getElementById('osPag').value
+    
+    dd = {
+        'os': idOs,
+        'custo': custo,
+        'peca': peca,
+        'pagamento': pag,
+        'status': 'ENTREGUE',
+    }
+
+    const req = await request("alter_status_os", "POST", dd)
+    const res = req.json()
+    if(req.ok){location.reload(); toast(res)}
+    else{toast(res)}
 }
 
 function addTipo(){
@@ -1419,7 +1446,7 @@ function addStatus(){
     }
 }
 
-function editarOs(t){
+async function editarOs(t){
     var id = document.getElementById('eosId').value
     var cpf = document.getElementById('eosCpf').value
     var modelo = document.getElementById('eosModelo').value
@@ -1429,25 +1456,23 @@ function editarOs(t){
     var valor = document.getElementById('eosValor').value
     var tipoOs = document.getElementById('eoTipoOs').value
     var servico = document.getElementById('eosTipoServico').value
-    var form = new FormData()
-
-    form.append('id', id)
-    form.append('cpf', cpf)
-    form.append('cor', cor)
-    form.append('marca', marca)
-    form.append('modelo', modelo)
-    form.append('imei', imei)
-    form.append('valor', valor)
-    form.append('statusOS', tipoOs)
-    form.append('servico', servico)
+    var form = {
+        'id': id,
+        'cpf': cpf,
+        'cor': cor,
+        'marca': marca,
+        'modelo': modelo,
+        'imei': imei,
+        'valor': valor,
+        'statusOS': tipoOs,
+        'servico': servico
+    }
 
     if(modelo && marca && cor && valor){
         t.innerHTML = spinner
-        sendForm('/manager/api/v1/editar_os/', form)
-        .then(res=>{res.json().then(js=>{
-            alert(js)
-            location.reload()
-        })})
+        const req = await request('os', 'PATCH', form)
+        if(req.ok){location.reload()}
+        else{toast(await req.json())}
     }else{alert('Preencha todos os dados!')}
 
 }
@@ -1598,7 +1623,7 @@ async function getMarcasClientes(){
         document.getElementById('ecMarca').appendChild(sl2)
     }
 }
-
+    
 function newClient(t){
     var cpf = document.getElementById('ncCpf').value
     var nome = document.getElementById('ncNome').value
@@ -1628,7 +1653,6 @@ function newClient(t){
                             "obs": "${obs}"
                         }`
                         t.innerHTML = spinner
-                        console.log(dados)
                         request('/manager/api/v1/cadastrar_cliente/', 'POST', dados)
                         .then(res=>{res.json().then(js=>{
                             alert(js)
@@ -1672,7 +1696,6 @@ function editarCliente(t){
                             "obs": "${obs}"
                         }`
                         t.innerHTML = spinner
-                        console.log(dados)
                         request('/manager/api/v1/editar_cliente/', 'PATCH', dados)
                         .then(res=>{res.json().then(js=>{
                             alert(js)
@@ -1977,7 +2000,6 @@ function entrada_produtos(t){
             "custo": "${custo}",
             "valor": "${valor}"
         }`
-        console.log(dados)
 
         request('/manager/api/v1/entrada_produtos/', 'POST', dados)
         .then(res=>{res.json().then(js=>{
@@ -2277,7 +2299,6 @@ async function get_config() {
             btnPmvAdmin.addEventListener('click', function(){
                 var conf = confirm(`Deseja tornar ${capitalize(nome)} um ADMIN ?`)
                 if (conf){
-                    console.log(mat)
                     request('/manager/api/v1/alterar_permissao/?mat='+mat, 'POST')
                     .then(res=>{
                         if(res.ok){
@@ -2308,7 +2329,6 @@ async function get_config() {
 }
 
 function estoque_negativo(t){
-    console.log(t.checked)
 
 }
 
@@ -2355,3 +2375,168 @@ function newFunc(t){
         })
     }
 }
+
+// Peças
+async function get_pecas() {
+    fetch(api + '/manager/api/v1/get_pecas/?cr=' + cr)
+    .then(res=>{
+        res.json()
+        .then(res=>{
+            for(var x = 0; x < res.length; x++){
+                const tr = document.createElement('tr')
+
+                const id = document.createElement('td')
+                id.textContent = res[x][0]
+                id.classList.add('text-truncate')
+                
+                const nome = document.createElement('td')
+                nome.classList.add('text-truncate')
+                nome.textContent = res[x][1]
+
+                const custo = document.createElement('td')
+                custo.textContent = res[x][2]
+                
+                const valor = document.createElement('td')
+                valor.textContent = res[x][3]
+
+                // const alerta = document.createElement('td')
+                // alerta.textContent = res[x][4]
+
+                const quantidade = document.createElement('td')
+                quantidade.textContent = res[x][4]
+
+                const btngp = document.createElement('div')
+                btngp.classList.add('btn-group')
+                const btns = document.createElement('td')
+                btns.appendChild(btngp)
+
+                // Buttons
+                const btnEditar = document.createElement('button')
+                btnEditar.classList.add('btn')
+                btnEditar.classList.add('btn-sm')
+                btnEditar.classList.add('btn-secondary')
+                var icon = document.createElement('i')
+                icon.classList.add('bi')
+                icon.classList.add('bi-box-arrow-up-right')
+                btnEditar.appendChild(icon)
+
+                const btnRemov = document.createElement('button')
+                btnRemov.classList.add('btn')
+                btnRemov.classList.add('btn-sm')
+                btnRemov.classList.add('btn-danger')
+                var icon = document.createElement('i')
+                icon.classList.add('bi')
+                icon.classList.add('bi-trash-fill')
+                btnRemov.appendChild(icon)
+
+                btngp.appendChild(btnEditar)
+                btngp.appendChild(btnRemov)
+
+                tr.appendChild(id)
+                tr.appendChild(nome)
+                tr.appendChild(custo)
+                tr.appendChild(valor)
+                // tr.appendChild(alerta)ssss
+                tr.appendChild(quantidade)
+                tr.appendChild(btns)
+
+                document.getElementById('tbody').appendChild(tr)
+            }
+        })
+    })
+}
+
+
+// JQuery ==================================================
+
+$(document).ready(function(){
+    $("#busca").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#table tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+});
+
+$(document).ready(function(){
+    $("#busca").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#table tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+});
+
+
+ $(document).ready(function(){
+    $("#buscarAbertas").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#tbAbertas tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+});
+
+$(document).ready(function(){
+    $("#buscaAll").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#tbAll tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+});
+
+$(document).ready(function(){
+    $("#buscaExp").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#tbExp tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+});
+
+$(document).ready(function(){
+    $("#searchClient").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#listClient li").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+});
+
+$(document).ready(function(){
+    $("#busca").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#table tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+});
+    
+$(document).ready(function(){
+    $("#busca").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#table tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+});
+    
+$(document).ready(function(){
+    $("#buscaitem").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#listProd tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+});
+
+
+// INPUTS MASKS
+$(document).ready(function(){
+    $(".tel-mask").inputmask("(99) 99999-9999");
+});
+
+$(document).ready(function(){
+    $(".money-mask").inputmask("currency");
+});

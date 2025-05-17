@@ -3,28 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta theme-color="#2B3035">
-    <title>Hubbix Manager</title>
-    <script src="../js/manager.js"></script>
-    
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="import" href="/manager/caixa.html">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
     <!-- Favicon -->
     <link rel="icon" href="../img/newFav.png">
 
     <!-- Local Arch -->
     <link rel="stylesheet" href="../css/base_manager.css">
-    
-    <!-- Outros Modulos (JQUERY, CHARTJS) -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
-    <!-- Jquery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body data-bs-theme="dark">
     <div class="p-2">
@@ -40,7 +26,7 @@
                     <p class="fs-5 fw-bold">Abrir Caixa</p>
                     <form id="formABC" class="d-flex flex-column gap-1">
                         <input class="form-control" id="mattroco" onblur="conferTroco(this)" placeholder="Matricula" type="number" name="mat" required>
-                        <input class="form-control" id="troco" placeholder="Troco" type="text" name="valor" required>
+                        <input class="form-control money-mask" id="troco" placeholder="Troco" type="text" name="valor" required>
                         <button class="btn btn-success" id="btnAbrirCaixa" type="button" onclick="abrirCaixa(this)" disabled>Abrir</button>
                     </form>
                 </div>
@@ -48,21 +34,21 @@
                     <p class="fs-5 fw-bold">Aplicar Valor</p>
                     <form class="d-flex flex-column gap-1">
                         <input class="form-control" id="aplicarMat" placeholder="Matricula" onblur="conferMatricula(this)" type="number" name="mat" required>
-                        <input class="form-control" id="aplicarValor" placeholder="Valor" type="text" name="valor" required>
+                        <input class="form-control money-mask" id="aplicarValor" placeholder="Valor" type="text" name="valor" required>
                         <button class="btn btn-success" type="button" onclick="aplicarVlr(this)">Aplicar</button>
                     </form>
                 </div>
                 <div class="card p-4">
-                    <p class="fs-5 fw-bold">Retirar Valor</p>
+                    <p class="fs-5 fw-bold">Despesas e Sangrias</p>
                     <form class="d-flex flex-column gap-1">
                         <input class="form-control" id="retirarMat" placeholder="Matricula" onblur="conferMatricula(this)" type="number" name="mat" required>
                         <select class="form-select" name="motivo" id="retirarMotivo" onchange="motivoF(this)">
                             <option>Sangria</option>
-                            <option>Outro</option>
+                            <option>Despesa</option>
                         </select>
-                        <input class="form-control" id="motivoIn" placeholder="Outro Motivo" type="text" name="motivoDet" hidden>
-                        <input class="form-control" id="retirarV" placeholder="Valor" type="text" name="valor" required>
-                        <button class="btn btn-success" type="button" onclick="retirarValor(this)">Retirar</button>
+                        <input class="form-control" id="motivoIn" placeholder="Qual a despesa?" type="text" name="motivoDet" hidden>
+                        <input class="form-control" id="retirarV" placeholder="Valor" type="number" name="valor" required>
+                        <button class="btn btn-success" type="button" onclick="adicionar_despesa(this)">Retirar</button>
                     </form>
                 </div>
             </div>
@@ -70,30 +56,36 @@
                 <p class="fs-5 fw-bold">Fechamento</p>
                 <form class="d-flex flex-column gap-1">
                     <input class="form-control" id="fecharMat" placeholder="Matricula" onblur="conferMatricula(this)" type="number" name="mat" required>
-                    <input class="form-control" value="Dinheiro: R$" type="text" id="dinheiro" disabled>
-                    <input class="form-control" value="Debito: R$" type="text" id="debito" disabled>
-                    <input class="form-control" value="Crédito: R$" type="text" id="credito" disabled>
-                    <input class="form-control" value="Pix: R$" type="text" id="pix" disabled>
-                    <input class="form-control" value="Total: R$" type="text" id="total" disabled>
-                    <input class="form-control" value="Saidas: R$" type="text" id="saidas" disabled>
-                    <input class="form-control" value="Abertura: R$" type="text" id="abertura" disabled>
+                    <input class="form-control" value="Dinheiro: " type="text" id="dinheiro" disabled>
+                    <input class="form-control" value="Debito: " type="text" id="debito" disabled>
+                    <input class="form-control" value="Crédito: " type="text" id="credito" disabled>
+                    <input class="form-control" value="Pix: " type="text" id="pix" disabled>
+                    <input class="form-control" value="Total: " type="text" id="total" disabled>
+                    <input class="form-control" value="Despesas: " type="text" id="despesas" disabled>
+                    <input class="form-control" value="Abertura: " type="text" id="abertura" disabled>
                     <br>
-                    <button class="btn btn-danger" type="button" onclick="fecharCaixa(this)">Fechar Caixa</button>
+                    <button class="btn btn-danger" type="button" onclick="fechar_caixa(this)">Fechar Caixa</button>
                 </form>
             </div>
             <div class="card p-4" style="flex-grow: 1;">
-                <p class="fs-5 fw-bold">Saidas <br> <span class="fs-6 fw-light">Motivo - Valor - Data</span></p>
+                <p class="fs-5 fw-bold">Despesas <br> <span class="fs-6 fw-light">Motivo - Valor - Data</span></p>
                 <ul class="list-group" id="saidasCaixa"></ul>
             </div>
         </div>
-        <script>
-            async function start(){
-                await conferCaixa()
-                await getSaidasCaixa()
-                await calc()
-            }
-            start()
-        </script>
+        
     </div>
+
+    <!-- Toast -->
+    <div id="snackbar"></div>
+
+    <!-- Scripts -->
+    
+    <!-- Jquery --> <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"></script>
+    <!-- Chartjs --><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script src="../js/manager.js"></script>
+    <script>conferencia_de_caixa(); get_despesas(); calc()</script>
 </body>
 </html>
