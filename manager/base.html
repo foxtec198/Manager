@@ -16,26 +16,18 @@
     <link rel="stylesheet" href="../css/base_manager.css">
 </head>
 <body data-bs-theme="dark">
-    <!-- <div class="m-2 alert alert-success alert-dismissible fade show" role="alert">
-        <span>
-            Nossa equipe deseja um feliz natal e boas festas! 🎅🏻🍒
-        </span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div> -->
+    <div class="d-flex h-100">
+        <div class="flex-adorno mobile-hide">
+            <img src="../img/laco.png" alt="adorno" class="adorno">
+        </div>
 
-    <div class="d-flex gap-2 p-2 h-100" style="margin-bottom: 90px;">
-        <!-- <div style="position: absolute;">
-            <img src="../img/gorro.svg" alt="gorro papai noel" class="gorro">
-        </div> -->
-
-        <div class="card overflow-hidden mobile-hide" style="min-width: 180px;">
+        <div class="d-flex flex-column overflow-hidden mobile-hide nv" style="min-width: 180px;">
             <span class="d-flex gap-2 flex-column w-100 align-items-center justify-content-center mt-3">
                 <img id="logoBase" class="logo img-fluid object-fit-contain placeholder">
-                <span class="fw-bold p-2 mb-5 text-center rounded-pill placeholder" id="nomeLoja" style="font-size: 14px;">,
+                <span class="p-2 mb-5 text-center rounded-pill placeholder neon-text" id="nomeLoja" style="font-size: 13px;">,
                     Nome da Loja
                 </span>
             </span>
-            <br>
             <button onclick="change_screen('caixa', this)" class="btnM menu-item menu-caixa"><i class="bi bi-box-seam-fill"></i> Caixa</button>
             <button onclick="change_screen('vendas', this)" class="btnM menu-item menu-vendas"><i class="bi bi-graph-up-arrow"></i> Vendas</button>
             <button onclick="change_screen('os', this)" class="btnM menu-item menu-os"><i class="bi bi-file-earmark-zip-fill"></i> OS's</button>
@@ -44,17 +36,16 @@
             <button onclick="change_screen('pecas', this)" class="btnM menu-item menu-pecas" hidden><i class="bi bi-gear-fill"></i> Peças</button>
             <button onclick="change_screen('relatorios', this)" class="btnM menu-item menu-relatorios"><i class="bi bi-microsoft"></i> Relatórios</button>
             <hr>
-            <!-- <button onclick="changeWin('/manager/suporte')" class="btnM">Suporte</a> -->
             <button onclick="change_screen('config', this)" class="btnM menu-item menu-config">Configurações</button>
             <button onclick="logout()" class="btnM-exit">Sair</button>
             <br>
         </div>
-        <iframe class="card" src="/manager/caixa.html" id="frame_screen" width="100%" height="100%" frameborder="0"></iframe>
-        
-        <br>
-    </div>
 
-    <br class="mobile">
+        <div class="d-flex flex-column w-100">
+            <marquee style="margin-top: 10px;" class="d-flex gap-4" loop direction="left" id="mq"></marquee>
+            <iframe class="p-2" src="/manager/caixa.html" id="frame_screen" width="100%" height="85%" frameborder="0"></iframe>
+        </div>
+    </div>
 
     <div class="navBot mobile">
         <div class="d-flex flex-row justify-content-around g-4">
@@ -96,6 +87,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <script src="../js/manager.js"></script>
-    <script> get_loja(); restore_screen() </script>
+    <script> get_loja(); restore_screen(); datas_comemorativas('Feliz dia dos namorados! 💍💘', '12/06/2025') </script>
 </body>
 </html>

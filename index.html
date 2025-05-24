@@ -28,18 +28,18 @@
     </nav>
 
     <div class="d-flex justify-content-center align-items-center h-100">
-        <form class="form">
+        <form class="form" id="form_login">
             <span class="input-span">
                 <label for="email" class="label">Matrícula</label>
-                <input type="number" name="matricula" id="mat"/>
+                <input type="number" name="matricula" id="mat" required/>
             </span>
             <span class="input-span">
                 <label for="password" class="label">Senha</label>
-                <input type="password" name="pwd" id="pwd"/>
+                <input type="password" name="pwd" id="pwd" required/>
             </span>
             <!-- <span class="span"><a href="#">Esqueceu a senha?</a></span> -->
             <br>
-            <input class="submit" type="button" value="Entrar" onclick="login()"/>
+            <input class="submit" type="submit" value="Entrar"/>
             <span class="span">Não tem conta? <a href="#">Crie uma</a></span>
         </form>
 
@@ -51,9 +51,19 @@
     
     <!-- Scripts -->
     <!-- Jquery --> <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"></script>
+
     <!-- Chartjs --><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <script src="../js/manager.js"></script>
+    <script>
+        document.getElementById('form_login').addEventListener("submit", function (e){
+            e.preventDefault()
+
+            login()  
+        })
+
+    </script>
 </body>
 </html>

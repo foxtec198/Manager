@@ -17,7 +17,7 @@
 <body data-bs-theme="dark">    
     <!-- Modal -->
     <div class="modal fade modal-xl" id="staticBackdrop" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true"> 
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">Nova Venda</h1>
@@ -29,8 +29,11 @@
                             <div class="d-flex flex-column border rounded p-2" style="flex-grow: 1; flex-basis: 200px; max-height: 300px; overflow-x: auto;">
                                 <label for="selProd" class="fs-6"><i class="bi bi-box-seam-fill"></i> Selecione o produto:</label>
                                 <div class="input-group mb-3 p-2">
-                                    <input class="form-control" placeholder="Buscar item" id="buscaitem">
                                     <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
+                                    <div class="form-floating">
+                                        <input class="form-control" placeholder="Buscar item" id="buscaitem">
+                                        <label for="buscaitem">Buscar item</label>
+                                    </div>
                                 </div>
                                 <table class="table" id="listProd">
                                     <thead>
@@ -49,21 +52,32 @@
                         </div>
                         <div class="d-flex flex-wrap border rounded p-2 gap-2">
                             <div class="d-flex flex-column p-2" style="flex-grow: 1; flex-basis: 400px;">
-                                <input type="text" placeholder="Valor: R$" class="form-control" id="valorProd" disabled>
+                                <div class="form-floating">
+                                    <input type="text" placeholder="Valor: R$" class="form-control" id="valorProd" disabled>
+                                    <label for="valorProd">Valor: R$</label>
+                                </div>
                             </div>
                             <div class="d-flex flex-column p-2" style="flex-grow: 1; flex-basis: 400px;">
-                                <input type="number" placeholder="Matricula" class="form-control" id="matricula" onblur="conferMatricula(this)">
+                                <div class="form-floating">
+                                    <input type="number" placeholder="Matricula" class="form-control" id="matricula" onblur="conferMatricula(this)">
+                                    <label for="matricula">Matricula</label>
+                                </div>
                             </div>
                             <div class="d-flex align-items-center">
                                 <div class="d-flex flex-column p-2" style="flex-grow: 1; flex-basis: 200px;">
-                                    <input type="text" placeholder="CPF" class="form-control" onblur="conferCPFNewVenda(this)" maxlength="11" minlength="11" id="cpf">
+                                    <div class="form-floating">
+                                        <input type="text" placeholder="CPF" class="form-control cpf-mask" onblur="conferCPFNewVenda(this)" id="cpf">
+                                        <label for="cpf">CPF</label>
+                                    </div>
                                 </div>
-                                <div class="spinner-border spinner-border-sm" id="ldgCPF" role="status" hidden>
-
-                                </div>
+                                <div class="spinner-border spinner-border-sm" id="ldgCPF" role="status" hidden></div>
                             </div>
                             <div class="d-flex flex-column p-2" style="flex-grow: 1; flex-basis: 200px;">
-                                <input type="text" placeholder="Desconto" class="form-control money-mask" maxlength="11" id="desconto">
+                                <div class="form-floating">
+                                    <input type="text" placeholder="Desconto" class="form-control money-mask" maxlength="11" id="desconto">
+                                    <label for="desconto">Desconto</label>
+                                </div>
+                                
                             </div>
                             <div class="d-flex flex-column p-2" style="flex-grow: 1; flex-basis: 200px;">
                                 <div class="input-group mb-3">
@@ -87,57 +101,66 @@
         </div>
     </div>
 
+    <!-- Corpo Vendas -->
     <div class="d-flex flex-column p-2 gap-2">
         <div class="d-flex p-2 justify-content-between align-items-center flex-wrap-reverse">
-            <p style="flex-grow: 1; flex-basis: 200px;" class="fs-2 fw-bold"></i> Vendas</p>
+            <p style="flex-grow: 1; flex-basis: 200px;" class="fs-2 fw-bold">Vendas.</p>
             <button onclick="zerarcart()" data-bs-toggle="modal" data-bs-target="#staticBackdrop" class="btn btn-success mobile"><i class="bi bi-plus-circle-fill"></i></a>
             <button onclick="zerarcart()" data-bs-toggle="modal" data-bs-target="#staticBackdrop" class="btn btn-success btn-sm mobile-hide"><i class="bi bi-plus-circle-fill"></i> Nova Venda</a>
         </div>
     
         <div class="d-flex gap-2 flex-wrap">
-            <div class="d-flex flex-column p-2 border rounded bg-blue metric" style="flex-grow: 1; flex-basis: 10px;">
-                <div class="d-flex gap-1">
+            <!-- Vendas Mes -->
+            <div class="sell_card azul">
+                <div class="topo text-truncate">
                     <i class="bi bi-cart4"></i>
                     <p>Vendas Mês</p>
                 </div>
-                <p class="fs-4 fw-bold text-center" id="vendasMes">
+                <p class="valor" id="vendasMes">
                     <span class="spinner-border spinner-border-sm text-light" role="status"></span>
                 </p>
             </div>
-            <div class="d-flex flex-column p-2 border rounded bg-green2 metric" style="flex-grow: 1; flex-basis: 10px;">
-                <div class="d-flex gap-1">
-                    <i class="bi bi-brightness-alt-high-fill"></i>
-                    <p>Vendas Hoje</p>
 
+            <!-- Vendas Hoje -->
+            <div class="sell_card verde-escuro">
+                <div class="topo text-truncate">
+                    <i class="bi bi-calendar-event-fill"></i>
+                    <p>Vendas Hoje</p>
                 </div>
-                <p class="fs-4 fw-bold text-center" id="vendasDia">
+                <p class="valor" id="vendasDia">
                     <span class="spinner-border spinner-border-sm text-light" role="status"></span>
                 </p>
             </div>
-            <div class="d-flex flex-column p-2 border rounded bg-violet metric" style="flex-grow: 1; flex-basis: 10px;">
-                <div class="d-flex gap-1">
+
+            <!-- Vendas Pix -->
+            <div class="sell_card roxo">
+                <div class="topo text-truncate">
                     <i class="bi bi-x-diamond-fill"></i>
                     <p>Pix</p>
                 </div>
-                <p class="fs-4 fw-bold text-center" id="pix">
+                <p class="valor" id="pix">
                     <span class="spinner-border spinner-border-sm text-light" role="status"></span>
                 </p>
             </div>
-            <div class="d-flex flex-column p-2 border rounded bg-orange metric" style="flex-grow: 1; flex-basis: 10px;">
-                <div class="d-flex gap-1">
+
+            <!-- Vendas Cartoes -->
+            <div class="sell_card laranja">
+                <div class="topo text-truncate">
                     <i class="bi bi-credit-card-2-front-fill"></i>
                     <p>Cartões</p>
                 </div>
-                <p class="fs-4 fw-bold text-center" id="cards">
+                <p class="valor" id="cards">
                     <span class="spinner-border spinner-border-sm text-light" role="status"></span>
                 </p>
             </div>
-            <div class="d-flex flex-column p-2 border rounded bg-green metric" style="flex-grow: 1; flex-basis: 10px;">
-                <div class="d-flex gap-1">
+
+            <!-- Vendas Dinehiro -->
+            <div class="sell_card verde">
+                <div class="topo text-truncate">
                     <i class="bi bi-coin"></i>
                     <p>Dinheiro</p>
                 </div>
-                <p class="fs-4 fw-bold text-center" id="dinheiro">
+                <p class="valor" id="dinheiro">
                     <span class="spinner-border spinner-border-sm text-light" role="status"></span>
                 </p>
             </div>
@@ -146,7 +169,10 @@
         <div>
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
-                <input id="busca" type="text" class="form-control" placeholder="Buscar Venda" aria-label="Username" aria-describedby="basic-addon1">
+                <div class="form-floating">
+                    <input id="busca" type="text" class="form-control" placeholder="Buscar Venda" aria-label="Username" aria-describedby="basic-addon1">
+                    <label for="busca">Buscar Venda</label>
+                </div>
             </div>
             <div class="card p-2 overflow-auto" id="divTableVendas">
                 <div class="d-flex w-100 align-items-center p-5 justify-content-center">

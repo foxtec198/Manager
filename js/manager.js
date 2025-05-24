@@ -2,18 +2,22 @@ var div = document.createElement('div')
 var cart = []
 var statusM = []
 var cont_status = 0
-var spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
+var spinner = '<span id="spin_ldg" class="spinner-border spinner-border-sm text-light" role="status"></span>'
 green = '#5E8B60'
 
 
 sessionStorage.setItem('filterRes', 'hoje')
 var filterRes = sessionStorage.getItem('filterRes')
 
-// var api = 'https://api.hubbix.com.br/manager/v1/'
-var api = 'http://localhost:9560/manager/v1/'
+// server = "https://api.hubbix.com.br"
+server = "http://localhost:9560"
+
+var api = server + '/manager/v1/'
 
 cr = sessionStorage.getItem('cr')
 gc = sessionStorage.getItem('gc')
+config_pecas = sessionStorage.getItem('pecas') === "true"
+config_estoque = sessionStorage.getItem('estoque') === "true"
 
 // function openCalc(){
 //     const divCalc = document.getElementById('divCalc')
@@ -27,6 +31,56 @@ gc = sessionStorage.getItem('gc')
 //         btnCalc.innerHTML = '<i class="bi bi-caret-left-fill"></i>'
 //     }
 // }
+
+function datas_comemorativas(msg, data){
+    for (let i = 0; i < 100; i++){
+        var sp = document.createElement('span')
+        sp.classList.add('badge', 'rounded-pill', 'px-4')
+        sp.style.background = '#ffc8dd'
+        sp.style.color = '#333'
+        sp.style.fontSize = '14px'
+        sp.textContent = data
+    
+        var sp2 = document.createElement('span')
+        sp2.classList.add('badge', 'rounded-pill', 'px-4')
+        sp2.style.background = '#edede9'
+        sp2.style.fontSize = '14px'
+        sp2.style.color = '#333'
+        sp2.textContent = msg
+    
+        document.getElementById('mq').appendChild(sp2)
+        document.getElementById('mq').appendChild(sp)
+    }
+}
+
+function imgPreview(file, prev){
+    const fileInput = document.getElementById(file)
+    const preview = document.getElementById(prev)
+
+    fileInput.addEventListener('change', function () {
+        const file = this.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        }
+    });
+
+}
+
+function limpar_pontuacao(str) {
+    somenteNumeros = str.replace(/,/g, "")
+    return somenteNumeros
+}
+
+function limpar_float(str) {
+  return str.replace(/[,]/g, "");
+}
 
 function toast(msg, type=null){
     tst = document.getElementById("snackbar");
@@ -49,16 +103,17 @@ async function login(){
     if(mat){
         if(pwd){
             ldg()
-            const res = await fetch(api + `login?mat=${mat}&&pwd=${pwd}`, {method:'POST'})
-            const js = await res.json()
-            if(res.ok){
-                sessionStorage.setItem('cr', js['cr'])
-                sessionStorage.setItem('gc', js['gc'])
+            const req = await fetch(api + `login?mat=${mat}&&pwd=${pwd}`, {method:'POST'})
+            const res = await req.json()
+            if(req.ok){
+                sessionStorage.setItem('cr', res['cr'])
+                sessionStorage.setItem('gc', res['gc'])
+                sessionStorage.setItem('pecas', res['pecas'])
+                sessionStorage.setItem('estoque', res['estoque'])
+                sessionStorage.setItem('perm', res['perm'])
+
                 document.location = '/manager/base.html'
-            }else{
-                closeLdg()
-                toast(js)
-            }
+            }else{closeLdg(); toast(res)}
         }else{toast('Senha vazia')}
     }else{toast("Matricula vazia")}
 
@@ -94,10 +149,10 @@ function request(url, method='GET', json){
     return fetch(api + url, options)
 }
 
-function sendForm(url, form){
+function sendForm(url, form, method="POST"){
     if(!form){
         var options = {
-            method: 'POST',
+            method: method,
             headers: {
                 // 'Content-Type': 'multipart/form-data',
                 'cr' : `${cr}`,
@@ -106,9 +161,8 @@ function sendForm(url, form){
         };
     }else{
         var options = {
-            method: 'POST',
+            method: method,
             headers: {
-                // 'Content-Type': 'multipart/form-data',
                 'cr' : `${cr}`,
                 'gc' : `${gc}`
             },
@@ -180,19 +234,18 @@ function capitalize(string){
     return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
-function changeWin(win){
-    const changer = document.getElementById('changer')
-
-    changer.src = win
-}
-
 // Troca e memoriza a screen
 function change_screen(screnn, t=null){
     others = document.querySelectorAll('.menu-item')
     others.forEach(element => {
         element.style.background = null
+        element.style.color = '#fff';
     });
-    if(t){t.style.background = green}
+    if(t){
+        t.style.background = "rgba(41, 201, 108, 0.08)";
+        t.style.color = '#2ecc71';
+        t.style.boxShadow = "inset 0 0 0 1px #2ecc71aa, 0 0 6px #2ecc7190;"
+    }
     frame = document.getElementById('frame_screen')
     sessionStorage.setItem('frame', `/manager/${screnn}.html`)
     frame.src = `/manager/${screnn}.html`
@@ -207,7 +260,10 @@ function restore_screen(){
         txt1 = frame.replace('/manager/', '')
         txt2 = txt1.replace('.html', '')
         frameWidget.src = frame
-        document.querySelector(`.menu-${txt2}`).style.background = green
+        const t = document.querySelector(`.menu-${txt2}`)
+        t.style.background = "rgba(41, 201, 108, 0.08)";
+        t.style.color = '#2ecc71';
+        t.style.boxShadow = "inset 0 0 0 1px #2ecc71aa, 0 0 6px #2ecc7190;"
     }
 }
 
@@ -219,6 +275,58 @@ function inform(msg){
 
 function to_real(valor){
     return valor.toLocaleString('pt-br', {style:'currency', currency:'BRL'})
+}
+
+function to_real_no_cents(valor){
+  return valor.toLocaleString('pt-br', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+}
+
+function to_CPF(cpf) {
+  // Remove tudo que não for número
+  const somenteNumeros = cpf.replace(/\D/g, "")
+
+//   if(somenteNumeros.length === 14){return to_CNPJ(cpf)}
+  if(somenteNumeros.length < 11){return false}
+
+  // Aplica a máscara
+  return somenteNumeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+}
+
+function to_CNPJ(cnpj) {
+  // Remove tudo que não for número
+  const somenteNumeros = cnpj.replace(/\D/g, "")
+
+  // Aplica a máscara
+  return somenteNumeros.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3\\$4-$5");
+}
+
+function to_tel(tel){
+    somenteNumeros = tel.replace(/\D/g, "")
+    
+    if(tel.length == 8){
+        somenteNumeros = somenteNumeros.replace(/(\d{4})(\d{4})/, "$1-$2")
+    }else if(tel.length == 9){
+        somenteNumeros = somenteNumeros.replace(/(\d{5})(\d{4})/, "$1-$2")
+    }else if(tel.length == 10){
+        somenteNumeros = somenteNumeros.replace(/(\d{2})(\d{4})(\d{4})/, "($1)$2-$3")
+    }else if(tel.length == 11){
+        somenteNumeros = somenteNumeros.replace(/(\d{2})(\d{5})(\d{4})/, "($1)$2-$3")
+    }else{
+        somenteNumeros = false
+    }
+    
+    return somenteNumeros 
+}
+
+function liberar_button(btn){
+    if(btn.disabled){
+        btn.disabled = ''
+    }
 }
 
 async function get_loja(){
@@ -238,7 +346,7 @@ async function get_loja(){
 
 async function conferCpf(inp){
     var cpf = await inp.value
-    const res = await request(`/manager/api/v1/conferir_cpf/?id=${cpf}`)
+    const res = await request("conferir_cpf", "POST", {'cpf':cpf})
     const js = await res.json()
     return js
 }
@@ -319,7 +427,7 @@ async function statusCaixa(){
 
 async function abrirCaixa(t){
     var mat = document.getElementById('mattroco').value
-    var troco = document.getElementById('troco').value
+    var troco = limpar_float(document.getElementById('troco').value)
 
     if(mat && troco){
         t.innerHTML = spinner
@@ -346,7 +454,7 @@ async function adicionar_despesa(t){
     var mat = document.getElementById('retirarMat').value
     var motivo = document.getElementById('retirarMotivo').value
     var desc = document.getElementById('motivoIn').value
-    var valor = document.getElementById('retirarV').value
+    var valor = limpar_float(document.getElementById('retirarV').value)
 
     if(mat && valor && motivo){
         if(motivo === 'Despesa'){motivo = desc}
@@ -361,7 +469,7 @@ async function adicionar_despesa(t){
 
 async function aplicarVlr(t){
     var mat = document.getElementById('aplicarMat').value
-    var valor = document.getElementById('aplicarValor').value
+    var valor = limpar_float(document.getElementById('aplicarValor').value)
 
     if(mat && valor){
         t.innerHTML = spinner
@@ -409,6 +517,7 @@ async function getSaidas(){
     <table class="table table-hover" id="table">
         <thead>
             <td>Nome</td>
+            <td>Tipo</td>
             <td>Valor</td>
             <td>Cliente</td>
             <td>Pagamento</td>
@@ -427,6 +536,21 @@ async function getSaidas(){
             const nome = document.createElement('td')
             nome.classList.add('text-truncate')
             nome.textContent = item['nome']
+
+            var tipov = item['tipo']
+            const tipoTd = document.createElement('td')
+            tipoTd.classList.add('text-truncate')
+
+            const tipo = document.createElement('span')
+            tipo.classList.add('w-100')
+
+            if(tipov == 'PRODUTOS'){
+                tipo.classList.add("badge", "text-bg-success")
+            }else{
+                tipo.classList.add("badge", "text-bg-primary")
+            }
+            tipo.textContent = tipov
+            tipoTd.appendChild(tipo)
     
             const valor = document.createElement('td')
             valor.textContent = to_real(item['valor'])
@@ -503,6 +627,7 @@ async function getSaidas(){
             act.appendChild(btngp)
     
             tr.appendChild(nome)
+            tr.appendChild(tipoTd)
             tr.appendChild(valor)
             tr.appendChild(cliente)
             tr.appendChild(pagamento)
@@ -526,11 +651,11 @@ async function vendasPorTipo(){
     var dia = js['DIA']
     var total = dinheiro + pix + debito + credito
 
-    document.getElementById('vendasMes').textContent = to_real(total)
-    document.getElementById('vendasDia').textContent = to_real(dia)
-    document.getElementById('pix').textContent = to_real(pix)
-    document.getElementById('cards').textContent = to_real(debito + credito)
-    document.getElementById('dinheiro').textContent = to_real(dinheiro)
+    document.getElementById('vendasMes').textContent = to_real_no_cents(total)
+    document.getElementById('vendasDia').textContent = to_real_no_cents(dia)
+    document.getElementById('pix').textContent = to_real_no_cents(pix)
+    document.getElementById('cards').textContent = to_real_no_cents(debito + credito)
+    document.getElementById('dinheiro').textContent = to_real_no_cents(dinheiro)
 }
 
 async function getProds(){
@@ -544,9 +669,32 @@ async function getProds(){
             const idProd = item['id']
             const nome = item['nome']
             const valor = item['valor']
+            const quant = item['quant']
+            const alerta = item['es_min']
         
             const nomeTd = document.createElement('td')
-            nomeTd.textContent = nome
+            nomeTd.classList.add("d-flex", "align-items-center", "justify-content-between")
+            if(config_estoque){
+                if(quant <= 0){
+                    nomeTd.innerHTML = `
+                        <span>${nome}</span>
+                        <span class="badge badge-sm text-bg-danger p-1" style="font-size: 14px;">Sem estoque!</span>
+                    `
+                }else{
+                nomeTd.innerHTML = `
+                        <span>${nome}</span>
+                        <span class="badge badge-sm text-bg-success p-1" style="font-size: 14px;">${to_real(valor)}</span>
+                    `
+
+                }
+            }else{
+                nomeTd.innerHTML = `
+                        <span>${nome}</span>
+                        <span class="badge badge-sm text-bg-success p-1" style="font-size: 14px;">${to_real(valor)}</span>
+                    `
+
+            }
+
             
             const btnTd = document.createElement('td')
             const btn = document.createElement('button')
@@ -554,6 +702,9 @@ async function getProds(){
             btn.classList.add('btn-dark')
             btn.innerHTML = '<i class="bi bi-plus-square-dotted"></i>'
             btn.addEventListener('click', function(){
+                if(config_estoque){
+                    if(quant <= alerta){toast("Produto com alerta de estoque!")}
+                }
                 const vl = document.getElementById('valorProd')
                 let newvl = 0
                 if(vl.value){
@@ -582,6 +733,8 @@ async function getProds(){
                 document.getElementById('listProdAdd').appendChild(li)
                 cart.push(nome)
             })
+            if(quant <= 0 && config_estoque){btn.disabled = true}
+
             btnTd.appendChild(btn)
             tr.appendChild(nomeTd)
             tr.appendChild(btnTd)
@@ -593,37 +746,26 @@ async function getProds(){
 
 async function conferCPFNewVenda(inp) {
     var cpf = await inp.value
-    
-    if(cpf.length > 11){
-        var l = document.getElementById('ldgCPF')
-        l.hidden = ''
-        request(`/manager/api/v1/conferir_cpf/?id=${cpf}`)
-        .then(res=>{
-            res.json()
-            .then(js=>{
-                if(js === 'Sem obs'){
-                    l.hidden = 'none'
-                }else if(js === 'CPF Não cadastrado!'){
-                    l.hidden = 'none'
-                    inp.value = ''
-                    alert(js)
-                }else{
-                    l.hidden = 'none'
-                    alert(`OBSERVAÇÃO ENCONTRADA: ${js}`)
-                }
-            })
-        })
-    }else{
-        alert('CPF Incorreto!')
-        inp.value = ''
+    cpf = limpar_pontuacao(cpf)
+
+    if(cpf){
+        if(cpf.length >= 11){
+            var l = document.getElementById('ldgCPF')
+            l.hidden = ''
+            const req = await request("conferir_cpf", "POST", {'cpf':cpf})
+            const res = await req.json()
+
+            if(req.ok){l.hidden = 'none'}
+            else{toast(res, 'erro'); inp.value = '', l.hidden = 'none'}
+        }else{toast('CPF Incorreto!', 'erro'); inp.value = ''. l.hidden = 'none'}
     }
 }
 
 async function vender(){
-    var valorTotal = document.getElementById('valorProd').value
+    var valorTotal = limpar_float(document.getElementById('valorProd').value)
     var mat = document.getElementById('matricula').value
-    var cpf = document.getElementById('cpf').value
-    var desconto = document.getElementById('desconto').value
+    var cpf = limpar_pontuacao(document.getElementById('cpf').value)
+    var desconto = limpar_float(document.getElementById('desconto').value)
     var sel = document.getElementById('selPag').value
 
     var dd = {
@@ -636,13 +778,11 @@ async function vender(){
         'tipo': 'PRODUTOS' 
     }
 
-    if(mat && valorTotal && sel){
-            document.getElementById('btnVender').innerHTML = spinner
-            const req = await request("vendas", 'POST', dd)
-            const res = await req.json()
-            if(req.ok){location.reload()}
-            else{toast(res)}
-    }toast('Preencha os dados necessários!')
+    document.getElementById('btnVender').innerHTML = spinner
+    const req = await request("vendas", 'POST', dd)
+    const res = await req.json()
+    if(req.ok){location.reload()}
+    else{toast(res)}
 }
 
 function zerarcart(){
@@ -661,7 +801,7 @@ async function getDadosOs() {
             const id = item['id']
             const cpf = item['cpf']
             const nome = item['nome']
-            const telefone = item['telefone']
+            const telefone = item['tel']
             const modelo = item['modelo']
             const marca = item['marca']
             const cor = item['cor']
@@ -672,13 +812,37 @@ async function getDadosOs() {
     
             var li = document.createElement('li')
             li.classList.add('list-group-item')
+
+            var dv = document.createElement('div')
+            dv.classList.add("d-flex")
+            dv.classList.add("flex-row")
+            dv.classList.add("justify-content-between")
     
             var s = document.createElement('spam')
-            s.textContent = nome + ' - ' + cpf
+            s.classList.add('d-flex')
+            s.classList.add('flex-column')
+            if(to_CPF(cpf)){
+                s.innerHTML = `
+                    <spam class="fs-6 fw-bold text-truncate" style="max-width: 200px;">${nome}</spam>
+                    <spam style="font-size: 12px;">${to_CPF(cpf)}</spam>
+                `
+            }else{
+                s.innerHTML = `
+                    <spam class="fs-6 fw-bold text-truncate" style="max-width: 200px;">${nome}</spam>
+                    <spam class="badge text-bg-danger" style="font-size: 12px;">
+                        CPF Incorreto, Favor alterar! <a href="/manager/clientes.html">Aqui</a>
+                    </spam>
+                `
+
+            }
     
             var btnAdd = document.createElement('button')
             btnAdd.classList.add('btn')
+            btnAdd.classList.add('btn-success')
+            btnAdd.classList.add('fw-bold')
             btnAdd.textContent = '+'
+            btnAdd.type = 'button'
+
             btnAdd.addEventListener('click', function(){
                 document.getElementById("CPF").value = id
                 document.getElementById("Nome").value = nome
@@ -700,15 +864,22 @@ async function getDadosOs() {
                 document.getElementById("retirada").value = dateEnd
             })
     
-            li.appendChild(s)
-            li.appendChild(btnAdd)
+            dv.appendChild(s)
+            dv.appendChild(btnAdd)
+            li.appendChild(dv)
             ul.appendChild(li)
         })
     }else{
         var ul = document.getElementById('listClient')
         var li = document.createElement('li')
         li.classList.add('list-group-item')
-        li.textContent = 'Nenhum cliente cadastrado, bora começar ?'
+        li.innerHTML = `
+            <span>
+                Nenhum cliente cadastrado, 
+                <button class="btn btn-sm btn-success" onclick="change_screen('clientes', this)">
+                    bora começar ?
+                </button>
+            </span>`
         ul.appendChild(li)
     }
 
@@ -722,63 +893,6 @@ async function getDadosOs() {
             document.getElementById('status').appendChild(sl)
         })
     }
-    for(var x = 0; x < js4.length; x++){
-    }
-
-    // const resProds = await request('/manager/api/v1/get_prods/')
-    // const jsProd = await resProds.json()
-
-    // jsProd.forEach(res => {
-    //     const tr = document.createElement('tr')
-
-    //     const idProd = res[0]
-    //     const nome = res[1]
-    //     const valor = res[3]
-
-    //     const nomeTd = document.createElement('td')
-    //     nomeTd.textContent = nome
-        
-    //     const btnTd = document.createElement('td')
-    //     const btn = document.createElement('button')
-    //     btn.classList.add('btn')
-    //     btn.classList.add('btn-dark')
-    //     btn.innerHTML = '<i class="bi bi-plus-square-dotted"></i>'
-    //     btn.addEventListener('click', function(){
-    //         const vl = document.getElementById('valor')
-    //         let newvl = 0
-    //         if(vl.value){
-    //             newvl = (parseFloat(vl.value) + parseFloat(valor)).toFixed(1)
-    //         }else{
-    //             newvl = parseFloat(valor)
-    //         }
-    //         vl.value = newvl
-    //         const li = document.createElement('li')
-    //         li.classList.add('list-group-item')
-    //         li.classList.add('d-flex')
-    //         li.classList.add('justify-content-between')
-    //         li.classList.add('align-items-center')
-    //         li.textContent = nome
-    //         const btnRemoveItem = document.createElement('button')
-    //         btnRemoveItem.classList.add('btn')
-    //         btnRemoveItem.classList.add('btn-danger')
-    //         btnRemoveItem.innerHTML = '<i class="bi bi-trash-fill"></i>'
-    //         btnRemoveItem.addEventListener('click', function(){
-    //             document.getElementById('listProdAddsOs').removeChild(li)
-    //             vl.value = (parseFloat(vl.value) - parseFloat(valor)).toFixed(1)
-    //             cart.splice(cart.indexOf(nome), 1)
-    //         })
-
-    //         li.appendChild(btnRemoveItem)
-    //         document.getElementById('listProdAddsOs').appendChild(li)
-    //         cart.push(nome)
-    //     })
-    //     btnTd.appendChild(btn)
-    //     tr.appendChild(nomeTd)
-    //     tr.appendChild(btnTd)
-
-    //     document.getElementById('listProdOs').appendChild(tr)
-    // });
-
 
 }
 
@@ -789,10 +903,12 @@ async function getStatusOs() {
     document.getElementById('canceladas').textContent = js['CANCELADA']
     document.getElementById('semconserto').textContent = js['SEM CONSERTO']
     document.getElementById('entregues').textContent = js['ENTREGUE']
+    document.getElementById('expiradas').textContent = js['EXPIRADA']
+    document.getElementById('orcamentos').textContent = js['ORÇAMENTO']
 }
 
 async function getOsAbertas(){
-    const req = await request("os?status='ABERTA','ORCAMENTO'")
+    const req = await request("os?status='ABERTA','ORÇAMENTO'")
     const js = await req.json()
 
     // Dentro do Prazo
@@ -811,7 +927,6 @@ async function getOsAbertas(){
             const tipoOS = item['tipo']
             const imeiOS = item['imei']
             const cpfOS = item['cpf']
-            
         
             const tr = document.createElement('tr')
         
@@ -871,6 +986,7 @@ async function getOsAbertas(){
         
             btnEntregue.addEventListener('click',function(){
                 document.getElementById('idOsEntrega').value = id
+                document.getElementById('osValor').value = valorOs
                 const myModal = new bootstrap.Modal(document.getElementById('ModalEntregue'), {show:'true'})
                 myModal.show()
             })
@@ -990,8 +1106,8 @@ async function getOsAbertas(){
                 const valorOs = item['valor']
                 const statusOS = item['status']
                 const atendenteOS = item['atendente']
-                const cadastroOS = new Date(item['abertura']).toLocaleDateString("pt-br",{day:'2-digit',month:'long',hour:'2-digit',minute:'2-digit'})
-                const entregaOS = new Date(item['entrega']).toLocaleDateString("pt-br",{day:'2-digit',month:'long'})
+                const cadastroOS = item['abertura']
+                const entregaOS = item['entrega']
                 const marcaOs = item['marca']
                 const corOs = item['cor']
                 const imeiOs = item['imei']
@@ -1055,6 +1171,7 @@ async function getOsAbertas(){
             
                 btnEntregue.addEventListener('click',function(){
                     document.getElementById('idOsEntrega').value = id
+                    document.getElementById('osValor').value = valorOs
                     const myModal = new bootstrap.Modal(document.getElementById('ModalEntregue'), {show:'true'})
                     myModal.show()
                 })
@@ -1079,7 +1196,7 @@ async function getOsAbertas(){
                     document.getElementById('eosCor').value = corOs
                     document.getElementById('eosCpf').value = cpfOs
                     document.getElementById('eosImei').value = imeiOs
-                    document.getElementById('eoTipoOs').value = statusOS
+                    document.getElementById('eoTipoOs').value = capitalize(statusOS)
                     document.getElementById('eosTipoServico').value = tipoServico
             
             
@@ -1132,7 +1249,7 @@ async function getOsAbertas(){
                 btnCancelar.classList.add('btn-danger')
                 btnCancelar.addEventListener('click', async function(){
                     btnCancelar.innerHTML = spinner
-                    const req = await request("alter_status_os", "POST", {'id':id, 'status':"CANCELADA"})
+                    const req = await request("alter_status_os", "POST", {'os':id, 'status':"CANCELADA"})
                     const res = await req.json()
                     if(req.ok){location.reload()}
                     else{toast(res)}
@@ -1242,7 +1359,7 @@ async function getAllOs(){
             btnCancelar.appendChild(icon)
             new bootstrap.Tooltip(btnCancelar, {title:'Cancelar Ordem!'})
             btnCancelar.addEventListener('click', async function(){
-                const req = await request("alter_status_os", 'POST', {'id':idOs, 'status':'CANCELADA'})
+                const req = await request("alter_status_os", 'POST', {'os':id, 'status':'CANCELADA'})
                 const res = await req.json()
                 if(req.ok){location.reload()}
                 else{toast(res)}
@@ -1259,7 +1376,7 @@ async function getAllOs(){
             new bootstrap.Tooltip(btnReabrir, {title:'Download!'})
             btnReabrir.addEventListener('click', function(){
                 btnReabrir.innerHTML = spinner
-                window.location = api + `/manager/api/v1/get_os_ind/?os=${id}&&cr=${cr}`
+                window.location = api + `get_os_ind/?os=${id}&&cr=${cr}`
             })
     
             if(statusOS == 'CANCELADA'){
@@ -1286,7 +1403,6 @@ async function getAllOs(){
             document.getElementById('tbAll').appendChild(tr)  
         })
     }
-    
 }
 
 async function getMarcasOs(){
@@ -1305,7 +1421,7 @@ async function getMarcasOs(){
     }
 }
 
-function abrirOS(t){
+async function abrirOS(t){
     var id = parseInt(document.getElementById("CPF").value)
     var telefone = document.getElementById("Telefone").value
     var endereco = document.getElementById('endereco').value
@@ -1324,7 +1440,7 @@ function abrirOS(t){
     var form = new FormData()
     
     form.append('id', id)
-    form.append('telefone', telefone)
+    form.append('telefone', limpar_pontuacao(telefone))
     form.append('endereco', endereco)
     form.append('imei', imei)
     form.append('modelo', modelo)
@@ -1336,31 +1452,15 @@ function abrirOS(t){
     form.append('obs', obs)
     form.append('relato', relato)
     form.append('retirada', retirada)
-    form.append('valor', valor)
+    form.append('valor', limpar_float(valor))
     form.append('matricula', matricula)
-    form.append('statusOS', statusOS)
+    form.append('st_os', statusOS)
 
-    if(document.getElementById("Telefone").value){
-        if(document.getElementById("modelo").value){
-            if(document.getElementById("cor").value){
-                if(document.getElementById("noMarca").value){
-                        if(document.getElementById("valor").value){
-                            if(document.getElementById("matricula").value){
-                                t.innerHTML = spinner
-                                sendForm('/manager/api/v1/abrir_os/', form)
-                                .then(res=>{
-                                    res.json()
-                                    .then(js=>{
-                                        alert(js)
-                                        location.reload()
-                                    })
-                                })
-                            }else{alert('Matricula não informada!')}
-                        }else{alert('Ordem sem valor!')}
-                    }else{alert('Não indicamos trabalhar com aparelho sem marca!')}
-                }else{alert('Registre a cor do aparelho!')}
-            }else{alert('Modelo não deve estar vazio!')}
-    }else{alert('Telefone não deve estar vazio!')}
+    t.innerHTML = spinner
+    const req = await sendForm("os", form)
+    const res = await req.json()
+    if(req.ok){window.location = api + `get_os_ind?os=${res['os']}&&cr=${cr}`}
+    else{toast(res);}
 }
 
 async function entregarOs(t){
@@ -1368,14 +1468,16 @@ async function entregarOs(t){
     var idOs = document.getElementById('idOsEntrega').value
     var custo = document.getElementById('osCusto').value
     var peca = document.getElementById('osPeca').value
+    var valor = document.getElementById('osValor').value
     var pag = document.getElementById('osPag').value
     
     dd = {
         'os': idOs,
-        'custo': custo,
-        'peca': peca,
+        'custo': limpar_float(custo),
+        'peca': limpar_float(peca),
         'pagamento': pag,
         'status': 'ENTREGUE',
+        'valor': limpar_float(valor)
     }
 
     const req = await request("alter_status_os", "POST", dd)
@@ -1384,36 +1486,10 @@ async function entregarOs(t){
     else{toast(res)}
 }
 
-function addTipo(){
-    const tp = document.getElementById('tipo').value
-    var ul = document.getElementById('ul-tipo')
-    const li = document.createElement('li')
-    li.classList.add('d-flex')
-    li.classList.add('list-group-item')
-    li.classList.add('justify-content-between')
-
-    var s = document.createElement('spam')
-    s.textContent = tp
-
-    var btnExcluir = document.createElement('button')
-    btnExcluir.classList.add('btn')
-    btnExcluir.classList.add('btn-sm')
-    btnExcluir.classList.add('btn-danger')
-    btnExcluir.innerHTML = `<i class="bi bi-trash-fill"></i>`
-    btnExcluir.addEventListener('click', function(){
-        ul.removeChild(li)
-        tipo.splice(tipo.indexOf(tp), 1)
-    })
-
-    li.appendChild(s)
-    li.appendChild(btnExcluir)
-    ul.appendChild(li)
-    tipo.push(tp)
-}
-
 function addStatus(){
     if(cont_status < 21){
-        const tp = document.getElementById('status').value
+        const select = document.getElementById('status')
+        const tp = select.value
         var ul = document.getElementById('ul-status')
         const li = document.createElement('li')
         li.classList.add('d-flex')
@@ -1421,6 +1497,7 @@ function addStatus(){
         li.classList.add('justify-content-between')
     
         var s = document.createElement('spam')
+        s.classList.add("text-truncate")
         s.textContent = tp
     
         var btnExcluir = document.createElement('button')
@@ -1430,10 +1507,17 @@ function addStatus(){
         btnExcluir.innerHTML = `<i class="bi bi-trash-fill"></i>`
         btnExcluir.addEventListener('click', function(){
             ul.removeChild(li)
-            statusM.splice(statusM.indexOf(tp), 1)
             cont_status -= 1
+            statusM.splice(statusM.indexOf(tp), 1)
+
+            opt = new Option(tp)
+            select.add(opt)
+
             document.getElementById('cont_status').textContent = `${cont_status}/21`
+            if(cont_status === 0){ul.innerHTML = `<li class="list-group-item text-center fw-bold"> Nenhum status adicionado! </li>`} 
         })
+        
+        if(cont_status === 0){ul.innerHTML = ''} 
 
         li.appendChild(s)
         li.appendChild(btnExcluir)
@@ -1441,8 +1525,11 @@ function addStatus(){
         statusM.push(tp)
         cont_status += 1
         document.getElementById('cont_status').textContent = `${cont_status}/21`
+
+        const selectedIndex = select.selectedIndex;
+        select.remove(selectedIndex)
     }else{
-        alert('Máximo de ' + cont_status + 'atingido!')
+        toast(`Máximo de ${cont_status} atingido!`)
     }
 }
 
@@ -1458,13 +1545,13 @@ async function editarOs(t){
     var servico = document.getElementById('eosTipoServico').value
     var form = {
         'id': id,
-        'cpf': cpf,
+        'cpf': limpar_pontuacao(cpf),
         'cor': cor,
         'marca': marca,
         'modelo': modelo,
         'imei': imei,
         'valor': valor,
-        'statusOS': tipoOs,
+        'status_os': tipoOs,
         'servico': servico
     }
 
@@ -1477,199 +1564,200 @@ async function editarOs(t){
 
 }
 
-// =============== Clientes
-async function get_clientes() {
-    const res = await request('/manager/api/v1/get_cliente/')
+// ====================== Clientes
+async function get_clientes(){
+    const res = await request("clientes")
     const js = await res.json()
 
-    for(var x = 0; x < js.length; x++){
-        const tr = document.createElement('tr')
+    if(res.ok){
+        js.forEach(item => {
+            const tr = document.createElement('tr')
 
-        const id = js[x][0]
-        const cpf = js[x][1]
-        const nome = js[x][2]
-        const telefone = js[x][3]
-        const modelo = js[x][4]
-        const marca = js[x][5]
-        const cor = js[x][6]
-        const endereco = js[x][7]
-        const obs = js[x][8]
-        const imei = js[x][10]
+            const id = item['id']
+            const cpf = item['cpf']
+            const nome = item['nome']
+            const telefone = item['tel']
+            const modelo = item['modelo']
+            const marca = item['marca']
+            const cor = item['cor']
+            const endereco = item['endereco']
+            const obs = item['obs']
+            const imei = item['imei']
+        
+            const idTd = document.createElement('td')
+            idTd.textContent = id
+            
+            const cpfTd = document.createElement('td')
+            cpfTd.classList.add('text-truncate')
+            if(to_CPF(cpf)){cpfTd.textContent = to_CPF(cpf)}
+            else{cpfTd.innerHTML = "<spam class='badge text-bg-danger'>CPF INCORRETO, ALTERE URGENTE!</spam>"}
 
-        const idTd = document.createElement('td')
-        idTd.textContent = id
+            
+            const nomeTd = document.createElement('td')
+            nomeTd.classList.add('text-truncate')
+            nomeTd.textContent = nome
+            
+            const telefoneTd = document.createElement('td')
+            telefoneTd.classList.add('text-truncate')
+            if(telefone.length >= 8 && telefone.length <= 11){telefoneTd.textContent = to_tel(telefone.trim())}
+            else(telefoneTd.innerHTML = "<spam class='badge text-bg-warning'>Telefone incorreto!</spam>")
+            
+            const modeloTd = document.createElement('td')
+            modeloTd.classList.add('text-truncate')
+            modeloTd.textContent = modelo
+            
+            const marcaTd = document.createElement('td')
+            marcaTd.classList.add('text-truncate')
+            marcaTd.textContent = marca
         
-        const cpfTd = document.createElement('td')
-        cpfTd.classList.add('text-truncate')
-        cpfTd.textContent = cpf
+            const corTd = document.createElement('td')
+            corTd.classList.add('text-truncate')
+            corTd.textContent = cor
         
-        const nomeTd = document.createElement('td')
-        nomeTd.classList.add('text-truncate')
-        nomeTd.textContent = nome
+            const enderecoTd = document.createElement('td')
+            enderecoTd.classList.add('text-truncate')
+            enderecoTd.textContent = endereco
+            
+            // const obsTd = document.createElement('td')
+            // obsTd.textContent = obs
         
-        const telefoneTd = document.createElement('td')
-        telefoneTd.classList.add('text-truncate')
-        telefoneTd.textContent = telefone
+            const btnWhats = document.createElement('button')
+            btnWhats.classList.add('btn')
+            btnWhats.classList.add('btn-sm')
+            btnWhats.classList.add('btn-success')
+            var icon = document.createElement('i')
+            icon.classList.add('bi')
+            icon.classList.add('bi-whatsapp')
+            btnWhats.appendChild(icon)
+            new bootstrap.Tooltip(btnWhats, {title:'Abrir contato!'})
+            btnWhats.addEventListener('click',function(){
+                window.open(`https://api.whatsapp.com/send/?phone=${telefone}`)
+            })
         
-        const modeloTd = document.createElement('td')
-        modeloTd.classList.add('text-truncate')
-        modeloTd.textContent = modelo
+            const btnEditar = document.createElement('button')
+            btnEditar.classList.add('btn')
+            btnEditar.classList.add('btn-sm')
+            btnEditar.classList.add('btn-secondary')
+            var icon = document.createElement('i')
+            icon.classList.add('bi')
+            icon.classList.add('bi-box-arrow-up-right')
+            new bootstrap.Tooltip(btnEditar, {title:'Editar!'})
+            btnEditar.appendChild(icon)
+            btnEditar.addEventListener('click', function(){
+                document.getElementById('ecId').value = id
+                document.getElementById('ecCpf').value = cpf
+                document.getElementById('ecNome').value = nome
+                document.getElementById('ecTel').value = telefone
+                document.getElementById('ecModelo').value = modelo
+                document.getElementById('ecCor').value = cor
+                document.getElementById('ecMarca').value = marca
+                document.getElementById('ecImei').value = imei
+                document.getElementById('ecEnd').value = endereco
+                document.getElementById('ecObs').value = obs
         
-        const marcaTd = document.createElement('td')
-        marcaTd.classList.add('text-truncate')
-        marcaTd.textContent = marca
-
-        const corTd = document.createElement('td')
-        corTd.classList.add('text-truncate')
-        corTd.textContent = cor
-
-        const enderecoTd = document.createElement('td')
-        enderecoTd.classList.add('text-truncate')
-        enderecoTd.textContent = endereco
+                const modalEditarCliente = new bootstrap.Modal(document.getElementById('editarClienteModal'), {show:'true'})
+                modalEditarCliente.show()
+            })
         
-        // const obsTd = document.createElement('td')
-        // obsTd.textContent = obs
-
-        const btnWhats = document.createElement('button')
-        btnWhats.classList.add('btn')
-        btnWhats.classList.add('btn-sm')
-        btnWhats.classList.add('btn-success')
-        var icon = document.createElement('i')
-        icon.classList.add('bi')
-        icon.classList.add('bi-whatsapp')
-        btnWhats.appendChild(icon)
-        new bootstrap.Tooltip(btnWhats, {title:'Abrir contato!'})
-        btnWhats.addEventListener('click',function(){
-            window.open(`https://api.whatsapp.com/send/?phone=${telefone}`)
+            const btnRemov = document.createElement('button')
+            btnRemov.classList.add('btn')
+            btnRemov.classList.add('btn-sm')
+            btnRemov.classList.add('btn-danger')
+            var icon = document.createElement('i')
+            icon.classList.add('bi')
+            icon.classList.add('bi-trash-fill')
+            new bootstrap.Tooltip(btnRemov, {title:'Excluir!'})
+            btnRemov.appendChild(icon)
+            btnRemov.addEventListener('click', async function(){
+                btnRemov.innerHTML = spinner
+                const req = await request('clientes', 'DELETE', {'id': id})
+                const res = await req.json()
+                if(req.ok){location.reload()}
+                else{toast(res)}
+            })
+        
+            const btngp = document.createElement('div')
+            btngp.classList.add('btn-group')
+            btngp.appendChild(btnWhats)
+            btngp.appendChild(btnEditar)
+            btngp.appendChild(btnRemov)
+        
+            const btns = document.createElement('td')
+            btns.appendChild(btngp)
+        
+            tr.appendChild(idTd)
+            tr.appendChild(cpfTd)
+            tr.appendChild(nomeTd)
+            tr.appendChild(telefoneTd)
+            tr.appendChild(modeloTd)
+            tr.appendChild(marcaTd)
+            tr.appendChild(corTd)
+            tr.appendChild(enderecoTd)
+            // tr.appendChild(obsTd)
+            tr.appendChild(btns)
+        
+            document.getElementById('tableClientes').appendChild(tr)
         })
-
-        const btnEditar = document.createElement('button')
-        btnEditar.classList.add('btn')
-        btnEditar.classList.add('btn-sm')
-        btnEditar.classList.add('btn-secondary')
-        var icon = document.createElement('i')
-        icon.classList.add('bi')
-        icon.classList.add('bi-box-arrow-up-right')
-        new bootstrap.Tooltip(btnEditar, {title:'Editar!'})
-        btnEditar.appendChild(icon)
-        btnEditar.addEventListener('click', function(){
-            document.getElementById('ecId').value = id
-            document.getElementById('ecCpf').value = cpf
-            document.getElementById('ecNome').value = nome
-            document.getElementById('ecTel').value = telefone
-            document.getElementById('ecModelo').value = modelo
-            document.getElementById('ecCor').value = cor
-            document.getElementById('ecMarca').value = marca
-            document.getElementById('ecImei').value = imei
-            document.getElementById('ecEnd').value = endereco
-            document.getElementById('ecObs').value = obs
-
-            const modalEditarCliente = new bootstrap.Modal(document.getElementById('editarClienteModal'), {show:'true'})
-            modalEditarCliente.show()
-        })
-
-        const btnRemov = document.createElement('button')
-        btnRemov.classList.add('btn')
-        btnRemov.classList.add('btn-sm')
-        btnRemov.classList.add('btn-danger')
-        var icon = document.createElement('i')
-        icon.classList.add('bi')
-        icon.classList.add('bi-trash-fill')
-        new bootstrap.Tooltip(btnRemov, {title:'Excluir!'})
-        btnRemov.appendChild(icon)
-        btnRemov.addEventListener('click', function(){
-            btnRemov.innerHTML = spinner
-            request('/manager/api/v1/remover_cliente/?id=' + id, 'DELETE')
-            .then(res=>{res.json().then(js=>{
-                alert(js)
-                location.reload()
-            })})
-        })
-
-        const btngp = document.createElement('div')
-        btngp.classList.add('btn-group')
-        btngp.appendChild(btnWhats)
-        btngp.appendChild(btnEditar)
-        btngp.appendChild(btnRemov)
-
-        const btns = document.createElement('td')
-        btns.appendChild(btngp)
-
-        tr.appendChild(idTd)
-        tr.appendChild(cpfTd)
-        tr.appendChild(nomeTd)
-        tr.appendChild(telefoneTd)
-        tr.appendChild(modeloTd)
-        tr.appendChild(marcaTd)
-        tr.appendChild(corTd)
-        tr.appendChild(enderecoTd)
-        // tr.appendChild(obsTd)
-        tr.appendChild(btns)
-
-        document.getElementById('tableClientes').appendChild(tr)
     }
 }
 
 async function getMarcasClientes(){
-    const res2 = await request('/manager/api/v1/get_marcas/')
+    const res2 = await request('marcas')
     const js2 = await res2.json()
-    for(var x = 0; x < js2.length; x++){
-        var sl = document.createElement('option')
-        sl.textContent = js2[x][0]
-        document.getElementById('ncMarca').appendChild(sl)
-
-        var sl2 = document.createElement('option')
-        sl2.textContent = js2[x][0]
-        document.getElementById('ecMarca').appendChild(sl2)
+    if(res2.ok){
+        js2.forEach(item => {
+            var sl = document.createElement('option')
+            sl.textContent = item['marca']
+            document.getElementById('ncMarca').appendChild(sl)
+        
+            var sl2 = document.createElement('option')
+            sl2.textContent = item['marca']
+            document.getElementById('ecMarca').appendChild(sl2)
+        })
     }
 }
     
-function newClient(t){
-    var cpf = document.getElementById('ncCpf').value
+async function newClient(t){
+    var cpf = limpar_pontuacao(document.getElementById('ncCpf').value)
     var nome = document.getElementById('ncNome').value
     var tel = document.getElementById('ncTel').value
+    var tel2 = document.getElementById('ncTel2').value
     var modelo = document.getElementById('ncModelo').value
     var cor = document.getElementById('ncCor').value
     var marca = document.getElementById('ncMarca').value
     var imei = document.getElementById('ncImei').value
     var end = document.getElementById('ncEnd').value
     var obs = document.getElementById('ncObs').value
-    
-    if(nome){
-        if(tel){
-            if(modelo){
-                if(cor){
-                    if(marca){
-                        if(!cpf){cpf = 0}
-                        var dados = `{
-                            "cpf": "${cpf}",
-                            "nome": "${nome}",
-                            "tel": "${tel}",
-                            "modelo": "${modelo}",
-                            "cor": "${cor}",
-                            "marca": "${marca}",
-                            "imei": "${imei}",
-                            "end": "${end}",
-                            "obs": "${obs}"
-                        }`
-                        t.innerHTML = spinner
-                        request('/manager/api/v1/cadastrar_cliente/', 'POST', dados)
-                        .then(res=>{res.json().then(js=>{
-                            alert(js)
-                            location.reload()
-                        })})
-                    }else{alert('Marca obrigatória!')}
-                }else{alert('Cor obrigatória!')}
-            }else{alert('Modelo obrigatório!')}
-        }else{alert('Telefone não deve estar vazio!')}
-    }else{alert('Nome não deve estar vázio!')}
+
+    var dados = {
+        "cpf": cpf,
+        "nome": nome,
+        "tel": limpar_pontuacao(tel),
+        "tel2": limpar_pontuacao(tel2),
+        "modelo": modelo,
+        "cor": cor,
+        "marca": marca,
+        "imei": imei,
+        "end": end,
+        "obs": obs
+    }   
+
+    if(cpf.length == 11 || cpf.length == 0){
+        t.innerHTML = spinner
+        const req = await request('clientes', 'POST', dados)
+        const res = await req.json()
+        if(req.ok){location.reload()}
+        else{toast(res)}
+    }else{toast("CPF Incorreto ajuste!")}
+                        
 }
 
-function editarCliente(t){
+async function editarCliente(t){
     var id = document.getElementById('ecId').value
     var cpf = document.getElementById('ecCpf').value
     var nome = document.getElementById('ecNome').value
     var tel = document.getElementById('ecTel').value
+    var tel2 = document.getElementById('ecTel2').value
     var modelo = document.getElementById('ecModelo').value
     var cor = document.getElementById('ecCor').value
     var marca = document.getElementById('ecMarca').value
@@ -1677,232 +1765,250 @@ function editarCliente(t){
     var end = document.getElementById('ecEnd').value
     var obs = document.getElementById('ecObs').value
 
-    if(nome){
-        if(tel){
-            if(modelo){
-                if(cor){
-                    if(marca){
-                        if(!cpf){cpf = 0}
-                        var dados = `{
-                            "id": "${id}",
-                            "cpf": "${cpf}",
-                            "nome": "${nome}",
-                            "tel": "${tel}",
-                            "modelo": "${modelo}",
-                            "cor": "${cor}",
-                            "marca": "${marca}",
-                            "imei": "${imei}",
-                            "end": "${end}",
-                            "obs": "${obs}"
-                        }`
-                        t.innerHTML = spinner
-                        request('/manager/api/v1/editar_cliente/', 'PATCH', dados)
-                        .then(res=>{res.json().then(js=>{
-                            alert(js)
-                            location.reload()
-                        })})
-                    }else{alert('Marca obrigatória!')}
-                }else{alert('Cor obrigatória!')}
-            }else{alert('Modelo obrigatório!')}
-        }else{alert('Telefone não deve estar vazio!')}
-    }else{alert('Nome não deve estar vázio!')}
+    var dados = {
+        "id": id,
+        "cpf": limpar_pontuacao(cpf),
+        "nome": nome,
+        "tel": limpar_pontuacao(tel),
+        "tel2": limpar_pontuacao(tel2),
+        "modelo": modelo,
+        "cor": cor,
+        "marca": marca,
+        "imei": imei,
+        "end": end,
+        "obs": obs
+    }
+
+    const req = await request("clientes", "PATCH", dados)
+    const res = await req.json()
+    if(req.ok){location.reload(); toast(res)} 
+    else{toast(res)}
 }
 
-// =============== Estoque
+// ====================== Estoque
 async function getProdutos() {
-    const res = await request('/manager/api/v1/get_prods/')
-    const js = await res.json()
-    
-    for(var x = 0; x < js.length; x++){
-        const tr = document.createElement('tr')
-        const idProd = js[x][0]
-        const nomeProd = js[x][1]
-        const custoProd = js[x][2]
-        const valorProd = js[x][3]
-        const esMinProd = js[x][4]
-        const quantProd = js[x][5]
-        const lucro = js[x][6]
-        const imgProd2 = js[x][7]
-        const fornProd = js[x][8]
-        const eanProd = js[x][9]
-        const descProd = js[x][10]
-        var porcentLucro =  (lucro/custoProd)*100
+    const req = await request('produtos')
+    const res = await req.json()
 
-        const id = document.createElement('td')
-        id.textContent = idProd
-        id.classList.add('text-truncate')
+    if(req.ok){
+        res.forEach(item => {
+            const tr = document.createElement('tr')
+
+            const imgProd = item['img']
+            const idProd = item['id']
+            const nomeProd = item['nome']
+            const custoProd = item['custo']
+            const valorProd = item['valor']
+            const esMinProd = item['es_min']
+            const quantProd = item['quant']
+            const lucro = item['lucro']
+            const imgProd2 = item['img']
+            const fornProd = item['fornecedor']
+            const eanProd = item['ean']
+            const descProd = item['desc']
+            var porcentLucro =  (lucro/custoProd)*100
+
+            const imgTd = document.createElement('td')
+            const img = document.createElement('img')
+            imgTd.appendChild(img)
+            img.classList.add('img-fluid')
+            img.src = server + '/img/' + imgProd
+
+            const id = document.createElement('td')
+            id.textContent = idProd
+            id.classList.add('text-truncate')
+            
+            const nome = document.createElement('td')
+            nome.classList.add('text-truncate')
+            nome.textContent = nomeProd
         
-        const nome = document.createElement('td')
-        nome.classList.add('text-truncate')
-        nome.textContent = nomeProd
-
-        const custo = document.createElement('td')
-        custo.textContent = 'R$ ' + custoProd
-        custo.classList.add('text-truncate')
+            const custo = document.createElement('td')
+            custo.textContent = 'R$ ' + custoProd
+            custo.classList.add('text-truncate')
+            
+            const valor = document.createElement('td')
+            valor.textContent = 'R$ ' + valorProd
+            valor.classList.add('text-truncate')
         
-        const valor = document.createElement('td')
-        valor.textContent = 'R$ ' + valorProd
-        valor.classList.add('text-truncate')
-
-        const alerta = document.createElement('td')
-        alerta.textContent = js[x][4]
-
-        const quantidade = document.createElement('td')
-        quantidade.textContent = quantProd
-
-        const lucrol = document.createElement('td')
-        const spn = document.createElement('span')
-
-        spn.classList.add('badge')
-        spn.classList.add('rounded-pill')
-        if(porcentLucro >= 75){
-            spn.classList.add('text-bg-success')
-        }else if(porcentLucro >= 50){
-            spn.classList.add('bg-blue')
-        }else if(porcentLucro >= 25){
-            spn.classList.add('bg-orange')
-        }else if(porcentLucro < 25){
-            spn.classList.add('text-bg-danger')
-        }
-        spn.textContent = porcentLucro.toFixed(2) + '%'
-        lucrol.appendChild(spn)
-
-        const btngp = document.createElement('div')
-        btngp.classList.add('btn-group')
-        const btns = document.createElement('td')
-        btns.appendChild(btngp)
-
-        // Buttons
-        const btnEditar = document.createElement('button')
-        btnEditar.classList.add('btn')
-        btnEditar.classList.add('btn-sm')
-        btnEditar.classList.add('btn-secondary')
-        var icon = document.createElement('i')
-        icon.classList.add('bi')
-        icon.classList.add('bi-box-arrow-up-right')
-        btnEditar.appendChild(icon)
-        btnEditar.addEventListener('click', function(){
-            document.getElementById('edIdProd').value = idProd
-            document.getElementById('edEan').value = eanProd
-            document.getElementById('edNome').value = nomeProd
-            document.getElementById('edCusto').value = custoProd
-            document.getElementById('edValor').value = valorProd
-            document.getElementById('edEsMin').value = esMinProd
-            document.getElementById('edQuant').value = quantProd
-            document.getElementById('edForn').value = fornProd
-            document.getElementById('edDesc').value = descProd
-            document.getElementById('edLucro').value = lucro
-            document.getElementById('edImgProd').src = api + '/img/' + imgProd2
-
-
-            const toast = new bootstrap.Modal(document.getElementById('editProdModal'), {'show':true})
-            toast.show()
-        })
-
-        const btnRemov = document.createElement('button')
-        btnRemov.classList.add('btn')
-        btnRemov.classList.add('btn-sm')
-        btnRemov.classList.add('btn-danger')
-        var icon = document.createElement('i')
-        icon.classList.add('bi')
-        icon.classList.add('bi-trash-fill')
-        btnRemov.appendChild(icon)
-        btnRemov.addEventListener('click', function(){
-            var conf = confirm('Tem certeza que deseja excluir?')
-            if (conf){
-                btnRemov.innerHTML = spinner
-                request('/manager/api/v1/excluir_prod/?id=' + idProd)
-                location.reload()
+            const alerta = document.createElement('td')
+            alerta.innerHTML = `
+                <spam class="badge text-bg-secondary">${esMinProd}</spam>
+            `
+        
+            const quantidade = document.createElement('td')
+            quantidade.classList.add("fw-bold")
+            if(quantProd <= esMinProd){quantidade.classList.add("text-danger")}
+            quantidade.textContent = quantProd
+        
+            const lucrol = document.createElement('td')
+            const spn = document.createElement('span')
+            
+            spn.classList.add('badge')
+            spn.classList.add('rounded-pill')
+            spn.classList.add('fs-6','fw-bold')
+            if(porcentLucro >= 75){
+                spn.classList.add('text-bg-success')
+                if(porcentLucro >= 100){
+                    porcentLucro = 99
+                }
+            }else if(porcentLucro >= 50){
+                spn.classList.add('bg-blue')
+            }else if(porcentLucro >= 25){
+                spn.classList.add('bg-orange')
+            }else if(porcentLucro < 25){
+                spn.classList.add('text-bg-danger')
             }
+
+            if(porcentLucro == 99){
+                spn.textContent = '+ 99%'
+            }else{
+                spn.textContent = porcentLucro.toFixed(2) + '%'
+            }
+            lucrol.appendChild(spn)
+
+            const ean = document.createElement('td')
+            ean.textContent = eanProd
+
+        
+            const btngp = document.createElement('div')
+            btngp.classList.add('btn-group')
+            const btns = document.createElement('td')
+            btns.appendChild(btngp)
+        
+            // Buttons
+            const btnEditar = document.createElement('button')
+            btnEditar.classList.add('btn')
+            btnEditar.classList.add('btn-sm')
+            btnEditar.classList.add('btn-secondary')
+            var icon = document.createElement('i')
+            icon.classList.add('bi')
+            icon.classList.add('bi-box-arrow-up-right')
+            btnEditar.appendChild(icon)
+            btnEditar.addEventListener('click', function(){
+                document.getElementById('edIdProd').value = idProd
+                document.getElementById('edEan').value = eanProd
+                document.getElementById('edNome').value = nomeProd
+                document.getElementById('edCusto').value = custoProd
+                document.getElementById('edValor').value = valorProd
+                document.getElementById('edEsMin').value = esMinProd
+                document.getElementById('edQuant').value = quantProd
+                document.getElementById('edForn').value = fornProd
+                document.getElementById('edDesc').value = descProd
+                document.getElementById('edLucro').value = lucro
+                document.getElementById('edImgProd').src = server + '/img/' + imgProd2
+        
+                const toast = new bootstrap.Modal(document.getElementById('editProdModal'), {'show':true})
+                toast.show()
+            })
+        
+            const btnRemov = document.createElement('button')
+            btnRemov.classList.add('btn')
+            btnRemov.classList.add('btn-sm')
+            btnRemov.classList.add('btn-danger')
+            var icon = document.createElement('i')
+            icon.classList.add('bi')
+            icon.classList.add('bi-trash-fill')
+            btnRemov.appendChild(icon)
+            btnRemov.addEventListener('click', async function(){
+                var conf = confirm('Tem certeza que deseja excluir?')
+                if (conf){
+                    btnRemov.innerHTML = spinner
+                    const req = await request('produtos', 'DELETE', {'id':idProd})
+                    const res = await req.json()
+                    if(req.ok){location.reload()}
+                    else{toast(res, 'erro')}
+                }
+            })
+        
+            const btnEntrada = document.createElement('button')
+            btnEntrada.classList.add('btn')
+            btnEntrada.classList.add('btn-sm')
+            btnEntrada.classList.add('btn-success')
+            var icon = document.createElement('i')
+            icon.classList.add('bi')
+            icon.classList.add('bi-plus-circle-fill')
+            btnEntrada.appendChild(icon)
+            btnEntrada.addEventListener('click', function(){
+                document.getElementById('prodIdEntrada').value = idProd
+                document.getElementById('prodNome').value = nomeProd
+                document.getElementById('prodQuant').value = quantProd
+                document.getElementById('prodCusto').value = to_real(custoProd)
+                document.getElementById('prodValor').value = to_real(valorProd)
+        
+                const toast = new bootstrap.Modal(document.getElementById('addProdModal'), {'show':true})
+                toast.show()
+            })
+        
+            btngp.appendChild(btnEditar)
+            btngp.appendChild(btnRemov)
+            btngp.appendChild(btnEntrada)
+        
+            tr.appendChild(imgTd)
+            tr.appendChild(id)
+            tr.appendChild(nome)
+            tr.appendChild(custo)
+            tr.appendChild(valor)
+            tr.appendChild(alerta)
+            tr.appendChild(quantidade)
+            tr.appendChild(lucrol)
+            tr.appendChild(ean)
+            tr.appendChild(btns)
+        
+            document.getElementById('tbody').appendChild(tr)
         })
-
-        const btnEntrada = document.createElement('button')
-        btnEntrada.classList.add('btn')
-        btnEntrada.classList.add('btn-sm')
-        btnEntrada.classList.add('btn-success')
-        var icon = document.createElement('i')
-        icon.classList.add('bi')
-        icon.classList.add('bi-plus-circle-fill')
-        btnEntrada.appendChild(icon)
-        btnEntrada.addEventListener('click', function(){
-            document.getElementById('prodIdEntrada').value = idProd
-            document.getElementById('prodNome').textContent = nomeProd
-            document.getElementById('prodQuant').textContent = `QUANTIDADE ATUAL: ${quantProd}`
-            document.getElementById('prodCusto').textContent = `CUSTO ATUAL: R$${custoProd}`
-            document.getElementById('prodValor').textContent = `VALOR ATUAL: R$${valorProd}`
-
-            const toast = new bootstrap.Modal(document.getElementById('addProdModal'), {'show':true})
-            toast.show()
-        })
-
-        btngp.appendChild(btnEditar)
-        btngp.appendChild(btnRemov)
-        btngp.appendChild(btnEntrada)
-
-        tr.appendChild(id)
-        tr.appendChild(nome)
-        tr.appendChild(custo)
-        tr.appendChild(valor)
-        tr.appendChild(alerta)
-        tr.appendChild(quantidade)
-        tr.appendChild(lucrol)
-        tr.appendChild(btns)
-
-        document.getElementById('tbody').appendChild(tr)
     }
 }
 
 async function getFornecedores() {
-    const res = await request('/manager/api/v1/get_fornecedores/')
-    const js = await res.json()
+    const req = await request('fornecedores')
+    const res = await req.json()
 
-    for(item in js){
-        const opt = document.createElement('option')
-        opt.textContent = js[item][1]
-        document.getElementById('npForn').appendChild(opt)
-
-        const opt2 = document.createElement('option')
-        opt2.textContent = js[item][1]
-        document.getElementById('edForn').appendChild(opt2)
+    if(req.ok){
+        res.forEach(item => {
+            const id = item['id']
+            const nome = item['nome']
+            
+            const opt = document.createElement('option')
+            opt.textContent = nome
+            document.getElementById('npForn').appendChild(opt)
         
-        const id = js[item][0]
-        const nome = js[item][1]
+            const opt2 = document.createElement('option')
+            opt2.textContent = nome
+            document.getElementById('edForn').appendChild(opt2)
+        
+            const li = document.createElement('li')
+            const btnExcluiForn = document.createElement('button')
+            const spn = document.createElement('spn')
+        
+            spn.textContent = nome
+            li.classList.add('list-group-item')
+            li.classList.add('d-flex')
+            li.classList.add('justify-content-between')
+            li.classList.add()
+            btnExcluiForn.classList.add('btn')
+            btnExcluiForn.classList.add('btn-danger')
+            btnExcluiForn.classList.add('btn-sm')
+            btnExcluiForn.innerHTML = '<i class="bi bi-trash-fill"></i>'
+            btnExcluiForn.addEventListener('click', async function(){
+                const conf = confirm('Deseja realmente exluir?')
+                if(conf){
+                    const req = await request("fornecedores", "DELETE", {"id":id})
+                    const res = await req.json()
+                    if(req.ok){location.reload()}
+                    else{toast(res, 'erro')}
+                }
+            })
+        
+            li.appendChild(spn)
+            li.appendChild(btnExcluiForn)
+        
+            document.getElementById('listForn').appendChild(li)
 
-        const li = document.createElement('li')
-        const btnExcluiForn = document.createElement('button')
-        const spn = document.createElement('spn')
-
-        spn.textContent = nome
-        li.classList.add('list-group-item')
-        li.classList.add('d-flex')
-        li.classList.add('justify-content-between')
-        li.classList.add()
-        btnExcluiForn.classList.add('btn')
-        btnExcluiForn.classList.add('btn-danger')
-        btnExcluiForn.classList.add('btn-sm')
-        btnExcluiForn.innerHTML = '<i class="bi bi-trash-fill"></i>'
-        btnExcluiForn.addEventListener('click', function(){
-            const conf = confirm('Deseja realmente exluir?')
-            if(conf){
-                request('/manager/api/v1/excluir_fornecedor/?id=' + id, 'POST')
-                .then(res=>{
-                    res.json().then(res=>{
-                        alert(res)
-                        location.reload()
-                    })
-                })
-            }
         })
-
-        li.appendChild(spn)
-        li.appendChild(btnExcluiForn)
-
-        document.getElementById('listForn').appendChild(li)
-
     }
 }
 
-function criar_prod(t){
+async function criar_prod(t){
     var ean = document.getElementById('npEan').value
     var nome = document.getElementById('npNome').value
     var custo = document.getElementById('npCusto').value
@@ -1912,43 +2018,25 @@ function criar_prod(t){
     var desc = document.getElementById('npDesc').value
     var lucro = document.getElementById('npLucro').value
     var forn = document.getElementById('npForn').value
-    var img = 'blank.png'
+    var imgFile = document.getElementById('imgProdInput').files[0]
 
-    if(nome){
-        if(custo){
-            if(valor){
-                if(quant){
-                    if(desc){
-                        if(lucro){
-                            if(forn){
-                                t.innerHTML = spinner
+    
+    t.innerHTML = spinner
+    var form = new FormData()
+    form.append('ean', ean)
+    form.append('nome', nome.toUpperCase())
+    form.append('custo', limpar_float(custo))
+    form.append('valor', limpar_float(valor))
+    form.append('esmin', esmin)
+    form.append('quant', quant)
+    form.append('desc', limpar_float(desc))
+    form.append('lucro', limpar_float(lucro))
+    form.append('forn', forn)
+    form.append('imgFile', imgFile)
 
-                                var form = new FormData()
-                                form.append('ean', ean)
-                                form.append('nome', nome.toUpperCase())
-                                form.append('custo', custo)
-                                form.append('valor', valor)
-                                form.append('esmin', esmin)
-                                form.append('quant', quant)
-                                form.append('desc', desc)
-                                form.append('lucro', lucro)
-                                form.append('forn', forn)
-                                form.append('img', img)
+    const req = await sendForm('produtos', form)
+    const res = await req.json()
 
-                                sendForm('/manager/api/v1/criar_produto/', form)
-                                .then(res=>{
-                                    res.json().then(js=>{
-                                        alert(js)
-                                        location.reload()
-                                    })
-                                })
-                            }else{alert('Qual o fornecedor ?')}
-                        }else{alert('Lucro nao informado ou calculado!')}
-                    }else{alert('Margem de desconto necessário!')}
-                }else{alert('Quantidade não especificada!')}
-            }else{alert('Valor obrigatório!')}
-        }else{alert('Custo obrigatório!')}
-    }else{alert('Nome obrigatório!!')}
 }
 
 function calc_lucro(){
@@ -1973,20 +2061,19 @@ function ed_calc_lucro(){
     }
 }
 
-function cadastrar_forn(t){
+async function cadastrar_forn(t){
     const nome = document.getElementById('nomeForn').value
     const tel = document.getElementById('telForn').value
     if(nome && tel){
         t.innerHTML = spinner
-        request('/manager/api/v1/cadastrar_fornecedor/', 'POST', `{"nome":"${nome.toUpperCase()}", "telefone":"${tel}"}`)
-        .then(res=>{res.json().then(js=>{
-            alert(js)
-            location.reload()
-        })})
+        const req = await request('fornecedores', 'POST', {"nome":nome.toUpperCase(), "telefone":limpar_pontuacao(tel)})
+        const res = await req.json()
+        if(req.ok){location.reload()}
+        else{toast(res, 'erro')}
     }
 }
 
-function entrada_produtos(t){
+async function entrada_produtos(t){
     var id = document.getElementById('prodIdEntrada').value
     var quant = document.getElementById('newQuant').value
     var custo = document.getElementById('newCusto').value
@@ -1994,22 +2081,22 @@ function entrada_produtos(t){
 
     if(quant){
         t.innerHTML = spinner
-        var dados = `{
-            "id": "${id}",
-            "quant": "${quant}",
-            "custo": "${custo}",
-            "valor": "${valor}"
-        }`
+        var dados = {
+            "id": id,
+            "quant": quant,
+            "custo": limpar_pontuacao(custo),
+            "valor": limpar_pontuacao(valor)
+        }
 
-        request('/manager/api/v1/entrada_produtos/', 'POST', dados)
-        .then(res=>{res.json().then(js=>{
-            alert(js)
-            location.reload()
-        })})
-    }
+        const req = await request('produtos', 'PUT', dados)
+        const res = await req.json()
+
+        if(req.ok){location.reload()}
+        else{toast(res, 'erro'); t.removeChild(document.getElementById('spin_ldg'))}
+    }else{toast('Quantidade Obrigatória!', 'erro')}
 }
 
-function editar_produto(t){
+async function editar_produto(t){
     var id = document.getElementById('edIdProd').value
     var ean = document.getElementById('edEan').value
     var nome = document.getElementById('edNome').value
@@ -2020,99 +2107,100 @@ function editar_produto(t){
     var forn = document.getElementById('edForn').value
     var desc = document.getElementById('edDesc').value
     var lucro = document.getElementById('edLucro').value
+    var img = document.getElementById('imgEdProd').files[0]
+    var form = new FormData()
+    
+    form.append('id', id)
+    form.append('ean', ean)
+    form.append('nome', nome.toUpperCase())
+    form.append('custo', limpar_pontuacao(custo))
+    form.append('valor', limpar_pontuacao(valor))
+    form.append('esmin', esmin)
+    form.append('quant', quant)
+    form.append('desc', limpar_pontuacao(desc))
+    form.append('lucro', limpar_pontuacao(lucro))
+    form.append('forn', forn)
+    form.append('img', img)
 
-    if(nome){
-        if(custo){
-            if(valor){
-                if(quant){
-                    if(desc){
-                        if(lucro){
-                            if(forn){
-                                t.innerHTML = spinner
+    t.innerHTML = spinner
+    const req = await sendForm('produtos', form, 'PATCH')
+    const res = await req.json()
 
-                                var form = new FormData()
-                                form.append('id', id)
-                                form.append('ean', ean)
-                                form.append('nome', nome.toUpperCase())
-                                form.append('custo', custo)
-                                form.append('valor', valor)
-                                form.append('esmin', esmin)
-                                form.append('quant', quant)
-                                form.append('desc', desc)
-                                form.append('lucro', lucro)
-                                form.append('forn', forn)
-
-                                sendForm('/manager/api/v1/editar_produto/', form)
-                                .then(res=>{
-                                    res.json().then(js=>{
-                                        alert(js)
-                                        location.reload()
-                                    })
-                                })
-                            }else{alert('Qual o fornecedor ?')}
-                        }else{alert('Lucro nao informado ou calculado!')}
-                    }else{alert('Margem de desconto necessário!')}
-                }else{alert('Quantidade não especificada!')}
-            }else{alert('Valor obrigatório!')}
-        }else{alert('Custo obrigatório!')}
-    }else{alert('Nome obrigatório!!')}
+    if(req.ok){location.reload()}
+    else{toast(res, 'erro')}
 }
 
 // =============== Relatorios
 async function get_infos(){
-    const res = await request('/manager/api/v1/get_infos_dash/?filter='+filterRes)
-    const js = await res.json()
+    const req = await request('get_infos_dash?filter=' + filterRes)
+    const res = await req.json()
 
-    if(js){
+    if(req.ok){
         var green = '#344e41'
         var red = '#a3b18a'
         
-        document.getElementById('total_vendas').textContent = `R$ ${js['TOTAL'].toFixed(2)}`
-        document.getElementById('vendas_prod').textContent = `R$ ${js['PRODUTOS'].toFixed(2)}`
-        document.getElementById('vendas_os').textContent = `R$ ${js['OS'].toFixed(2)}`
+        document.getElementById('total_vendas').textContent = to_real(res['TOTAL'])
+        document.getElementById('vendas_prod').textContent = to_real(res['PRODUTOS'])
+        document.getElementById('vendas_os').textContent = to_real(res['PRODUTOS'])
 
-        document.getElementById('vendas_bruto').textContent = `R$ ${js['BRUTO'].toFixed(2)}`
-        document.getElementById('vendas_liq').textContent = `R$ ${js['LIQUIDO'].toFixed(2)}`
-        document.getElementById('vendas_med').textContent = `${js['MEDIA_VENDAS'].toFixed(2)}`
+        document.getElementById('vendas_bruto').textContent = to_real(res['BRUTO'])
+        document.getElementById('vendas_liq').textContent = to_real(res['LIQUIDO'])
+        document.getElementById('vendas_med').textContent = res['MEDIA_VENDAS'] + ' Un.'
         
-        document.getElementById('tc_med').textContent = `R$ ${js['TICKET_MEDIO'].toFixed(2)}`
-        document.getElementById('tc_cp').textContent = `${js['TICKET_PROD'].toFixed(2)} Un.`
-        document.getElementById('ct_prod').textContent = `R$ ${js['CUSTO_PROD']}`
+        document.getElementById('tc_med').textContent = to_real(res['TICKET_MEDIO'])
+        document.getElementById('tc_cp').textContent = res['TICKET_PROD'] + ' Un.'
+        document.getElementById('ct_prod').textContent = to_real(res['CUSTO_PROD'])
 
-        js['VD_AT'].forEach(res=>{
-            document.getElementById('top3func').innerHTML = ''
+        document.getElementById('top3func').innerHTML = '' // Funcionarios
+        res['VD_AT'].forEach(res=>{
             const li = document.createElement('li')
-            li.classList.add('list-group-item')
-            li.textContent = res[0] + ' - ' + res[1]
+            li.classList.add('list-group-item', 'd-flex', 'justify-content-between')
+            li.innerHTML = `
+                <span>${res[0]}</span>
+                <span class="badge text-bg-secondary">${res[1]}</span>
+
+            `
             document.getElementById('top3func').appendChild(li)
             
         })
-        js['VD_PROD'].forEach(res=>{
-            document.getElementById('top3prod').innerHTML = ''
+
+        document.getElementById('top3prod').innerHTML = '' // Produtos
+        res['VD_PROD'].forEach(res=>{
             const li = document.createElement('li')
-            li.classList.add('list-group-item')
-            li.textContent = res[0] + ' - ' + res[1]
+            li.classList.add('list-group-item', 'd-flex', 'justify-content-between')
+            li.innerHTML = `
+                <span>${res[0]}</span>
+                <span class="badge text-bg-secondary">${res[1]}</span>
+
+            `
             document.getElementById('top3prod').appendChild(li)
 
         })
-        js['VD_MARCAS'].forEach(res=>{
-            document.getElementById('top3marcas').innerHTML = ''
+
+        document.getElementById('top3marcas').innerHTML = '' // Marcas
+        res['VD_MARCAS'].forEach(res=>{
             const li = document.createElement('li')
-            li.classList.add('list-group-item')
-            li.textContent = res[0] + ' - ' + res[1]
+            li.classList.add('list-group-item', 'd-flex', 'justify-content-between')
+            li.innerHTML = `
+                <span>${res[0]}</span>
+                <span class="badge text-bg-secondary">${res[1]}</span>
+
+            `
             document.getElementById('top3marcas').appendChild(li)
 
         })
 
 
         var dashVendas = document.createElement('canvas')
+        dashVendas.style.height = '300px'
+
         new Chart(dashVendas, {
             type: 'line',
             data: {
-            labels: js['PROD_MES']['dia'],
+            labels: res['PROD_MES']['dia'],
             
             datasets: [{
-                data: js['PROD_MES']['cont'],
+                data: res['PROD_MES']['cont'],
                 label: 'Total',
                 fill: {
                     target: 'origin',
@@ -2120,7 +2208,7 @@ async function get_infos(){
                 borderWidth: 1,
                 borderColor: red,
             },{
-                data: js['PROD_MES']['valor'],
+                data: res['PROD_MES']['valor'],
                 label: 'Valor R$',
                 fill: {
                     target: 'start',
@@ -2132,6 +2220,7 @@ async function get_infos(){
             options: {
             indexAxis: 'x', 
             responsive: true,
+            aspectRatio: 1,
             scales: {
                 x: {
                     beginAtZero: false
@@ -2145,12 +2234,13 @@ async function get_infos(){
             },
             }
         })
+
         var dv = document.getElementById('divDashVendas')
         dv.innerHTML = ''
         dv.style.height = '300px'
         dv.appendChild(dashVendas)
 
-        var osMes = js['OS_MES']
+        var osMes = res['OS_MES']
         var dashOs = document.createElement('canvas')
         new Chart(dashOs, {
             type: 'line',
@@ -2178,6 +2268,7 @@ async function get_infos(){
             options: {
             indexAxis: 'x', 
             responsive: true,
+            aspectRatio: 1,
             scales: {
                 x: {
                     beginAtZero: false
@@ -2191,12 +2282,13 @@ async function get_infos(){
             },
             }
         })
+
         var dv2 = document.getElementById('divDashOs')
         dv2.innerHTML = ''
         dv2.style.height = '300px'
         dv2.appendChild(dashOs)
 
-        var pag = js['VENDA_PAGAMENTO']
+        var pag = res['VENDA_PAGAMENTO']
         var pagDash = document.createElement('canvas')
         new Chart(pagDash, {
             type: 'doughnut',
@@ -2221,13 +2313,13 @@ async function get_infos(){
                 },
                 }
         })
+        
         var dv3 = document.getElementById('divDashVendasPorTipo')
         dv3.style.height = '300px'
         dv3.innerHTML = ''
         dv3.appendChild(pagDash)
     }
 }
-
 
 function trocarFiltroRes(t){
     var btnAntigo = document.getElementById(`btn-${filterRes}`)
@@ -2376,8 +2468,8 @@ function newFunc(t){
     }
 }
 
-// Peças
-async function get_pecas() {
+// ======================= Peças
+async function get_pecas(){
     fetch(api + '/manager/api/v1/get_pecas/?cr=' + cr)
     .then(res=>{
         res.json()
@@ -2446,9 +2538,7 @@ async function get_pecas() {
     })
 }
 
-
 // JQuery ==================================================
-
 $(document).ready(function(){
     $("#busca").on("keyup", function() {
         var value = $(this).val().toLowerCase();
@@ -2466,7 +2556,6 @@ $(document).ready(function(){
         });
     });
 });
-
 
  $(document).ready(function(){
     $("#buscarAbertas").on("keyup", function() {
@@ -2531,7 +2620,6 @@ $(document).ready(function(){
     });
 });
 
-
 // INPUTS MASKS
 $(document).ready(function(){
     $(".tel-mask").inputmask("(99) 99999-9999");
@@ -2539,4 +2627,8 @@ $(document).ready(function(){
 
 $(document).ready(function(){
     $(".money-mask").inputmask("currency");
+});
+
+$(document).ready(function(){
+    $(".cpf-mask").inputmask("999.999.999-99");
 });
