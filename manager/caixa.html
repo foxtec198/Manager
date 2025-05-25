@@ -58,15 +58,18 @@
                             <input class="form-control" id="retirarMat" placeholder="Matricula" onblur="conferMatricula(this)" type="number" name="mat" required>
                             <label for="retiraMat">Matricula</label>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-text"> Motivo </span>
-                            <select class="form-select" name="motivo" id="retirarMotivo" onchange="motivoF(this)">
+                        <div class="form-floating">
+                            <select class="form-select" name="motivo" id="retirarMotivo" aria-placeholder="Motivo" onchange="motivoF(this)">
                                 <option>Sangria</option>
                                 <option>Despesa</option>
                             </select>
+                            <label for="retirarMotivo">Motivo</label>
                         </div>
 
-                        <input class="form-control" id="motivoIn" placeholder="Qual a despesa?" type="text" name="motivoDet" hidden>
+                        <div class="form-floating" id="motivoDespesa" hidden>
+                            <input class="form-control" id="motivoIn" placeholder="Qual a despesa?" type="text" name="motivoDet">
+                            <label for="motivoIn">Qual a despesa?</label>
+                        </div>
                         
                         <div class="form-floating">
                             <input class="form-control money-mask" id="retirarV" placeholder="Valor" type="text" name="valor" required>

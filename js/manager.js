@@ -34,22 +34,22 @@ config_estoque = sessionStorage.getItem('estoque') === "true"
 
 function datas_comemorativas(msg, data){
     for (let i = 0; i < 100; i++){
-        var sp = document.createElement('span')
-        sp.classList.add('badge', 'rounded-pill', 'px-4')
-        sp.style.background = '#ffc8dd'
-        sp.style.color = '#333'
-        sp.style.fontSize = '14px'
-        sp.textContent = data
-    
-        var sp2 = document.createElement('span')
-        sp2.classList.add('badge', 'rounded-pill', 'px-4')
-        sp2.style.background = '#edede9'
-        sp2.style.fontSize = '14px'
-        sp2.style.color = '#333'
-        sp2.textContent = msg
-    
-        document.getElementById('mq').appendChild(sp2)
-        document.getElementById('mq').appendChild(sp)
+            var sp = document.createElement('span')
+            sp.classList.add('badge', 'rounded-pill', 'px-4')
+            sp.style.background = '#ffc8dd'
+            sp.style.color = '#333'
+            sp.style.fontSize = '14px'
+            sp.textContent = data
+        
+            var sp2 = document.createElement('span')
+            sp2.classList.add('badge', 'rounded-pill', 'px-4')
+            sp2.style.background = '#edede9'
+            sp2.style.fontSize = '14px'
+            sp2.style.color = '#333'
+            sp2.textContent = msg
+        
+            document.getElementById('mq').appendChild(sp2)
+            document.getElementById('mq').appendChild(sp)
     }
 }
 
@@ -481,7 +481,7 @@ async function aplicarVlr(t){
 }
 
 function motivoF(sl){
-    inn = document.getElementById('motivoIn')
+    inn = document.getElementById('motivoDespesa')
 
     if(sl.value === 'Despesa'){inn.hidden = ''}
     else{inn.hidden = 'none'}
@@ -1802,18 +1802,24 @@ async function getProdutos() {
             const esMinProd = item['es_min']
             const quantProd = item['quant']
             const lucro = item['lucro']
-            const imgProd2 = item['img']
             const fornProd = item['fornecedor']
             const eanProd = item['ean']
             const descProd = item['desc']
             var porcentLucro =  (lucro/custoProd)*100
 
             const imgTd = document.createElement('td')
+            const link = document.createElement("a")
+            link.href = server + '/img/' + imgProd
+            link.target = '_blank'
+
             const img = document.createElement('img')
-            imgTd.appendChild(img)
             img.classList.add('img-fluid')
+            img.style.maxHeight = '30px'
             img.src = server + '/img/' + imgProd
 
+            link.appendChild(img)
+            imgTd.appendChild(link)
+            
             const id = document.createElement('td')
             id.textContent = idProd
             id.classList.add('text-truncate')
@@ -2141,183 +2147,218 @@ async function get_infos(){
         
         document.getElementById('total_vendas').textContent = to_real(res['TOTAL'])
         document.getElementById('vendas_prod').textContent = to_real(res['PRODUTOS'])
-        document.getElementById('vendas_os').textContent = to_real(res['PRODUTOS'])
+        document.getElementById('vendas_os').textContent = to_real(res['OS'])
 
         document.getElementById('vendas_bruto').textContent = to_real(res['BRUTO'])
         document.getElementById('vendas_liq').textContent = to_real(res['LIQUIDO'])
         document.getElementById('vendas_med').textContent = res['MEDIA_VENDAS'] + ' Un.'
         
         document.getElementById('tc_med').textContent = to_real(res['TICKET_MEDIO'])
-        document.getElementById('tc_cp').textContent = res['TICKET_PROD'] + ' Un.'
+        document.getElementById('tc_cp').textContent = res['TICKET_PROD'].toFixed(2) + ' Un.'
         document.getElementById('ct_prod').textContent = to_real(res['CUSTO_PROD'])
 
         document.getElementById('top3func').innerHTML = '' // Funcionarios
-        res['VD_AT'].forEach(res=>{
-            const li = document.createElement('li')
-            li.classList.add('list-group-item', 'd-flex', 'justify-content-between')
-            li.innerHTML = `
-                <span>${res[0]}</span>
-                <span class="badge text-bg-secondary">${res[1]}</span>
-
-            `
-            document.getElementById('top3func').appendChild(li)
-            
-        })
+        if(res['VD_AT'].length !== 0){
+            document.getElementById('top3func').classList.remove('d-flex','align-items-center','justify-content-between')
+            res['VD_AT'].forEach(res=>{
+                const li = document.createElement('li')
+                li.classList.add('list-group-item', 'd-flex', 'justify-content-between')
+                li.innerHTML = `
+                    <span>${res[0]}</span>
+                    <span class="badge text-bg-secondary">${res[1]}</span>
+                `
+                document.getElementById('top3func').appendChild(li)  
+            })            
+        }else{
+            tp3 = document.getElementById('top3func')
+            tp3.textContent = "Sem venda por atendentes!"
+            tp3.classList.add('d-flex','align-items-center','justify-content-between')
+        }
 
         document.getElementById('top3prod').innerHTML = '' // Produtos
-        res['VD_PROD'].forEach(res=>{
-            const li = document.createElement('li')
-            li.classList.add('list-group-item', 'd-flex', 'justify-content-between')
-            li.innerHTML = `
-                <span>${res[0]}</span>
-                <span class="badge text-bg-secondary">${res[1]}</span>
-
-            `
-            document.getElementById('top3prod').appendChild(li)
-
-        })
+        if(res['VD_PROD'].length > 0){
+            document.getElementById('top3prod').classList.remove('d-flex','align-items-center','justify-content-between')
+            res['VD_PROD'].forEach(res=>{
+                const li = document.createElement('li')
+                li.classList.add('list-group-item', 'd-flex', 'justify-content-between')
+                li.innerHTML = `
+                    <span>${res[0]}</span>
+                    <span class="badge text-bg-secondary">${res[1]}</span>
+    
+                `
+                document.getElementById('top3prod').appendChild(li)
+                
+            })
+        }else{
+            tp3 = document.getElementById('top3prod')
+            tp3.textContent = "Sem venda de produtos!"
+            tp3.classList.add('d-flex','align-items-center','justify-content-between')
+        }
 
         document.getElementById('top3marcas').innerHTML = '' // Marcas
-        res['VD_MARCAS'].forEach(res=>{
-            const li = document.createElement('li')
-            li.classList.add('list-group-item', 'd-flex', 'justify-content-between')
-            li.innerHTML = `
-                <span>${res[0]}</span>
-                <span class="badge text-bg-secondary">${res[1]}</span>
+        if(res['VD_MARCAS'].length > 0){
+            document.getElementById('top3marcas').classList.remove('d-flex','align-items-center','justify-content-between')
 
-            `
-            document.getElementById('top3marcas').appendChild(li)
+            res['VD_MARCAS'].forEach(res=>{
+                const li = document.createElement('li')
+                li.classList.add('list-group-item', 'd-flex', 'justify-content-between')
+                li.innerHTML = `
+                    <span>${res[0]}</span>
+                    <span class="badge text-bg-secondary">${res[1]}</span>
+    
+                `
+                document.getElementById('top3marcas').appendChild(li)
+            })
+        }else{
+            tp3 = document.getElementById('top3marcas')
+            tp3.classList.add('d-flex','align-items-center','justify-content-between')
+            tp3.textContent = "Sem venda por marcas!"
+        }
 
-        })
-
-
-        var dashVendas = document.createElement('canvas')
-        dashVendas.style.height = '300px'
-
-        new Chart(dashVendas, {
-            type: 'line',
-            data: {
-            labels: res['PROD_MES']['dia'],
-            
-            datasets: [{
-                data: res['PROD_MES']['cont'],
-                label: 'Total',
-                fill: {
-                    target: 'origin',
-                },
-                borderWidth: 1,
-                borderColor: red,
-            },{
-                data: res['PROD_MES']['valor'],
-                label: 'Valor R$',
-                fill: {
-                    target: 'start',
-                },
-                borderWidth: 2,
-                borderColor: green,
-            }]
-            },
-            options: {
-            indexAxis: 'x', 
-            responsive: true,
-            aspectRatio: 1,
-            scales: {
-                x: {
-                    beginAtZero: false
-                }
-            },
-            plugins: {
-                title: {
-                  display: true,
-                  text: 'PRODUTOS POR DIA'
-                }
-            },
-            }
-        })
-
+        // Dashboard Vendas
         var dv = document.getElementById('divDashVendas')
-        dv.innerHTML = ''
         dv.style.height = '300px'
-        dv.appendChild(dashVendas)
 
-        var osMes = res['OS_MES']
-        var dashOs = document.createElement('canvas')
-        new Chart(dashOs, {
-            type: 'line',
-            data: {
-            labels: osMes['dia'],
-            
-            datasets: [{
-                data: osMes['cont'],
-                label: 'Total',
-                fill: {
-                    target: 'origin',
+        if(res['PROD_MES']['valor'].length > 0){
+            var dashVendas = document.createElement('canvas')
+
+            dv.innerHTML = ''
+            new Chart(dashVendas, {
+                type: 'line',
+                data: {
+                labels: res['PROD_MES']['dia'],
+                
+                datasets: [{
+                    data: res['PROD_MES']['cont'],
+                    label: 'Total',
+                    fill: {
+                        target: 'origin',
+                    },
+                    borderWidth: 1,
+                    borderColor: red,
+                },{
+                    data: res['PROD_MES']['valor'],
+                    label: 'Valor R$',
+                    fill: {
+                        target: 'start',
+                    },
+                    borderWidth: 2,
+                    borderColor: green,
+                }]
                 },
-                borderWidth: 1,
-                borderColor: red,
-            },{
-                data: osMes['valor'],
-                label: 'Valor R$',
-                fill: {
-                    target: 'start',
-                },
-                borderWidth: 2,
-                borderColor: green,
-            }]
-            },
-            options: {
-            indexAxis: 'x', 
-            responsive: true,
-            aspectRatio: 1,
-            scales: {
-                x: {
-                    beginAtZero: false
-                }
-            },
-            plugins: {
-                title: {
-                  display: true,
-                  text: 'ORDENS POR DIA'
-                }
-            },
-            }
-        })
-
-        var dv2 = document.getElementById('divDashOs')
-        dv2.innerHTML = ''
-        dv2.style.height = '300px'
-        dv2.appendChild(dashOs)
-
-        var pag = res['VENDA_PAGAMENTO']
-        var pagDash = document.createElement('canvas')
-        new Chart(pagDash, {
-            type: 'doughnut',
-            data: {
-            labels: pag['tipo'],
-            
-            datasets: [{
-                data: pag['valor'],
-                label: 'Total R$',
-            }]
-            },options: {
+                options: {
                 indexAxis: 'x', 
                 responsive: true,
+                aspectRatio: 1,
+                scales: {
+                    x: {
+                        beginAtZero: false
+                    }
+                },
                 plugins: {
-                    legend: {
-                        display: false
-                    },
                     title: {
                       display: true,
-                      text: 'VENDAS POR TIPO'
+                      text: 'PRODUTOS POR DIA'
                     }
                 },
                 }
-        })
+            })
+            dv.appendChild(dashVendas)
+        }else{
+            dv.textContent = "Sem dados!"
+        }
         
+        // Dashboard OS's
+        var osMes = res['OS_MES']
+        var dv2 = document.getElementById('divDashOs')
+        dv2.style.height = '300px'
+
+        if(osMes['valor'].length > 0){
+            var dashOs = document.createElement('canvas')
+            dv2.innerHTML = ''
+            new Chart(dashOs, {
+                type: 'line',
+                data: {
+                labels: osMes['dia'],
+                
+                datasets: [{
+                    data: osMes['cont'],
+                    label: 'Total',
+                    fill: {
+                        target: 'origin',
+                    },
+                    borderWidth: 1,
+                    borderColor: red,
+                },{
+                    data: osMes['valor'],
+                    label: 'Valor R$',
+                    fill: {
+                        target: 'start',
+                    },
+                    borderWidth: 2,
+                    borderColor: green,
+                }]
+                },
+                options: {
+                indexAxis: 'x', 
+                responsive: true,
+                aspectRatio: 1,
+                scales: {
+                    x: {
+                        beginAtZero: false
+                    }
+                },
+                plugins: {
+                    title: {
+                      display: true,
+                      text: 'ORDENS POR DIA'
+                    }
+                },
+                }
+            })
+            dv2.appendChild(dashOs)
+
+        }else{
+            dv2.textContent = "Sem dados!"
+        }
+        
+        // Dashboard Pagamentos
+        var pag = res['VENDA_PAGAMENTO']
         var dv3 = document.getElementById('divDashVendasPorTipo')
         dv3.style.height = '300px'
-        dv3.innerHTML = ''
-        dv3.appendChild(pagDash)
+        
+        if(pag['valor'].length > 0){
+            dv3.innerHTML = ''
+            var pagDash = document.createElement('canvas')
+            new Chart(pagDash, {
+                type: 'doughnut',
+                data: {
+                labels: pag['tipo'],
+                
+                datasets: [{
+                    data: pag['valor'],
+                    label: 'Total R$',
+                }]
+                },options: {
+                    indexAxis: 'x', 
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                          display: true,
+                          text: 'VENDAS POR TIPO'
+                        }
+                    },
+                    }
+            })
+            dv3.appendChild(pagDash)
+
+        }else{
+            dv3.textContent = "Sem dados!"
+        }
+        
     }
 }
 
@@ -2335,28 +2376,28 @@ function trocarFiltroRes(t){
 
 // =============== Configurações
 async function get_config() {
-    const res = await request('/manager/api/v1/get_config/')
-    const js = await res.json()
-    if(js){
+    const req = await request('config')
+    const res = await req.json()
+    if(req.ok){
         var esc = document.getElementById('slEscala')
 
-        document.getElementById('slFuso').value = js['fuso']
-        document.getElementById('ckEstoque').checked = js['ct_es']
-        document.getElementById('ckPeca').checked = js['pecas']
+        document.getElementById('slFuso').value = res['fuso']
+        document.getElementById('ckEstoque').checked = res['ct_es']
+        document.getElementById('ckPeca').checked = res['pecas']
         document.getElementById('config_logo').classList.remove('placeholder')
-        document.getElementById('config_logo').src = api + '/img/' + js['logo']
+        document.getElementById('config_logo').src = server + '/img/' + res['logo']
         document.getElementById('inputCR').value = cr
         for(var x = 1; x < 51; x++){
             const opt = document.createElement('option')
             opt.textContent = x
             esc.appendChild(opt)
         }
-        esc.value = js['escala']
+        esc.value = res['escala']
 
-        for(item in js['funcs']){
-            const nome = js['funcs'][item][0]
-            const perm = js['funcs'][item][1]
-            const mat = js['funcs'][item][2]
+        res['funcs'].forEach(item => {
+            const nome = item[0]
+            const perm = item[1]
+            const mat = item[2]
             const li = document.createElement('li')
             const sp = document.createElement('span') 
             const btnRemove = document.createElement('button')
@@ -2371,15 +2412,13 @@ async function get_config() {
             btnRemove.classList.add('btn-danger')
             btnRemove.classList.add('btn-sm')
             btnRemove.innerHTML = '<i class="bi bi-trash-fill"></i>'
-            btnRemove.addEventListener('click', function(){
+            btnRemove.addEventListener('click', async function(){
                 var conf = confirm(`Deseja realmente excluir ${capitalize(nome)}?`)
                 if(conf){
-                    request('/manager/api/v1/remover_user/?mat='+mat, 'POST')
-                    .then(res=>{
-                        if(res.ok){
-                            location.reload()
-                        }
-                    })
+                    const req = await request("funcionarios", "DELETE", {"mat": mat})
+                    const res = await req.json()
+                    if(req.ok){location.reload()
+                    }else{toast(res, 'erro')}
                 }
 
             })
@@ -2388,15 +2427,13 @@ async function get_config() {
             btnPmvAdmin.classList.add('btn-light')
             btnPmvAdmin.classList.add('btn-sm')
             btnPmvAdmin.innerHTML = '<i class="bi bi-shield-fill-check"></i>'
-            btnPmvAdmin.addEventListener('click', function(){
+            btnPmvAdmin.addEventListener('click', async function(){
                 var conf = confirm(`Deseja tornar ${capitalize(nome)} um ADMIN ?`)
                 if (conf){
-                    request('/manager/api/v1/alterar_permissao/?mat='+mat, 'POST')
-                    .then(res=>{
-                        if(res.ok){
-                            location.reload()
-                        }
-                    })
+                    const req = await request("funcionarios", "PATCH", {"mat": mat})
+                    const res = await req.json()
+                    if(req.ok){location.reload()
+                    }else{toast(res, 'erro')}
                 }
             })
 
@@ -2415,56 +2452,49 @@ async function get_config() {
             li.appendChild(btnGp)
 
             document.getElementById('listFuncs').appendChild(li)
-        }
+        })
 
     }
 }
 
-function estoque_negativo(t){
-
-}
-
 function trocar_fuso(t){
-    var dd = `{
-        "fuso":${t.value}
-    }`
-    request('/manager/api/v1/alterar_fuso/', 'POST', dd)
+    var dd = {
+        "value": t.value,
+        "filter": "fuso"
+    }
+    request("config", "PATCH", dd)
 }
 
 function alterar_estoque(t){
-    var dd = `{
-        "valor":${t.checked}
-    }`
-    request('/manager/api/v1/alterar_estoque/', 'POST', dd)
+    var dd = {
+        "value": t.checked,
+        "filter": "estoque"
+    }
+    request("config", "PATCH", dd)
 }
 
 function alterar_pecas(t){
-    var dd = `{
-        "valor":${t.checked}
-    }`
-    request('/manager/api/v1/alterar_pecas/', 'POST', dd)
+    var dd = {"value":t.checked, "filter":"peca"}
+    request("config", "PATCH", dd)
 }
 
 function trocar_escala(t){
-    var dd = `{
-        "valor":${t.value}
-    }`
-    request('/manager/api/v1/alterar_escala/', 'POST', dd)
-
+    var dd = {"value": t.value, "filter":"escala"}
+    request("config", "PATCH", dd)
 }
 
-function newFunc(t){
+async function newFunc(t){
     var name = document.getElementById('nomeFunc').value
 
     if (name){
+        var dd = {"nome": name, "pwd": "1234"}
         t.innerHTML = spinner
-        request('/manager/api/v1/cadastrar_funcionario/?nome='+name, 'POST')
-        .then(res=>{
-            res.json().then(js=>{
-                alert('Sua nova matricula é ' + js)
-                location.reload()
-            })
-        })
+        const req = await request("funcionarios", "POST", dd)
+        const res = await req.json()
+        if(req.ok){
+            alert('Sua nova matricula é ' + res)
+            location.reload()
+        }else{toast(res, 'erro')}
     }
 }
 

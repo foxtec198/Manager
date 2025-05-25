@@ -17,9 +17,9 @@
 </head>
 <body data-bs-theme="dark">
     <div class="d-flex h-100">
-        <div class="flex-adorno mobile-hide">
+        <!-- <div class="flex-adorno mobile-hide" id="adorno">
             <img src="../img/laco.png" alt="adorno" class="adorno">
-        </div>
+        </div> -->
 
         <div class="d-flex flex-column overflow-hidden mobile-hide nv" style="min-width: 180px;">
             <span class="d-flex gap-2 flex-column w-100 align-items-center justify-content-center mt-3">
@@ -40,9 +40,8 @@
             <button onclick="logout()" class="btnM-exit">Sair</button>
             <br>
         </div>
-
         <div class="d-flex flex-column w-100">
-            <marquee style="margin-top: 10px;" class="d-flex gap-4" loop direction="left" id="mq"></marquee>
+            <!-- <marquee style="margin-top: 10px;" class="d-flex gap-4" loop direction="left" id="mq"></marquee> -->
             <iframe class="p-2" src="/manager/caixa.html" id="frame_screen" width="100%" height="85%" frameborder="0"></iframe>
         </div>
     </div>
@@ -87,6 +86,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <script src="../js/manager.js"></script>
-    <script> get_loja(); restore_screen(); datas_comemorativas('Feliz dia dos namorados! 💍💘', '12/06/2025') </script>
+    <script> 
+        get_loja(); 
+        restore_screen();
+        if(document.getElementById("adorno")){
+            datas_comemorativas('Feliz dia dos namorados! 💍💘', '12/06/2025');
+        }
+        if(window.innerWidth > 500){document.getElementById("frame_screen").height = "100%"}
+        else{document.getElementById("frame_screen").height = "85%"}
+    </script>
 </body>
 </html>
