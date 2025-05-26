@@ -33,7 +33,7 @@
             <button onclick="change_screen('os', this)" class="btnM menu-item menu-os"><i class="bi bi-file-earmark-zip-fill"></i> OS's</button>
             <button onclick="change_screen('clientes', this)" class="btnM menu-item menu-clientes"><i class="bi bi-person-bounding-box"></i> Clientes</button>
             <button onclick="change_screen('estoque', this)" class="btnM menu-item menu-estoque"><i class="bi bi-archive-fill"></i> Estoque</button>
-            <button onclick="change_screen('pecas', this)" class="btnM menu-item menu-pecas" hidden><i class="bi bi-gear-fill"></i> Peças</button>
+            <button onclick="change_screen('pecas', this)" class="btnM menu-item menu-pecas"><i class="bi bi-gear-fill"></i> Peças</button>
             <button onclick="change_screen('relatorios', this)" class="btnM menu-item menu-relatorios"><i class="bi bi-microsoft"></i> Relatórios</button>
             <hr>
             <button onclick="change_screen('config', this)" class="btnM menu-item menu-config">Configurações</button>
@@ -48,15 +48,15 @@
 
     <div class="navBot mobile">
         <div class="d-flex flex-row justify-content-around g-4">
-            <a class="d-flex flex-column p-1 align-items-center navBot-item" onclick="change_screen('caixa')">
+            <a class="d-flex flex-column p-1 align-items-center navBot-item menu-caixa" onclick="change_screen('caixa')">
                 <i class="bi bi-box-seam-fill"></i>
                 <p>Caixa</p>
             </a>
-            <a class="d-flex flex-column p-1 align-items-center navBot-item" onclick="change_screen('vendas')">
+            <a class="d-flex flex-column p-1 align-items-center navBot-item menu-vendas" onclick="change_screen('vendas')">
                 <i class="bi bi-graph-up-arrow"></i>
                 <p>Vendas</p>
             </a>
-            <a class="d-flex flex-column p-1 align-items-center navBot-item" onclick="change_screen('os')">
+            <a class="d-flex flex-column p-1 align-items-center navBot-item menu-os" onclick="change_screen('os')">
                 <i class="bi bi-file-earmark-zip-fill"></i>
                 <p>Ordens</p>
             </a>
@@ -65,12 +65,12 @@
                 <p>Demais</p>
             </a>
             <ul class="dropdown-menu text-bg-dark">
-                <li><button onclick="change_screen('clientes')" class="dropdown-item dp-item"><i class="bi bi-person-bounding-box"></i> Clientes</a></li>
-                <li><button onclick="change_screen('estoque')" class="dropdown-item dp-item"><i class="bi bi-archive-fill"></i> Estoque</a></li>
-                <li hidden><button onclick="change_screen('pecas')" class="dropdown-item dp-item"><i class="bi bi-gear-fill"></i> Peças</a></li>
-                <li><button onclick="change_screen('relatorios')" class="dropdown-item dp-item"><i class="bi bi-microsoft"></i> Relatórios</a></li>
+                <li><button onclick="change_screen('clientes')" class="dropdown-item dp-item menu-clientes"><i class="bi bi-person-bounding-box"></i> Clientes</a></li>
+                <li><button onclick="change_screen('estoque')" class="dropdown-item dp-item menu-estoque"><i class="bi bi-archive-fill"></i> Estoque</a></li>
+                <li hidden><button onclick="change_screen('pecas')" class="dropdown-item dp-item menu-pecas"><i class="bi bi-gear-fill"></i> Peças</a></li>
+                <li><button onclick="change_screen('relatorios')" id="btnMrelatorios" class="dropdown-item dp-item menu-relatorios"><i class="bi bi-microsoft"></i> Relatórios</a></li>
                 <hr>
-                <li><button onclick="change_screen('config')" class="dropdown-item dp-item">Configurações</a></li>
+                <li><button onclick="change_screen('config')" class="dropdown-item dp-item menu-config">Configurações</a></li>
                 <li><button class="dropdown-item dp-item-exit" onclick="logout()">Sair</button></li>
             </ul>
         </div>
@@ -88,12 +88,16 @@
     <script src="../js/manager.js"></script>
     <script> 
         get_loja(); 
+        confer_perm();
         restore_screen();
+
         if(document.getElementById("adorno")){
             datas_comemorativas('Feliz dia dos namorados! 💍💘', '12/06/2025');
         }
+
         if(window.innerWidth > 500){document.getElementById("frame_screen").height = "100%"}
-        else{document.getElementById("frame_screen").height = "85%"}
+        else{document.getElementById("frame_screen").height = "90%"}
+        
     </script>
 </body>
 </html>

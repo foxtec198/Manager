@@ -210,6 +210,15 @@ nav{
     border-left: 8px solid var(--brow);
 }
 
+.hcard{
+  border-radius: 10px;
+  background-color: var(--green);
+  border: 2px solid #333;
+}
+
+.hcard-header{
+  background-color: var(--green2);
+}
 
 @media only screen and (max-width: 500px) {
     .mobile-hide{ display: none !important; }

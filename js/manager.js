@@ -4,10 +4,14 @@ var statusM = []
 var cont_status = 0
 var spinner = '<span id="spin_ldg" class="spinner-border spinner-border-sm text-light" role="status"></span>'
 green = '#5E8B60'
+red = '#c1121f'
 
+md_cart = []
+numItem = 0
 
 sessionStorage.setItem('filterRes', 'hoje')
 var filterRes = sessionStorage.getItem('filterRes')
+let timeout
 
 server = "https://api.hubbix.com.br"
 // server = "http://localhost:9560"
@@ -16,8 +20,9 @@ var api = server + '/manager/v1/'
 
 cr = sessionStorage.getItem('cr')
 gc = sessionStorage.getItem('gc')
-config_pecas = sessionStorage.getItem('pecas') === "true"
-config_estoque = sessionStorage.getItem('estoque') === "true"
+config_pecas = sessionStorage.getItem('pecas') == "true"
+config_estoque = sessionStorage.getItem('estoque') == "true"
+perm = sessionStorage.getItem("perm")
 
 // function openCalc(){
 //     const divCalc = document.getElementById('divCalc')
@@ -31,6 +36,15 @@ config_estoque = sessionStorage.getItem('estoque') === "true"
 //         btnCalc.innerHTML = '<i class="bi bi-caret-left-fill"></i>'
 //     }
 // }
+
+function validar_senha(senha){
+    const temSimbolo = /[!@#$%^&*(),.?":{}|<>]/.test(senha);
+    const temNumero = /\d/.test(senha);
+    const temMaiuscula = /[A-Z]/.test(senha);
+    const temMinuscula = /[a-z]/.test(senha);
+
+    return temSimbolo && temNumero && temMaiuscula && temMinuscula;
+}
 
 function datas_comemorativas(msg, data){
     for (let i = 0; i < 100; i++){
@@ -78,6 +92,10 @@ function limpar_pontuacao(str) {
     return somenteNumeros
 }
 
+function somente_numeros(str){
+    return str.replace(/\D/g, "")
+}
+
 function limpar_float(str) {
   return str.replace(/[,]/g, "");
 }
@@ -94,34 +112,6 @@ function toast(msg, type=null){
         tst.style.background = '#3a5a40'
     }
     setTimeout(function(){ tst.className = tst.className.replace("show", ""); }, 3000);
-}
-
-async function login(){
-    mat = document.getElementById("mat").value
-    pwd = document.getElementById("pwd").value
-
-    if(mat){
-        if(pwd){
-            ldg()
-            const req = await fetch(api + `login?mat=${mat}&&pwd=${pwd}`, {method:'POST'})
-            const res = await req.json()
-            if(req.ok){
-                sessionStorage.setItem('cr', res['cr'])
-                sessionStorage.setItem('gc', res['gc'])
-                sessionStorage.setItem('pecas', res['pecas'])
-                sessionStorage.setItem('estoque', res['estoque'])
-                sessionStorage.setItem('perm', res['perm'])
-
-                document.location = '/manager/base.html'
-            }else{closeLdg(); toast(res)}
-        }else{toast('Senha vazia')}
-    }else{toast("Matricula vazia")}
-
-}
-
-function logout(){
-    sessionStorage.clear()
-    document.location = '/'
 }
 
 function request(url, method='GET', json){
@@ -329,6 +319,59 @@ function liberar_button(btn){
     }
 }
 
+function confirmar_protecao(t){
+    senha = t.value
+    const temSimbolo = /[!@#$%^&*(),.?":{}|<>]/.test(senha);
+    const temNumero = /\d/.test(senha);
+    const temMaiuscula = /[A-Z]/.test(senha);
+    const temMinuscula = /[a-z]/.test(senha);
+    const lblSt = document.getElementById('status-senha')
+
+    if(temNumero && temMinuscula){
+        if(temMaiuscula){
+            if(temSimbolo){
+                lblSt.classList.remove('text-danger', 'text-warning')
+                lblSt.classList.add('text-success')
+                lblSt.textContent = "FORTE!"
+                return true
+            }else{
+                lblSt.classList.remove('text-danger')
+                lblSt.classList.add('text-warning')
+                lblSt.textContent = "MÉDIA"
+                return false
+            }
+        }else{
+            lblSt.classList.remove('text-success', 'text-warning')
+            lblSt.classList.add('text-danger')
+            lblSt.textContent = "FRACA!"; return false
+        }
+    }else{
+        lblSt.classList.remove('text-success', 'text-warning')
+        lblSt.classList.add('text-danger')
+        lblSt.textContent = "FRACA!"; return false
+    }
+
+
+
+}
+
+function confirmar_senha(t){
+    lbl = document.getElementById('senhasNot')
+    if(t.value !== document.getElementById('newFPwd').value){
+        t.style.color = red
+        lbl.hidden = ''
+        document.getElementById('btnCadFunc').disabled = true
+    }else{
+        t.style.color = '#fff'
+        lbl.hidden = 'none'
+        if(validar_senha(t.value)){
+            document.getElementById('btnCadFunc').disabled = false
+        }else{
+            document.getElementById('btnCadFunc').disabled = true
+        }
+    }
+}
+
 async function get_loja(){
     req = await request('get_loja')
     res = await req.json()
@@ -338,7 +381,7 @@ async function get_loja(){
         label.classList.remove('placeholder')
         
         var img = document.getElementById('logoBase')
-        img.src = `https://api.hubbix.com.br/img/${res['logo']}`
+        img.src = `${server}/img/${res['logo']}`
         img.classList.remove('placeholder')
 
     }
@@ -349,6 +392,70 @@ async function conferCpf(inp){
     const res = await request("conferir_cpf", "POST", {'cpf':cpf})
     const js = await res.json()
     return js
+}
+
+function confer_perm(){
+    if(perm === 'USER'){
+        blocks = [
+            "relatorios",
+            "config",
+            "caixa"
+        ]
+        blocks.forEach(item => {
+            document.querySelectorAll(`.menu-${item}`).forEach(el => {
+                el.remove()
+            })
+        })
+        change_screen("vendas")
+        
+    }
+
+    if(config_pecas){
+        document.querySelectorAll('.menu-pecas').forEach(el => {
+            el.hidden = ''
+        })
+    }else{
+        document.querySelectorAll('.menu-pecas').forEach(el => {
+            el.hidden = 'none'
+        })
+    }
+}
+
+// ===================================================================
+// ===================================================================
+// ===================================================================
+// ===========================CALLBACKS =============================
+// ===================================================================
+// ===================================================================
+
+// =============== Login
+
+function logout(){
+    sessionStorage.clear()
+    document.location = '/'
+}
+
+async function login(){
+    mat = document.getElementById("mat").value
+    pwd = document.getElementById("pwd").value
+
+    if(mat){
+        if(pwd){
+            ldg()
+            const req = await fetch(api + `login?mat=${mat}&&pwd=${pwd}`, {method:'POST'})
+            const res = await req.json()
+            if(req.ok){
+                sessionStorage.setItem('cr', res['cr'])
+                sessionStorage.setItem('gc', res['gc'])
+                sessionStorage.setItem('pecas', res['pecas'])
+                sessionStorage.setItem('estoque', res['estoque'])
+                sessionStorage.setItem('perm', res['perm'])
+
+                document.location = '/manager/base.html'
+            }else{closeLdg(); toast(res)}
+        }else{toast('Senha vazia')}
+    }else{toast("Matricula vazia")}
+
 }
 
 // =============== Caixa
@@ -1440,7 +1547,7 @@ async function abrirOS(t){
     var form = new FormData()
     
     form.append('id', id)
-    form.append('telefone', limpar_pontuacao(telefone))
+    form.append('telefone', somente_numeros(telefone))
     form.append('endereco', endereco)
     form.append('imei', imei)
     form.append('modelo', modelo)
@@ -1732,8 +1839,8 @@ async function newClient(t){
     var dados = {
         "cpf": cpf,
         "nome": nome,
-        "tel": limpar_pontuacao(tel),
-        "tel2": limpar_pontuacao(tel2),
+        "tel": somente_numeros(tel),
+        "tel2": somente_numeros(tel2),
         "modelo": modelo,
         "cor": cor,
         "marca": marca,
@@ -1901,7 +2008,7 @@ async function getProdutos() {
                 document.getElementById('edForn').value = fornProd
                 document.getElementById('edDesc').value = descProd
                 document.getElementById('edLucro').value = lucro
-                document.getElementById('edImgProd').src = server + '/img/' + imgProd2
+                document.getElementById('edImgProd').src = server + '/img/' + imgProd
         
                 const toast = new bootstrap.Modal(document.getElementById('editProdModal'), {'show':true})
                 toast.show()
@@ -2042,12 +2149,14 @@ async function criar_prod(t){
 
     const req = await sendForm('produtos', form)
     const res = await req.json()
+    if(req.ok){location.reload()}
+    else{toast(res, 'erro')}
 
 }
 
 function calc_lucro(){
-    var valor = document.getElementById('npValor').value
-    var custo = document.getElementById('npCusto').value
+    var valor = limpar_float(document.getElementById('npValor').value)
+    var custo = limpar_float(document.getElementById('npCusto').value)
     if(valor && custo){
         var lucro = parseFloat(valor) - parseFloat(custo) 
         document.getElementById('npLucro').value = lucro.toFixed(2)
@@ -2057,8 +2166,8 @@ function calc_lucro(){
 }
 
 function ed_calc_lucro(){
-    var valor = document.getElementById('edValor').value
-    var custo = document.getElementById('edCusto').value
+    var valor = limpar_float(document.getElementById('edValor').value)
+    var custo = limpar_float(document.getElementById('edCusto').value)
     if(valor && custo){
         var lucro = parseFloat(valor) - parseFloat(custo) 
         document.getElementById('edLucro').value = lucro.toFixed(2)
@@ -2072,7 +2181,7 @@ async function cadastrar_forn(t){
     const tel = document.getElementById('telForn').value
     if(nome && tel){
         t.innerHTML = spinner
-        const req = await request('fornecedores', 'POST', {"nome":nome.toUpperCase(), "telefone":limpar_pontuacao(tel)})
+        const req = await request('fornecedores', 'POST', {"nome":nome.toUpperCase(), "telefone": somente_numeros(tel)})
         const res = await req.json()
         if(req.ok){location.reload()}
         else{toast(res, 'erro')}
@@ -2137,7 +2246,7 @@ async function editar_produto(t){
 }
 
 // =============== Relatorios
-async function get_infos(){
+async function get_infos(opt='dia'){
     const req = await request('get_infos_dash?filter=' + filterRes)
     const res = await req.json()
 
@@ -2258,7 +2367,7 @@ async function get_infos(){
                 plugins: {
                     title: {
                       display: true,
-                      text: 'PRODUTOS POR DIA'
+                      text: 'PRODUTOS POR ' + opt.toUpperCase()
                     }
                 },
                 }
@@ -2311,7 +2420,7 @@ async function get_infos(){
                 plugins: {
                     title: {
                       display: true,
-                      text: 'ORDENS POR DIA'
+                      text: 'ORDENS POR ' + opt.toUpperCase()
                     }
                 },
                 }
@@ -2364,14 +2473,17 @@ async function get_infos(){
 
 function trocarFiltroRes(t){
     var btnAntigo = document.getElementById(`btn-${filterRes}`)
-    btnAntigo.classList.remove('btn-success')
-    btnAntigo.classList.add('btn-outline-success')
+    try{
+        btnAntigo.classList.remove('btn-success')
+        btnAntigo.classList.add('btn-outline-success')
+    }catch{}
     
     t.classList.add('btn-success')
     t.classList.remove('btn-outline-success')
     sessionStorage.setItem('filterRes', t.value)
     filterRes = sessionStorage.getItem('filterRes')
-    get_infos()
+    if(t.value === 'ano'){get_infos('mês')}
+    else{get_infos()}
 }
 
 // =============== Configurações
@@ -2386,7 +2498,10 @@ async function get_config() {
         document.getElementById('ckPeca').checked = res['pecas']
         document.getElementById('config_logo').classList.remove('placeholder')
         document.getElementById('config_logo').src = server + '/img/' + res['logo']
-        document.getElementById('inputCR').value = cr
+
+        document.getElementById('emailFx').value = res['email']
+        document.getElementById('ckCaixa').checked = res['caixa']
+
         for(var x = 1; x < 51; x++){
             const opt = document.createElement('option')
             opt.textContent = x
@@ -2408,6 +2523,23 @@ async function get_config() {
             li.classList.add('d-flex')
             li.classList.add('justify-content-between')
 
+            if(perm !== 'ADMIN'){
+                btnPmvAdmin.classList.add('btn')
+                btnPmvAdmin.classList.add('btn-light')
+                btnPmvAdmin.classList.add('btn-sm')
+                btnPmvAdmin.innerHTML = '<i class="bi bi-unlock-fill"></i>'
+                btnPmvAdmin.addEventListener('click', async function(){
+                    var conf = confirm(`Deseja tornar ${capitalize(nome)} um ADMIN ?`)
+                    if (conf){
+                        const req = await request("funcionarios", "PATCH", {"mat": mat})
+                        const res = await req.json()
+                        if(req.ok){location.reload()
+                        }else{toast(res, 'erro')}
+                    }
+                })
+                btnGp.appendChild(btnPmvAdmin)
+            }
+            
             btnRemove.classList.add('btn')
             btnRemove.classList.add('btn-danger')
             btnRemove.classList.add('btn-sm')
@@ -2423,30 +2555,19 @@ async function get_config() {
 
             })
 
-            btnPmvAdmin.classList.add('btn')
-            btnPmvAdmin.classList.add('btn-light')
-            btnPmvAdmin.classList.add('btn-sm')
-            btnPmvAdmin.innerHTML = '<i class="bi bi-shield-fill-check"></i>'
-            btnPmvAdmin.addEventListener('click', async function(){
-                var conf = confirm(`Deseja tornar ${capitalize(nome)} um ADMIN ?`)
-                if (conf){
-                    const req = await request("funcionarios", "PATCH", {"mat": mat})
-                    const res = await req.json()
-                    if(req.ok){location.reload()
-                    }else{toast(res, 'erro')}
-                }
-            })
+            
 
             btnGp.classList.add('btn-group')
             
-            sp.textContent = nome
+            sp.classList.add("fw-bold")
+            if(perm === 'ADMIN'){
+                sp.innerHTML = `<i class="bi bi-shield-fill-check"></i> ${mat} - ${nome}`
+            }else{
+                sp.innerHTML = `${mat} - ${nome}`
+            }
             
             li.appendChild(sp)
             
-            if(perm === 'ADMIN'){
-                btnPmvAdmin.disabled = true
-            }
-            btnGp.appendChild(btnPmvAdmin)
             btnGp.appendChild(btnRemove)
 
             li.appendChild(btnGp)
@@ -2465,17 +2586,32 @@ function trocar_fuso(t){
     request("config", "PATCH", dd)
 }
 
-function alterar_estoque(t){
-    var dd = {
-        "value": t.checked,
-        "filter": "estoque"
-    }
-    request("config", "PATCH", dd)
+async function alterar_estoque(t){
+    var dd = {"value": t.checked, "filter": "estoque"}
+    
+    const req = await request("config", "PATCH", dd)
+    const res = await req.json()
+    if(req.ok){sessionStorage.setItem('estoque', t.checked); window.top.location.reload()}
+    else{toast(res, 'erro')}
+    
 }
 
-function alterar_pecas(t){
+async function alterar_pecas(t){
     var dd = {"value":t.checked, "filter":"peca"}
-    request("config", "PATCH", dd)
+
+    const req = await request("config", "PATCH", dd)
+    const res = await req.json()
+    if(req.ok){sessionStorage.setItem('pecas', t.checked); window.top.location.reload();}
+    else{toast(res, 'erro')}
+}
+
+async function modo_caixa(t){
+    var dd = {"value":t.checked, "filter":"caixa"}
+
+    const req = await request("config", "PATCH", dd)
+    const res = await req.json()
+    if(req.ok){location.reload();}
+    else{toast(res, 'erro')}
 }
 
 function trocar_escala(t){
@@ -2484,18 +2620,27 @@ function trocar_escala(t){
 }
 
 async function newFunc(t){
-    var name = document.getElementById('nomeFunc').value
+    var name = document.getElementById('newFName').value
+    var pwd = document.getElementById('newFPwd').value
 
-    if (name){
-        var dd = {"nome": name, "pwd": "1234"}
-        t.innerHTML = spinner
-        const req = await request("funcionarios", "POST", dd)
-        const res = await req.json()
-        if(req.ok){
-            alert('Sua nova matricula é ' + res)
-            location.reload()
-        }else{toast(res, 'erro')}
-    }
+    var dd = {"nome": name, "pwd": pwd}
+
+    t.innerHTML = spinner
+    const req = await request("funcionarios", "POST", dd)
+    const res = await req.json()
+    if(req.ok){location.reload()
+    }else{toast(res, 'erro')}
+}
+
+async function alterar_logo(t){
+    form = new FormData()
+
+    form.append('logoImg', t.files[0])
+
+    const req = await sendForm("atualizar_logo", form, "POST")
+    const res = await req.json()
+    if(req.ok){window.top.location.reload()}
+    else{toast(res, 'erro')}
 }
 
 // ======================= Peças
@@ -2566,6 +2711,80 @@ async function get_pecas(){
             }
         })
     })
+}
+
+
+// ======================= Modo Caixa
+async function md_conferencia_cx(){
+    const st = await statusCaixa()
+    const stcx = document.getElementById('stcx')
+    if(st.status){
+        stcx.textContent = 'CAIXA ABERTO'
+        stcx.classList.remove("bg-danger")
+        stcx.classList.add("bg-green")
+    }else{
+        stcx.textContent = 'CAIXA FECHADO'
+        stcx.classList.remove("bg-green")
+        stcx.classList.add("bg-danger")
+    }
+}
+
+async function md_add_prod(t) {
+    if(t.value){
+        const req = await request('produto', 'POST', {'ean': t.value})
+        const res = await req.json()
+        if(req.ok){
+            numItem += 1
+            const id = res['id']
+            const nome = res['nome']
+            const valor = res['valor']
+            const ean = res['ean']
+            const quant = 1
+            const total = valor * quant
+
+            const numtd = document.createElement('td')
+            const idtd = document.createElement('td')
+            const nometd = document.createElement('td')
+            const quanttd = document.createElement('td')
+            const valortd = document.createElement('td')
+            const totaltd = document.createElement('td')
+
+            numtd.textContent = numItem
+            idtd.textContent = id
+            nometd.textContent = nome
+            valortd.textContent = to_real(valor)
+            quanttd.textContent = quant
+            totaltd.textContent = to_real(total)
+            
+            const tr = document.createElement('tr')
+            const tb = document.getElementById('listProdBody')
+
+            tr.appendChild(numtd)
+            tr.appendChild(idtd)
+            tr.appendChild(nometd)
+            tr.appendChild(quanttd)
+            tr.appendChild(valortd)
+            tr.appendChild(totaltd)
+            tb.appendChild(tr)
+            
+            document.getElementById('cxcdgbar').textContent = ean
+            document.getElementById('cxvlr').textContent = to_real(valor)
+            document.getElementById('cxttitem').textContent = to_real(quant * valor)
+            document.getElementById('cxcdg').textContent = id
+            
+            md_cart.push(`${id}:${nome}`)
+            console.log(md_cart)
+            t.value = ''
+        }else{toast(res, 'erro'); t.value = ''}
+    }
+}
+
+async function md_get_loja() {
+    const req = await request("get_loja")
+    const res = await req.json()
+    if(req.ok){
+        document.getElementById('logoBase').src = server + '/img/' + res['logo']
+    }
 }
 
 // JQuery ==================================================

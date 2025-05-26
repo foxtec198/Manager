@@ -20,7 +20,10 @@
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Nova Venda</h1>
+                    <div class="d-flex gap-2 align-items-baseline">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Nova Venda</h1>
+                        <span class="badge badge-sm rounded-pill placeholder" id="statusCaixa">Caixa Fechado</span>
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" style="overflow-x: auto;">
@@ -193,6 +196,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <script src="../js/manager.js"></script>
-    <script> vendasPorTipo(); getSaidas(); getProds() </script>
+    <script> vendasPorTipo(); getSaidas(); getProds(); conferencia_de_caixa() </script>
 </body>
 </html>

@@ -15,10 +15,14 @@
     <div class="p-2">
         <h1 class="">Configurações.</h1>
         <hr>
-        <div class="d-flex flex-column p-4">
+        <div class="d-flex flex-column p-2">
+            <!-- Fusos horarios -->
             <div class="d-flex justify-content-between mb-3 flex-wrap gap-4">
-                <span class="fs-5 fw-bold w-50">Fuso horário</span>
-                <select class="form-control w-50" onchange="trocar_fuso(this)" id="slFuso" style="flex-grow: 1; flex-basis: 200px;"> 
+                <div class="d-flex flex-column" style="flex-grow: 1; flex-basis: 200px;">
+                    <span class="fs-5 fw-bold">Fuso horário</span>
+                    <span class="fs-6">Altera o horário de registro de datas!</span>
+                </div>
+                <select class="form-control" onchange="trocar_fuso(this)" id="slFuso" style="flex-grow: 1; flex-basis: 200px;"> 
                     <option value="-2">GMT -2</option>
                     <option value="-3">GMT -3</option>
                     <option value="-4">GMT -4</option>
@@ -26,8 +30,13 @@
                 </select>
             </div>
             <hr>
+
+            <!-- Controle de Estoque -->
             <div class="d-flex justify-content-between mb-3 flex-wrap gap-4">
-                <span class="fs-5 fw-bold w-50" style="flex-grow: 1; flex-basis: 200px;">Controle Estoque</span>
+                <div class="d-flex flex-column flex-grow-1" style="flex-basis: 200px;">
+                    <span class="fs-5 fw-bold">Controle Estoque</span>
+                    <span class="fs-6">Deseja controlar o estoque e nao permitir a venda de estoque negativado?</span>
+                </div>
                 <div class="d-flex justify-content-end" style="flex-grow: 1; flex-basis: 200px;">
                     <label class="switch">
                         <input class="toggle" type="checkbox" id="ckEstoque" onchange="alterar_estoque(this)">
@@ -37,8 +46,14 @@
                 </div>
             </div>
             <hr>
+
+            <!-- Controle de Peças -->
             <div class="d-flex justify-content-between mb-3 flex-wrap gap-4">
-                <span class="fs-5 fw-bold w-50" style="flex-grow: 1; flex-basis: 200px;">Controle de Peças</span>
+                <div class="d-flex flex-column flex-grow-1" style="flex-basis: 200px;">
+                    <span class="fs-5 fw-bold">Controle de Peças</span>
+                    <span class="fs-6">Ao invés de adicionar o valor de custo deseja cadastras as peças e pegar as informações da mesma e adicionar a OS?</span>
+
+                </div>
                 <div class="d-flex justify-content-end" style="flex-grow: 1; flex-basis: 200px;">
                     <label class="switch">
                         <input class="toggle" type="checkbox" id="ckPeca" onchange="alterar_pecas(this)">
@@ -48,20 +63,54 @@
                 </div>
             </div>
             <hr>
+
+            <!-- Modo caixa -->
+            <div class="d-flex justify-content-between mb-3 flex-wrap gap-4">
+                <div class="d-flex flex-column flex-grow-1" style="flex-basis: 200px;">
+                    <span class="fs-5 fw-bold">Modo Caixa</span>
+                    <span class="fs-6">Este modo te permite utilizar o hubbix de forma separada somente para caixa, onde é realizado a venda de produto e fechamento de ordens.</span>
+
+                </div>
+                <div class="d-flex justify-content-end" style="flex-grow: 1; flex-basis: 200px;">
+                    <label class="switch">
+                        <input class="toggle" type="checkbox" id="ckCaixa" onchange="modo_caixa(this)">
+                        <span class="slider"></span>
+                        <span class="card-side"></span>
+                    </label>
+                </div>
+            </div>
+            <button id="btnMDCX" class="btn btn-success btn-sm">Acesse o Modo Caixa!</button>
+            <hr>
+
+            <!-- Fechamento por email! -->
+            <div class="d-flex align-items-start flex-wrap gap-2">
+                <div class="d-flex flex-column flex-grow-1" style="flex-basis: 200px;">
+                    <span class="fs-5 fw-bold">Enviar fechamento por email</span>
+                    <span class="fs-6">Ao adicionar um email, toda vez que for fechado o caixa, será enviado automaticamente uma nota via email com o fechamento atual!</span>
+                </div>
+                <div class="input-group flex-grow-1" style="flex-basis: 200px;">
+                    <div class="form-floating">
+                        <input type="email" class="form-control" id="emailFx" placeholder="Email" autocomplete="off">
+                        <label for="emailFx">Email</label>
+                    </div>
+                    <input type="button" class="btn btn-outline-secondary" value="Salvar">
+                </div>
+            </div>
+            <hr>
+
+            <!-- Alter Logo -->
             <div class="d-flex align-items-top justify-content-between flex-wrap gap-4">
-                <span class="fs-5 fw-bold" style="flex-grow: 1; flex-basis: 200px;">Escala da Logo</span>
+                <span class="fs-5 fw-bold" style="flex-grow: 1; flex-basis: 200px;">Logo da Loja</span>
                 <div class="d-flex flex-column gap-1 align-items-end" style="flex-grow: 1; flex-basis: 200px;">
                     <div class="d-flex gap-2">
                         <img class="img-fluid img-thumbnail object-fit-contain placeholder" alt="Logo" width="130wh" id="config_logo">
-                        <form action="http://localhost:5432/manager/api/v1/atualizar_logo/" method="post" enctype="multipart/form-data" class="d-flex flex-column gap-2 justify-content-around">
-                            <input type="text" name="cr" id="inputCR" hidden>
-                            <input type="file" name="logoImg" class="form-control" accept="image/*">
-                            <button class="btn btn-success" >Alterar Imagem</button>
-                            <div class="d-flex gap-2 justify-content-around align-items-center">
-                                <span class="fs-6 fw-bold">Escala: </span>
-                                <select class="form-control" onchange="trocar_escala(this)" id="slEscala"></select>
+                        <div class="d-flex flex-column gap-2">
+                            <input placeholder="Imagem" onchange="alterar_logo(this)" type="file" id="logoImg" class="form-control" accept="image/*">
+                            <div class="form-floating">
+                                <select class="form-control" aria-placeholder="Escala" onchange="trocar_escala(this)" id="slEscala"></select>
+                                <label for="slEscala">Escala</label>
                             </div>
-                        </form>
+                        </div>
                     </div>
                     <span class="text-end" style="font-size: 12px; font-style: italic;">
                         Só altere a escala da logo, caso esteja consumindo muito espaço na Ordem de Serviço.
@@ -71,14 +120,55 @@
                 </div>
             </div>
             <hr>
-            <div class="d-flex align-items-top justify-content-between flex-wrap gap-4" style="max-height: 500px; overflow-y: auto;">
-                <span class="fs-5 fw-bold" style="flex-grow: 1; flex-basis: 200px;">Controle de Funcionários</span>
-                <div class="d-flex flex-column w-100 gap-2" style="flex-grow: 1; flex-basis: 200px;">
-                    <div class="input-group" id="nweFunc">
-                        <input type="text" id="nomeFunc" class="form-control w-75" placeholder="Nome do Funcionario(a)">
-                        <button onclick="newFunc(this)" class="form-control w-25">Adicionar</button>
+
+            <!-- Funcionarios  -->
+            <div class="d-flex flex-column gap-4">
+                <span class="fs-5 fw-bold">Controle de Funcionários</span>
+                <div class="d-flex flex-wrap justify-content-around gap-2" style="max-height: 500px; overflow-y: auto;">
+                    <!-- Cadastro -->
+                    <div class="d-flex card gap-4 p-4 flex-column flex-grow-1" style="flex-basis: 200px;">
+                        <span class="fs-5 fw-bold">Cadastro</span>
+                        <span class="fs-6"><strong>Dica de senha forte:</strong> Utilize de um simbolos, numeros e letras maiusculas e minusculas!</span>
+                        <span class="fs-6">Status da senha: <strong class="text-danger" id="status-senha">FRACA!</strong>!</span>
+                        <form class="d-flex flex-column gap-2" id="form-func">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-people-fill"></i>
+                                </span>
+                                <div class="form-floating">
+                                    <input type="text" id="newFName" class="form-control" placeholder="Nome" autocomplete="name">
+                                    <label for="newFName">Nome</label>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <div class="input-group flex-grow-1" style="flex-basis: 200px;">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-key"></i>
+                                    </span>
+                                    <div class="form-floating">
+                                        <input type="password" oninput="confirmar_protecao(this)" id="newFPwd" class="form-control" placeholder="Senha" autocomplete="new-password">
+                                        <label for="newFName">Senha</label>
+                                    </div>
+                                </div>
+                                <div class="input-group flex-grow-1" style="flex-basis: 200px;">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-key-fill"></i>
+                                    </span>
+                                    <div class="form-floating">
+                                        <input oninput="confirmar_senha(this)" type="password" id="newFPwd2" class="form-control" placeholder="Confirme sua senha!" autocomplete="new-password">
+                                        <label for="newFName">Confirme sua senha!</label>
+                                    </div>
+                                </div>
+                                <span class="fs-6 text-danger text-center" id="senhasNot" hidden>As senhas não coincidem!</span>
+                            </div>
+                            <input disabled id="btnCadFunc" type="submit" class="btn btn-success" value="Cadastrar Funcionario!">
+                        </form>
                     </div>
-                    <ul class="list-group" id="listFuncs"></ul>
+                    <!-- Ativos -->
+                    <div class="d-flex card gap-4 p-4 flex-column flex-grow-1" style="flex-basis: 200px;">
+                        <span class="fs-5 fw-bold">Ativos</span>
+                        <ul class="list-group flex-grow-1" id="listFuncs"></ul>
+                    </div>
                 </div>
             </div>
             <hr>
@@ -96,6 +186,20 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <script src="../js/manager.js"></script>
-    <script>get_config()</script>
+    <script>
+        get_config()
+        
+        document.getElementById("form-func").addEventListener("submit", function(e){
+            e.preventDefault()
+
+            newFunc(document.getElementById("btnCadFunc"))
+        })
+        
+        document.getElementById("btnMDCX").addEventListener("click", function(){
+            window.top.location = "/manager/modo_caixa.html"
+        })
+
+        
+    </script>
 </body>
 </html>

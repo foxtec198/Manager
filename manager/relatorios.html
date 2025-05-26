@@ -18,8 +18,8 @@
     <span class="fs-1 p-2 fw-bold">Relatórios.</span>
 
     <!-- Filtros -->
-    <div class="d-flex p-4 gap-2 align-items-center" style="overflow-x: auto;">
-        <div class="d-flex gap-2 align-items-center">
+    <div class="d-flex flex-column p-2" style="overflow-x: auto;">
+        <div class="d-flex p-2 gap-2 align-items-center">
             <i class="bi bi-filter-circle-fill"></i>
             <span class="fw-bold">Filtros: </span>
         </div>
@@ -28,16 +28,25 @@
             <button class="btn btn-success" id="btn-hoje" value="hoje" onclick="trocarFiltroRes(this)">Hoje</button>
             <button class="btn btn-outline-success" id="btn-mes" value="mes" onclick="trocarFiltroRes(this)">Mês</button>
             <button class="btn btn-outline-success" id="btn-ano" value="ano" onclick="trocarFiltroRes(this)">Ano</button>
+            <input class="btn btn-outline-success" type="date" onchange="trocarFiltroRes(this)" id="btn-data">
+        </div>
+        <div class="d-flex p-2 gap-2 align-items-center">
+            <i class="bi bi-calendar-check"></i>
+            <span class="fw-bold">Periodo: </span>
+        </div>
+        <div class="btn-group">
+            <input class="btn btn-outline-success" type="date" onchange="trocarFiltroRes(this)" id="btn-data">
+            <input class="btn btn-outline-success" type="date" onchange="trocarFiltroRes(this)" id="btn-data">
         </div>
     </div>
     <hr>
 
     <!-- Results Cards -->
-    <div class="d-flex flex-column p-4 gap-3">
+    <div class="d-flex flex-column p-2 gap-3">
         <div class="d-flex flex-wrap gap-2 justify-content-around">
-            <div class="card" style="flex-grow: 1; flex-basis: 200px;">
+            <div class="card" style="flex-grow: 1; flex-basis: 160px;">
                 <div class="card-header">
-                    <span>Total de Vendas.</span>
+                    <span>Total.</span>
                 </div>
                 <div class="card-body">
                     <span class="fs-4 fw-bold" id="total_vendas">
@@ -45,9 +54,9 @@
                     </span>
                 </div>
             </div>
-            <div class="card" style="flex-grow: 1; flex-basis: 200px;">
+            <div class="card" style="flex-grow: 1; flex-basis: 160px;">
                 <div class="card-header">
-                    <span>Vendas por Ordem.</span>
+                    <span>Ordem de Serviço.</span>
                 </div>
                 <div class="card-body">
                     <span class="fs-4 fw-bold" id="vendas_os">
@@ -55,9 +64,9 @@
                     </span>
                 </div>
             </div>
-            <div class="card" style="flex-grow: 1; flex-basis: 200px;">
+            <div class="card" style="flex-grow: 1; flex-basis: 160px;">
                 <div class="card-header">
-                    <span>Vendas por Produtos.</span>
+                    <span>Produtos.</span>
                 </div>
                 <div class="card-body">
                     <span class="fs-4 fw-bold" id="vendas_prod">
@@ -67,9 +76,9 @@
             </div>
         </div>
         <div class="d-flex flex-wrap gap-2 justify-content-around">
-            <div class="card" style="flex-grow: 1; flex-basis: 200px;">
+            <div class="card" style="flex-grow: 1; flex-basis: 160px;">
                 <div class="card-header">
-                    <span>Valor Bruto.</span>
+                    <span>Bruto.</span>
                 </div>
                 <div class="card-body">
                     <span class="fs-4 fw-bold" id="vendas_bruto">
@@ -77,9 +86,9 @@
                     </span>
                 </div>
             </div>
-            <div class="card" style="flex-grow: 1; flex-basis: 200px;">
+            <div class="card" style="flex-grow: 1; flex-basis: 160px;">
                 <div class="card-header">
-                    <span>Valor Liquido.</span>
+                    <span>Liquido.</span>
                 </div>
                 <div class="card-body">
                     <span class="fs-4 fw-bold" id="vendas_liq">
@@ -87,9 +96,9 @@
                     </span>
                 </div>
             </div>
-            <div class="card" style="flex-grow: 1; flex-basis: 200px;">
+            <div class="card" style="flex-grow: 1; flex-basis: 160px;">
                 <div class="card-header">
-                    <span>Média de Vendas (Qnt.).</span>
+                    <span>Média de Vendas.</span>
                 </div>
                 <div class="card-body">
                     <span class="fs-4 fw-bold" id="vendas_med">
@@ -99,7 +108,7 @@
             </div>
         </div>
         <div class="d-flex flex-wrap gap-2 justify-content-around">
-            <div class="card" style="flex-grow: 1; flex-basis: 200px;">
+            <div class="card" style="flex-grow: 1; flex-basis: 160px;">
                 <div class="card-header">
                     <span>Ticket Médio.</span>
                 </div>
@@ -109,7 +118,7 @@
                     </span>
                 </div>
             </div>
-            <div class="card" style="flex-grow: 1; flex-basis: 200px;">
+            <div class="card" style="flex-grow: 1; flex-basis: 160px;">
                 <div class="card-header">
                     <span>Ticket por Cupom.</span>
                 </div>
@@ -119,7 +128,7 @@
                     </span>
                 </div>
             </div>
-            <div class="card" style="flex-grow: 1; flex-basis: 200px;">
+            <div class="card" style="flex-grow: 1; flex-basis: 160px;">
                 <div class="card-header">
                     <span>Custo de Produtos.</span>
                 </div>
@@ -163,7 +172,7 @@
             </div>
         </div>
         <div class="d-flex flex-wrap gap-2 justify-content-around">
-            <div class="card" style="flex-grow: 1; flex-basis: 200px;">
+            <div class="card" style="flex-grow: 1; flex-basis: 160px;">
                 <div class="card-header">
                     <span>Top 3 Funcionários</span>
                 </div>
@@ -173,7 +182,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="card" style="flex-grow: 1; flex-basis: 200px;">
+            <div class="card" style="flex-grow: 1; flex-basis: 160px;">
                 <div class="card-header">
                     <span>Top 3 Produtos.</span>
                 </div>
@@ -183,7 +192,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="card" style="flex-grow: 1; flex-basis: 200px;">
+            <div class="card" style="flex-grow: 1; flex-basis: 160px;">
                 <div class="card-header">
                     <span>Top 3 Consertos por Marcas.</span>
                 </div>
