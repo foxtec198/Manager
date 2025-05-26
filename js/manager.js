@@ -1541,7 +1541,7 @@ async function abrirOS(t){
     var obs = document.getElementById('obs').value
     var relato = document.getElementById('relato').value
     var retirada = document.getElementById('retirada').value
-    var valor = parseFloat(document.getElementById('valor').value)
+    var valor = (document.getElementById('valor').value)
     var matricula = document.getElementById('matricula').value
     var statusOS = document.getElementById('noTipoOs').value 
     var form = new FormData()
