@@ -14,7 +14,7 @@ var filterRes = sessionStorage.getItem('filterRes')
 let timeout
 
 server = "https://api.hubbix.com.br"
-// server = "http://localhost:9560"
+server = "http://localhost:9560"
 
 var api = server + '/manager/v1/'
 
@@ -2643,6 +2643,22 @@ async function alterar_logo(t){
     else{toast(res, 'erro')}
 }
 
+async function alterar_email(t){
+    const email = document.getElementById('emailFx')
+
+    if(email.value){
+        const dd = {
+            "filter": "email",
+            "value": email.value
+        }
+        t.innerHTML = spinner
+        const req = await request("config","PATCH", dd)
+        const res = await req.json()
+        if(req.ok){location.reload()}
+        else{toast(res, 'erro')}
+    }else{toast('Email obrigatorio', 'erro')}
+}
+
 // ======================= Peças
 async function get_pecas(){
     fetch(api + '/manager/api/v1/get_pecas/?cr=' + cr)
@@ -2872,6 +2888,10 @@ $(document).ready(function(){
 // INPUTS MASKS
 $(document).ready(function(){
     $(".tel-mask").inputmask("(99) 99999-9999");
+});
+
+$(document).ready(function(){
+    $(".email-mask").inputmask("email");
 });
 
 $(document).ready(function(){
