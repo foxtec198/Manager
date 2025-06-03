@@ -1,5 +1,5 @@
 var div = document.createElement('div')
-var cart = []
+var cart = new Object
 var statusM = []
 var cont_status = 0
 var spinner = '<span id="spin_ldg" class="spinner-border spinner-border-sm text-light" role="status"></span>'
@@ -478,7 +478,8 @@ async function conferencia_de_caixa(){
         status.classList.add('text-bg-success')
 
         status.textContent = 'Caixa Aberto - ' + to_real(js.valor)
-        document.getElementById('btnAbrirCaixa').disabled = true
+        btn = document.getElementById('btnAbrirCaixa')
+        if(btn){btn.disabled = true}
     }else{
         const status = document.getElementById('statusCaixa')
         
@@ -833,12 +834,12 @@ async function getProds(){
                 btnRemoveItem.addEventListener('click', function(){
                     document.getElementById('listProdAdd').removeChild(li)
                     vl.value = (parseFloat(vl.value) - parseFloat(valor)).toFixed(1)
-                    cart.splice(cart.indexOf(nome), 1)
+                    rmvProdCart(idProd, valor)
                 })
         
                 li.appendChild(btnRemoveItem)
                 document.getElementById('listProdAdd').appendChild(li)
-                cart.push(nome)
+                addProdCart(idProd, nome, valor)
             })
             if(quant <= 0 && config_estoque){btn.disabled = true}
 
@@ -849,6 +850,25 @@ async function getProds(){
             document.getElementById('listProd').appendChild(tr)
         })
     }
+}
+
+function addProdCart(idProd, nome, valor){
+    if(cart[idProd]){
+        cart[idProd].quantidade += 1
+        cart[idProd].valor += valor
+    }else{
+        cart[idProd] = {
+            'nome': nome,
+            'quantidade': 1,
+            'valor': valor
+        }
+    }
+}
+
+function rmvProdCart(id, valor){
+    cart[id].quantidade -= 1
+    cart[id].valor -= valor
+
 }
 
 async function conferCPFNewVenda(inp) {
@@ -874,6 +894,15 @@ async function vender(){
     var cpf = limpar_pontuacao(document.getElementById('cpf').value)
     var desconto = limpar_float(document.getElementById('desconto').value)
     var sel = document.getElementById('selPag').value
+    var form = new FormData()
+
+    form.append('mat', mat)
+    form.append('valor', valorTotal)
+    form.append('cpf', cpf)
+    form.append('desconto', desconto)
+    form.append('mt_pag', sel)
+    form.append('cart', JSON.stringify(cart))
+    form.append('tipo', 'PRODUTOS')
 
     var dd = {
         'mat': mat,
@@ -886,14 +915,15 @@ async function vender(){
     }
 
     document.getElementById('btnVender').innerHTML = spinner
-    const req = await request("vendas", 'POST', dd)
+    const req = await sendForm("vendas", form, 'POST')
+    // const req = await request("vendas", 'POST', dd)
     const res = await req.json()
     if(req.ok){location.reload()}
     else{toast(res)}
 }
 
 function zerarcart(){
-    cart = []
+    cart = {}
     document.getElementById('valorProd').value =  null
     document.getElementById('listProdAdd').innerHTML = ''
 }
@@ -2744,7 +2774,7 @@ async function md_conferencia_cx(){
         stcx.classList.add("bg-danger")
     }
 }
-
+cx_total = localStorage.getItem('cx-total')
 async function md_add_prod(t) {
     if(t.value){
         const req = await request('produto', 'POST', {'ean': t.value})
@@ -2787,9 +2817,9 @@ async function md_add_prod(t) {
             document.getElementById('cxvlr').textContent = to_real(valor)
             document.getElementById('cxttitem').textContent = to_real(quant * valor)
             document.getElementById('cxcdg').textContent = id
+            document.getElementById('cxtotal').textContent = to_real(cx_total += total)
             
             md_cart.push(`${id}:${nome}`)
-            console.log(md_cart)
             t.value = ''
         }else{toast(res, 'erro'); t.value = ''}
     }
@@ -2802,6 +2832,35 @@ async function md_get_loja() {
         document.getElementById('logoBase').src = server + '/img/' + res['logo']
     }
 }
+
+// ==================================================  MODO CAIXA ATALHOS
+
+if(window.location.pathname == "/manager/modo_caixa.html"){
+    // Abrir caixa
+    document.addEventListener('keydown', function(e){
+        if(e.key === 'F10'){
+            e.preventDefault()
+            console.log('Abrir caixa')
+        }else{}
+    })
+    
+    // Multiplicar Item
+    document.addEventListener('keydown', function(e){
+        if(e.key === 'F2'){
+            e.preventDefault()
+            console.log('Multiplicar')
+        }else{}
+    })
+    
+    // Receber
+    document.addEventListener('keydown', function(e){
+        if(e.key === 'F1'){
+            e.preventDefault()
+            console.log('Receber')
+        }else{}
+    })
+}
+
 
 // JQuery ==================================================
 $(document).ready(function(){

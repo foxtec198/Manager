@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Receptor de Webhook</title>
+</head>
+<body>
+    <h1>Aguardando pagamento</h1>
+    <pre id="log"></pre>
+    
+
+
+
+    <!-- Scripts -->
+    <!-- Jquery --> <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"></script>
+    <!-- CHARTJS --> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="js/manager.js"></script>
+    <script>
+        async function requestl(url, method='GET', delayMs = 1000) {
+            let resposta;
+            let tentativas = 0;
+            let log = document.getElementById('log')
+
+            while (true) {
+                if(tentativas < 60){
+                    try {
+                        resposta = await fetch(api + url, {method: method});
+    
+                        if (resposta.status === 200) {
+                            console.log("✅ Requisição bem-sucedida!");
+                            log.textContent = "✅ Requisição bem-sucedida!";
+                            const dados = await resposta.json(); // ou .text() se não for JSON
+                            return dados;
+                        } else {
+                            console.warn(`⚠️ Tentativa ${++tentativas}: status ${resposta.status}`);
+                        }
+                    } catch (erro) {
+                        console.error(`❌ Erro na requisição:`, erro);
+                    }
+    
+                    // Aguarda um pouco antes da próxima tentativa
+                    await new Promise(resolve => setTimeout(resolve, delayMs));
+                }else{
+                    return 'Sessão expirada!'
+                }
+            }
+        }
+
+        requestl('pagamento')
+
+
+    </script>
+</body>
+</html>
