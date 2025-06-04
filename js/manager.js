@@ -1894,6 +1894,7 @@ async function newClient(t){
     var end = document.getElementById('ncEnd').value
     var obs = document.getElementById('ncObs').value
 
+    alert(cpf)
     var dados = {
         "cpf": cpf,
         "nome": nome,
