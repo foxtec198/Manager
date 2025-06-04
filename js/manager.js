@@ -1883,7 +1883,7 @@ async function getMarcasClientes(){
 }
     
 async function newClient(t){
-    var cpf = limpar_pontuacao(document.getElementById('ncCpf').value)
+    var cpf = somente_numeros(document.getElementById('ncCpf').value)
     var nome = document.getElementById('ncNome').value
     var tel = document.getElementById('ncTel').value
     var tel2 = document.getElementById('ncTel2').value
