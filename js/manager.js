@@ -643,7 +643,7 @@ async function getSaidas(){
     const res = await req.json()
 
     document.getElementById('divTableVendas').innerHTML = `
-        <table class="display" id="tablevendas">
+        <table class="table table-hover" id="tablevendas">
             <thead>
                 <td>Nome</td>
                 <td>Tipo</td>
@@ -776,9 +776,9 @@ async function getSaidas(){
         })
     }
 
-    let table = new DataTable('#tablevendas', {
-        responsive: true
-    });
+    //let table = new DataTable('#tablevendas', {
+    //    responsive: true
+    //});
 }
 
 async function vendasPorTipo(){
