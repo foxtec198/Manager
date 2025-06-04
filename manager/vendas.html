@@ -56,7 +56,7 @@
                         <div class="d-flex flex-wrap border rounded p-2 gap-2">
                             <div class="d-flex flex-column p-2" style="flex-grow: 1; flex-basis: 400px;">
                                 <div class="form-floating">
-                                    <input type="text" placeholder="Valor: R$" class="form-control" id="valorProd" disabled>
+                                    <input type="text" placeholder="Valor: R$" class="form-control money-mask" id="valorProd" disabled>
                                     <label for="valorProd">Valor: R$</label>
                                 </div>
                             </div>
@@ -85,14 +85,20 @@
                             <div class="d-flex flex-column p-2" style="flex-grow: 1; flex-basis: 200px;">
                                 <div class="input-group mb-3">
                                     <span class="input-group-text" id="basic-addon1"><i class="bi bi-credit-card-fill"></i></span>
-                                    <select class="form-select" id="selPag">
-                                        <option>Pix</option>
-                                        <option>Dinheiro</option>
-                                        <option>Debito</option>
-                                        <option>Credito</option>
-                                    </select>
+                                    <div class="form-floating">
+                                        <select class="form-select" aria-placeholder="Metodo de Pagamento" id="selPag">
+                                            <option>Debito</option>
+                                            <option>Credito</option>
+                                            <option>Dinheiro</option>
+                                            <option>Pix</option>
+                                        </select>
+                                        <label for="selPag">Metodo de Pagamento</label>
+                                    </div>
                                 </div>
                             </div>
+                            <!-- <div class="d-flex justify-content-center align-items-center">
+                                <img class="img-fluid img-thumbnail" width="200vh" src="https://api.hubbix.com.br/qrpix/1MSOFICINADOCELULAR1MSOFICINADOCELULARKEY20250603041207.png" alt="qrcodepix" id="imgqr">
+                            </div> -->
                         </div>
                     </div>
                 </div>

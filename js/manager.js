@@ -14,7 +14,7 @@ var filterRes = sessionStorage.getItem('filterRes')
 let timeout
 
 server = "https://api.hubbix.com.br"
-// server = "http://localhost:9560"
+server = "http://localhost:9560"
 
 var api = server + '/manager/v1/'
 
@@ -668,7 +668,14 @@ async function getSaidas(){
             cliente.textContent = item['cliente']
     
             const pagamento = document.createElement('td')
-            pagamento.textContent = item['pagamento']
+            pagamento.classList.add('text-truncate')
+            if(item['pagamento'] == 'Em processamento.'){
+                pagamento.innerHTML = `
+                    ${item['pagamento']} <a href='payment.html?id=${item['idVenda']}&qr=${item['qr']}' class='btn btn-secondary btn-sm'>Finalizar Pagamento</a>
+                `
+            }else{
+                pagamento.textContent = item['pagamento']
+            }
     
             const atendente = document.createElement('td')
             atendente.textContent = item['atendente']
@@ -904,21 +911,16 @@ async function vender(){
     form.append('cart', JSON.stringify(cart))
     form.append('tipo', 'PRODUTOS')
 
-    var dd = {
-        'mat': mat,
-        'valor': valorTotal,
-        'cpf': cpf,
-        'desconto': desconto,
-        'mt_pag': sel,
-        'cart': cart,
-        'tipo': 'PRODUTOS' 
-    }
-
     document.getElementById('btnVender').innerHTML = spinner
     const req = await sendForm("vendas", form, 'POST')
-    // const req = await request("vendas", 'POST', dd)
     const res = await req.json()
-    if(req.ok){location.reload()}
+    if(req.ok){
+        if(res['qr']){
+            window.location = `/manager/payment.html?qr=${res['qr']}&id=${res['id_venda']}`
+        }else{
+            location.reload()
+        }
+    }
     else{toast(res)}
 }
 
