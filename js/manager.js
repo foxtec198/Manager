@@ -486,7 +486,7 @@ async function calc(){
     if(res.ok){
         alert(JSON.stringify(js))
         for(item in js){
-            document.getElementById(item.toLowerCase()).value += to_real(js[item])
+            document.getElementById(item.toLowerCase()) += to_real(js[item])
         }
     }
 }
