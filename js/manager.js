@@ -485,7 +485,6 @@ async function calc(){
     const js = await res.json()
     if(res.ok){
         for(item in js){
-            alert(item)
             document.getElementById(item.toLowerCase()).value += to_real(js[item])
         }
     }
