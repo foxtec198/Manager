@@ -1,6 +1,8 @@
 body, html{
     height: 100%;
     width: 100%;
+    margin: 0;
+    padding: 0;
     --green: #5E8B60;
     --cinza: #282729;
     --cinza2: #2B3035;
@@ -24,16 +26,16 @@ body, html{
   left: -10px;
 }
 
-.scroll-container {
+/* .scroll-container {
   width: 100%;
   overflow: hidden;
   /* background: #0b0b0d; */
-  padding: 0.5rem 0;
+  /* padding: 0.5rem 0; */
   /* border-top: 1px solid #2ecc7140; */
   /* border-bottom: 1px solid #2ecc7140; */
-}
+/* } */
 
-.scroll-content {
+/* .scroll-content {
   display: inline-block;
   white-space: nowrap;
   animation: scroll-left 15s linear infinite;
@@ -42,7 +44,7 @@ body, html{
   color: #2ecc71;
   text-shadow: 0 0 6px #2ecc71aa;
   font-size: 1.1rem;
-}
+} */
 
 @keyframes scroll-left {
   0% {
@@ -65,9 +67,9 @@ nav{
 .nv{
     background-color: var(--cinza);
 }
-::-webkit-scrollbar{
+/* ::-webkit-scrollbar{
     width: 0px;
-}
+} */
 .navBot{
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;

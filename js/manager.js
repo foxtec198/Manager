@@ -14,7 +14,7 @@ var filterRes = sessionStorage.getItem('filterRes')
 let timeout
 
 server = "https://api.hubbix.com.br"
-// server = "http://localhost:9560"
+server = "http://localhost:9560"
 
 var api = server + '/manager/v1/'
 
@@ -36,6 +36,27 @@ perm = sessionStorage.getItem("perm")
 //         btnCalc.innerHTML = '<i class="bi bi-caret-left-fill"></i>'
 //     }
 // }
+
+function create_modal(id, title, body, center='modal-dialog-centered'){
+    container = document.createElement('div')
+    const modalHtml = `
+        <div class="modal fade" id="${id}" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+            <div class="modal-dialog ${center}">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">${title}</h5>
+                </div>
+                <div class="modal-body">
+                    ${body}
+                </div>
+            </div>
+            </div>
+        </div>
+    `;
+    container.innerHTML = modalHtml
+    document.body.appendChild(container)
+    return new bootstrap.Modal(document.getElementById(id), {'show':true, 'backdrop': 'static'})
+}
 
 function validar_senha(senha){
     const temSimbolo = /[!@#$%^&*(),.?":{}|<>]/.test(senha);
@@ -622,20 +643,21 @@ async function getSaidas(){
     const res = await req.json()
 
     document.getElementById('divTableVendas').innerHTML = `
-    <table class="table table-hover" id="table">
-        <thead>
-            <td>Nome</td>
-            <td>Tipo</td>
-            <td>Valor</td>
-            <td>Cliente</td>
-            <td>Pagamento</td>
-            <td>Atendente</td>
-            <td>Data</td>
-            <td>Ação</td>
-        </thead>
-        <tbody id="tbVendas">
-        </tbody>
-    </table>`
+        <table class="display" id="tablevendas">
+            <thead>
+                <td>Nome</td>
+                <td>Tipo</td>
+                <td>Valor</td>
+                <td>Cliente</td>
+                <td>Pagamento</td>
+                <td>Atendente</td>
+                <td>Data</td>
+                <td>Ação</td>
+            </thead>
+            <tbody id="tbVendas">
+            </tbody>
+        </table>
+    `
 
     if(req.ok){
         res.forEach(item => {
@@ -671,7 +693,7 @@ async function getSaidas(){
             pagamento.classList.add('text-truncate')
             if(item['pagamento'] == 'Em processamento.'){
                 pagamento.innerHTML = `
-                    ${item['pagamento']} <a href='payment.html?id=${item['idVenda']}&qr=${item['qr']}' class='btn btn-secondary btn-sm'>Finalizar Pagamento</a>
+                    ${item['pagamento']} <a href='payment.html?id=${item['idVenda']}&qr=${item['qr']}&key=${item['key']}' class='btn btn-secondary btn-sm'>Finalizar Pagamento</a>
                 `
             }else{
                 pagamento.textContent = item['pagamento']
@@ -753,6 +775,10 @@ async function getSaidas(){
             document.getElementById('tbVendas').appendChild(tr)  
         })
     }
+
+    let table = new DataTable('#tablevendas', {
+        responsive: true
+    });
 }
 
 async function vendasPorTipo(){
@@ -916,7 +942,7 @@ async function vender(){
     const res = await req.json()
     if(req.ok){
         if(res['qr']){
-            window.location = `/manager/payment.html?qr=${res['qr']}&id=${res['id_venda']}`
+            window.location = `/manager/payment.html?qr=${res['qr']}&id=${res['id_venda']}&key=${res['key']}`
         }else{
             location.reload()
         }
@@ -2776,10 +2802,11 @@ async function md_conferencia_cx(){
         stcx.classList.add("bg-danger")
     }
 }
+
 cx_total = localStorage.getItem('cx-total')
-async function md_add_prod(t) {
-    if(t.value){
-        const req = await request('produto', 'POST', {'ean': t.value})
+async function md_add_prod(t, ean=t.value, db=true) {
+    if(ean){
+        const req = await request('produto', 'POST', {'ean': ean})
         const res = await req.json()
         if(req.ok){
             numItem += 1
@@ -2789,6 +2816,14 @@ async function md_add_prod(t) {
             const ean = res['ean']
             const quant = 1
             const total = valor * quant
+
+            dd = {
+                'idProd':id,
+                'ean': ean,
+                'nome': nome,
+                'quantidade': quant,
+                'valor': valor
+            }
 
             const numtd = document.createElement('td')
             const idtd = document.createElement('td')
@@ -2821,6 +2856,7 @@ async function md_add_prod(t) {
             document.getElementById('cxcdg').textContent = id
             document.getElementById('cxtotal').textContent = to_real(cx_total += total)
             
+            if(db){request('produto', 'PUT', dd)}
             md_cart.push(`${id}:${nome}`)
             t.value = ''
         }else{toast(res, 'erro'); t.value = ''}
@@ -2835,17 +2871,65 @@ async function md_get_loja() {
     }
 }
 
+async function md_get_produtos(){
+    const req = await request('produto')
+    let res = await req.json()
+
+    if(req.ok){
+        res.forEach(item =>{
+            md_add_prod('', item[0], false)
+        })
+    }
+}
+
+async function md_alter_caixa() {
+    const st = await statusCaixa()
+    if(st.status){
+        // fecha
+        body = `
+            <div class="d-flex flex-column gap-2">
+                <div class="form-floating">
+                    <input id="fecharMat" placeholder="Matricula" class="form-control" autofocus/>
+                    <label for="fecharMat">Matricula</label>
+                </div>
+                <button class="btn btn-danger" type="button" onclick="fechar_caixa(this)">Fechar Caixa</button>
+            </div>
+        `
+        modal = create_modal('modal_md_caixa', 'Fechar caixa!', body)
+        modal.show()
+    }else{
+        // abre
+        body = `
+            <div class="d-flex flex-column gap-2">
+                <div class="form-floating">
+                    <input id="mattroco" placeholder="Matricula" onblur="conferTroco(this)" class="form-control" autofocus/>
+                    <label for="mattroco">Matricula</label>
+                </div>
+                <div class="form-floating">
+                    <input id="troco" placeholder="Troco" class="form-control money-mask" />
+                    <label for="troco">Troco</label>
+                </div>
+                <button class="btn btn-success" id="btnAbrirCaixa" type="button" onclick="abrirCaixa(this)" disabled>Abrir</button>
+            </div>
+        `
+        modal = create_modal('modal_md_caixa', 'Abrir caixa!', body)
+        modal.show()
+    }
+    
+}
 // ==================================================  MODO CAIXA ATALHOS
 
 if(window.location.pathname == "/manager/modo_caixa.html"){
+    md_get_produtos()
     // Abrir caixa
     document.addEventListener('keydown', function(e){
         if(e.key === 'F10'){
             e.preventDefault()
             console.log('Abrir caixa')
+            md_alter_caixa()
         }else{}
     })
-    
+
     // Multiplicar Item
     document.addEventListener('keydown', function(e){
         if(e.key === 'F2'){

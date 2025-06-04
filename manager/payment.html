@@ -37,6 +37,7 @@
 
         const id = params.get('id')
         const qr = params.get('qr')
+        const key = params.get('key')
         console.log(id, qr)
 
         let img =  document.getElementById('qrpix')
@@ -78,7 +79,7 @@
             }
         }
 
-        requestl(`pagamento?id=${id}`)
+        requestl(`pagamento?id=${id}&key=${key}`)
     </script>
 </body>
 </html>

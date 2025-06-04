@@ -11,6 +11,16 @@
 
     <!-- Local Arch -->
     <link rel="stylesheet" href="../css/base_manager.css">
+    <style>
+        body{
+            zoom: 70%;
+        }
+        .modal-backdrop.show {
+            width: 100%;
+            height: 100%;
+            filter: blur('3px');
+        }
+    </style>
 </head>
 <body data-bs-theme="dark">
     <div class="d-flex flex-column h-100 justify-content-between p-4">
@@ -31,6 +41,20 @@
                     <div class="card-body p-4 text-center fs-5 fw-bold" id="cxttitem">
                     </div>
                 </div>
+                <div class="card bd-green">
+                    <div class="card-header">Comandos.</div>
+                    <div class="card-body gap-4 justify-content-around d-flex p-4 text-start" id="cxttitem">
+                        <div class="d-flex flex-column">
+                            <span>F1 - Receber Venda</span>
+                            <span>F2 - Multiplicar Item</span>
+                            <span>F3 - Dar baixa em OS</span>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <span>F9 - Cancelar Venda</span>
+                            <span>F10 - Abrir/Fechar Caixa</span>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="card d-flex bd-violet flex-grow-1 p-2">
                 <div class="card-header text-center">
@@ -40,7 +64,7 @@
                     <table class="table" id="listProd">
                         <thead>
                             <th>N° Item</th>
-                            <th>Código</th>
+                            <th>Id</th>
                             <th>Descrição</th>
                             <th>Qntd.</th>
                             <th>Vlr Unit.</th>
