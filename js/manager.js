@@ -14,7 +14,7 @@ var filterRes = sessionStorage.getItem('filterRes')
 let timeout
 
 server = "https://api.hubbix.com.br"
-// server = "http://localhost:9560"
+server = "http://localhost:9560"
 
 var api = server + '/manager/v1/'
 
@@ -2310,8 +2310,14 @@ async function editar_produto(t){
 
 // =============== Relatorios
 async function get_infos(opt='dia'){
-    const req = await request('get_infos_dash?filter=' + filterRes)
+    if(filterRes == 'periodo'){
+        periodo = document.getElementById('btn-' + filterRes).value
+        req = await request('get_infos_dash?periodo=' + periodo)
+    }else{
+        req = await request('get_infos_dash?filter=' + filterRes)
+    }
     const res = await req.json()
+    console.log(res)
 
     if(req.ok){
         var green = '#344e41'
@@ -2536,18 +2542,22 @@ async function get_infos(opt='dia'){
 
 function trocarFiltroRes(t){
     var btnAntigo = document.getElementById(`btn-${filterRes}`)
-    try{
-        btnAntigo.classList.remove('btn-success')
-        btnAntigo.classList.add('btn-outline-success')
-    }catch{}
+    btnAntigo.classList.remove('btn-success')
+    btnAntigo.classList.add('btn-outline-success')
     
+    if(t.id == 'btn-periodo'){
+        sessionStorage.setItem('filterRes', 'periodo')
+    }else{
+        sessionStorage.setItem('filterRes', t.value)
+    }
     t.classList.add('btn-success')
     t.classList.remove('btn-outline-success')
-    sessionStorage.setItem('filterRes', t.value)
+    
     filterRes = sessionStorage.getItem('filterRes')
     if(t.value === 'ano'){get_infos('mês')}
-    else{get_infos()}
+    else{get_infos(); console.log('aqui')}
 }
+
 
 // =============== Configurações
 async function get_config() {

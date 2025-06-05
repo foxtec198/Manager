@@ -13,6 +13,12 @@
 
     <!-- Local Arch -->
     <link rel="stylesheet" href="../css/base_manager.css">
+
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+
+    </style>
 </head>
 <body data-bs-theme="dark">
     <span class="fs-1 p-2 fw-bold">Relatórios.</span>
@@ -28,16 +34,16 @@
             <button class="btn btn-success" id="btn-hoje" value="hoje" onclick="trocarFiltroRes(this)">Hoje</button>
             <button class="btn btn-outline-success" id="btn-mes" value="mes" onclick="trocarFiltroRes(this)">Mês</button>
             <button class="btn btn-outline-success" id="btn-ano" value="ano" onclick="trocarFiltroRes(this)">Ano</button>
-            <input class="btn btn-outline-success" type="date" onchange="trocarFiltroRes(this)" id="btn-data">
+            <input class="btn btn-outline-success" type="date" placeholder="Personalizado" onchange="trocarFiltroRes(this)" id="btn-data">
         </div>
-        <!-- <div class="d-flex p-2 gap-2 align-items-center">
+        <div class="d-flex p-2 gap-2 align-items-center">
             <i class="bi bi-calendar-check"></i>
             <span class="fw-bold">Periodo: </span>
         </div>
-        <div class="btn-group">
-            <input class="btn btn-outline-success" type="date" onchange="trocarFiltroRes(this)" id="btn-data">
-            <input class="btn btn-outline-success" type="date" onchange="trocarFiltroRes(this)" id="btn-data">
-        </div>-->
+        <div class="d-flex btn-group justify-content-center align-items-center">
+            <input class="btn btn-outline-success w-100" type="text" value="Periodo" id="btn-periodo">
+            <button class="btn btn-success input-group-text" id="btnPeriodo" onclick="trocarFiltroRes(document.getElementById('btn-periodo'))">Filtrar</button>
+        </div>
     </div>
     <hr>
 
@@ -215,7 +221,18 @@
     <!-- Chartjs --> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+
     <script src="../js/manager.js"></script>
-    <script>get_infos()</script>
+    <script>
+        get_infos()
+        flatpickr("#btn-periodo", {
+            mode: "range",
+            dateFormat: "d/m/Y",
+            locale: "pt"
+        });
+    </script>
 </body>
 </html>
