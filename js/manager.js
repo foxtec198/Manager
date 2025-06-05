@@ -23,6 +23,8 @@ gc = sessionStorage.getItem('gc')
 config_pecas = sessionStorage.getItem('pecas') == "true"
 config_estoque = sessionStorage.getItem('estoque') == "true"
 perm = sessionStorage.getItem("perm")
+const meses = {1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril", 5: "Maio", 6: "Junho", 7: "Julho", 8: "Agosto", 9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"};
+const mesesAbreviados = {1: "Jan", 2: "Fev", 3: "Mar", 4: "Abr", 5: "Mai", 6: "Jun", 7: "Jul", 8: "Ago", 9: "Set", 10: "Out", 11: "Nov", 12: "Dez"};
 
 // function openCalc(){
 //     const divCalc = document.getElementById('divCalc')
@@ -40,7 +42,7 @@ perm = sessionStorage.getItem("perm")
 function create_modal(id, title, body, center='modal-dialog-centered'){
     container = document.createElement('div')
     const modalHtml = `
-        <div class="modal fade" id="${id}" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal fade" id="${id}" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
             <div class="modal-dialog ${center}">
             <div class="modal-content">
                 <div class="modal-header">
@@ -2317,7 +2319,6 @@ async function get_infos(opt='dia'){
         req = await request('get_infos_dash?filter=' + filterRes)
     }
     const res = await req.json()
-    console.log(res)
 
     if(req.ok){
         var green = '#344e41'
@@ -2396,15 +2397,23 @@ async function get_infos(opt='dia'){
         // Dashboard Vendas
         var dv = document.getElementById('divDashVendas')
         dv.style.height = '300px'
-
+        
         if(res['PROD_MES']['valor'].length > 0){
             var dashVendas = document.createElement('canvas')
+
+            mesesDash = res['PROD_MES']['dia']
+            if(filterRes == 'ano'){
+                mesesDash = []
+                res['PROD_MES']['dia'].forEach(item =>{
+                    mesesDash.push(`${item} - ${mesesAbreviados[parseInt(item)]}`)
+                })
+            }
 
             dv.innerHTML = ''
             new Chart(dashVendas, {
                 type: 'line',
                 data: {
-                labels: res['PROD_MES']['dia'],
+                labels: mesesDash,
                 
                 datasets: [{
                     data: res['PROD_MES']['cont'],
@@ -2427,17 +2436,20 @@ async function get_infos(opt='dia'){
                 options: {
                 indexAxis: 'x', 
                 responsive: true,
-                aspectRatio: 1,
+                aspectRatio: 0,
                 scales: {
                     x: {
                         beginAtZero: false
+                    },
+                    y: {
+                        display: false
                     }
                 },
                 plugins: {
-                    title: {
-                      display: true,
-                      text: 'PRODUTOS POR ' + opt.toUpperCase()
-                    }
+                    // title: {
+                    //   display: true,
+                    //   text: 'PRODUTOS POR ' + opt.toUpperCase()
+                    // }
                 },
                 }
             })
@@ -2454,10 +2466,20 @@ async function get_infos(opt='dia'){
         if(osMes['valor'].length > 0){
             var dashOs = document.createElement('canvas')
             dv2.innerHTML = ''
+
+            mesesDash = osMes['dia']
+            if(filterRes == 'ano'){
+                mesesDash = []
+                osMes['dia'].forEach(item =>{
+                    mesesDash.push(`${item} - ${mesesAbreviados[parseInt(item)]}`)
+                })
+            }
+
+
             new Chart(dashOs, {
                 type: 'line',
                 data: {
-                labels: osMes['dia'],
+                labels: mesesDash,
                 
                 datasets: [{
                     data: osMes['cont'],
@@ -2480,17 +2502,20 @@ async function get_infos(opt='dia'){
                 options: {
                 indexAxis: 'x', 
                 responsive: true,
-                aspectRatio: 1,
+                aspectRatio: 0,
                 scales: {
                     x: {
                         beginAtZero: false
+                    },
+                    y: {
+                        display: false
                     }
                 },
                 plugins: {
-                    title: {
-                      display: true,
-                      text: 'ORDENS POR ' + opt.toUpperCase()
-                    }
+                    // title: {
+                    //   display: true,
+                    //   text: 'ORDENS - ' + filterRes.toUpperCase()
+                    // }
                 },
                 }
             })
@@ -2541,7 +2566,11 @@ async function get_infos(opt='dia'){
 }
 
 function trocarFiltroRes(t){
-    var btnAntigo = document.getElementById(`btn-${filterRes}`)
+    if(isValidDate(filterRes)){
+        var btnAntigo = document.getElementById(`btn-data`)
+    }else{
+        var btnAntigo = document.getElementById(`btn-${filterRes}`)
+    }
     btnAntigo.classList.remove('btn-success')
     btnAntigo.classList.add('btn-outline-success')
     
@@ -2550,14 +2579,19 @@ function trocarFiltroRes(t){
     }else{
         sessionStorage.setItem('filterRes', t.value)
     }
+
     t.classList.add('btn-success')
     t.classList.remove('btn-outline-success')
     
     filterRes = sessionStorage.getItem('filterRes')
     if(t.value === 'ano'){get_infos('mês')}
-    else{get_infos(); console.log('aqui')}
+    else{get_infos()}
 }
 
+function isValidDate(dateString) {
+  const date = new Date(dateString);
+  return !isNaN(date.getTime());
+}
 
 // =============== Configurações
 async function get_config() {
