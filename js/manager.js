@@ -734,7 +734,7 @@ async function getSaidas(){
                 var conf = confirm('Deseja excluir permanentemente esta venda?')
                 if(conf){
                     btnCancel.innerHTML = spinner
-                    const req = await request("vendas", "DELETE", {'id':id,'id_venda':idVenda})
+                    const req = await request("vendas", "DELETE", {'id': id,'id_venda':idVenda})
                     const res = await req.json()
                     if(req.ok){location.reload()}
                     else{toast(res)}
@@ -756,13 +756,34 @@ async function getSaidas(){
                 var conf = confirm('Deseja excluir permanentemente este item?')
                 if (conf){
                     btnCancelItem.innerHTML = spinner
-                    const req = await request("saidas", "DELETE", {'id':id, 'id_venda':idVenda})
+                    const req = await request("saidas", "DELETE", {'id': id, 'id_venda':idVenda})
                     const res = await req.json()
                     if(req.ok){location.reload()}
                     else{toast(res)}
                 }
             })
+
+            const btnNota = document.createElement('button')
+            var icon = document.createElement('i')
+            icon.classList.add('bi')
+            icon.classList.add('bi-sticky-fill')
+            btnNota.appendChild(icon)
+            btnNota.classList.add('btn')
+            btnNota.classList.add('btn-sm')
+            btnNota.classList.add('btn-light')
     
+            new bootstrap.Tooltip(btnNota, {title:'Salvar nota'})
+    
+            btnNota.addEventListener('click', async function(){
+                btnNota.innerHTML = '<span id="spin_ldg" class="spinner-border spinner-border-sm text-dark" role="status"></span>'
+                const req = await request('nnf?id=' + idVenda)
+                const res = await req.json()
+                if(req.ok){
+                    window.location = server + '/nnf/' + res
+                }
+            })
+    
+            btngp.appendChild(btnNota)
             btngp.appendChild(btnCancelItem)
             btngp.appendChild(btnCancel)
     
