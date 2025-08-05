@@ -249,7 +249,7 @@ function capitalize(string){
 
 // Troca e memoriza a screen
 function change_screen(screnn, t=null){
-    others = document.querySelectorAll('.menu-item')
+    others = parent.document.querySelectorAll('.menu-item')
     others.forEach(element => {
         element.style.background = null
         element.style.color = '#fff';
@@ -259,7 +259,7 @@ function change_screen(screnn, t=null){
         t.style.color = '#2ecc71';
         t.style.boxShadow = "inset 0 0 0 1px #2ecc71aa, 0 0 6px #2ecc7190;"
     }
-    frame = document.getElementById('frame_screen')
+    frame = parent.document.getElementById('frame_screen')
     sessionStorage.setItem('frame', `/manager/${screnn}.html`)
     frame.src = `/manager/${screnn}.html`
 }
@@ -267,13 +267,13 @@ function change_screen(screnn, t=null){
 // Recupera a tela mesmo que atualize a pagina
 function restore_screen(){
     frame = sessionStorage.getItem('frame')
-    frameWidget = document.getElementById('frame_screen')
+    frameWidget = parent.document.getElementById('frame_screen')
     
     if(frame){
         txt1 = frame.replace('/manager/', '')
         txt2 = txt1.replace('.html', '')
         frameWidget.src = frame
-        const t = document.querySelector(`.menu-${txt2}`)
+        const t = parent.document.querySelector(`.menu-${txt2}`)
         t.style.background = "rgba(41, 201, 108, 0.08)";
         t.style.color = '#2ecc71';
         t.style.boxShadow = "inset 0 0 0 1px #2ecc71aa, 0 0 6px #2ecc7190;"
@@ -831,84 +831,93 @@ async function getProds(){
     const js = await res.json()
 
     if(res.ok){
-        js.forEach(item => {
-            const tr = document.createElement('tr')
-        
-            const idProd = item['id']
-            const nome = item['nome']
-            const valor = item['valor']
-            const quant = item['quant']
-            const alerta = item['es_min']
-        
-            const nomeTd = document.createElement('td')
-            nomeTd.classList.add("d-flex", "align-items-center", "justify-content-between")
-            if(config_estoque){
-                if(quant <= 0){
-                    nomeTd.innerHTML = `
-                        <span>${nome}</span>
-                        <span class="badge badge-sm text-bg-danger p-1" style="font-size: 14px;">Sem estoque!</span>
-                    `
-                }else{
-                nomeTd.innerHTML = `
-                        <span>${nome}</span>
-                        <span class="badge badge-sm text-bg-success p-1" style="font-size: 14px;">${to_real(valor)}</span>
-                    `
-
-                }
-            }else{
-                nomeTd.innerHTML = `
-                        <span>${nome}</span>
-                        <span class="badge badge-sm text-bg-success p-1" style="font-size: 14px;">${to_real(valor)}</span>
-                    `
-
-            }
-
+        if(js[0]){
+            js.forEach(item => {
+                const tr = document.createElement('tr')
             
-            const btnTd = document.createElement('td')
-            const btn = document.createElement('button')
-            btn.classList.add('btn')
-            btn.classList.add('btn-dark')
-            btn.innerHTML = '<i class="bi bi-plus-square-dotted"></i>'
-            btn.addEventListener('click', function(){
+                const idProd = item['id']
+                const nome = item['nome']
+                const valor = item['valor']
+                const quant = item['quant']
+                const alerta = item['es_min']
+            
+                const nomeTd = document.createElement('td')
+                nomeTd.classList.add("d-flex", "align-items-center", "justify-content-between")
                 if(config_estoque){
-                    if(quant <= alerta){toast("Produto com alerta de estoque!")}
-                }
-                const vl = document.getElementById('valorProd')
-                let newvl = 0
-                if(vl.value){
-                    newvl = (parseFloat(vl.value) + parseFloat(valor)).toFixed(1)
+                    if(quant <= 0){
+                        nomeTd.innerHTML = `
+                            <span>${nome}</span>
+                            <span class="badge badge-sm text-bg-danger p-1" style="font-size: 14px;">Sem estoque!</span>
+                        `
+                    }else{
+                    nomeTd.innerHTML = `
+                            <span>${nome}</span>
+                            <span class="badge badge-sm text-bg-success p-1" style="font-size: 14px;">${to_real(valor)}</span>
+                        `
+    
+                    }
                 }else{
-                    newvl = parseFloat(valor)
+                    nomeTd.innerHTML = `
+                            <span>${nome}</span>
+                            <span class="badge badge-sm text-bg-success p-1" style="font-size: 14px;">${to_real(valor)}</span>
+                        `
+    
                 }
-                vl.value = newvl
-                const li = document.createElement('li')
-                li.classList.add('list-group-item')
-                li.classList.add('d-flex')
-                li.classList.add('justify-content-between')
-                li.classList.add('align-items-center')
-                li.textContent = nome
-                const btnRemoveItem = document.createElement('button')
-                btnRemoveItem.classList.add('btn')
-                btnRemoveItem.classList.add('btn-danger')
-                btnRemoveItem.innerHTML = '<i class="bi bi-trash-fill"></i>'
-                btnRemoveItem.addEventListener('click', function(){
-                    document.getElementById('listProdAdd').removeChild(li)
-                    vl.value = (parseFloat(vl.value) - parseFloat(valor)).toFixed(1)
-                    rmvProdCart(idProd, valor)
+    
+                
+                const btnTd = document.createElement('td')
+                const btn = document.createElement('button')
+                btn.classList.add('btn')
+                btn.classList.add('btn-dark')
+                btn.innerHTML = '<i class="bi bi-plus-square-dotted"></i>'
+                btn.addEventListener('click', function(){
+                    if(config_estoque){
+                        if(quant <= alerta){toast("Produto com alerta de estoque!")}
+                    }
+                    const vl = document.getElementById('valorProd')
+                    let newvl = 0
+                    if(vl.value){
+                        newvl = (parseFloat(vl.value) + parseFloat(valor)).toFixed(1)
+                    }else{
+                        newvl = parseFloat(valor)
+                    }
+                    vl.value = newvl
+                    const li = document.createElement('li')
+                    li.classList.add('list-group-item')
+                    li.classList.add('d-flex')
+                    li.classList.add('justify-content-between')
+                    li.classList.add('align-items-center')
+                    li.textContent = nome
+                    const btnRemoveItem = document.createElement('button')
+                    btnRemoveItem.classList.add('btn')
+                    btnRemoveItem.classList.add('btn-danger')
+                    btnRemoveItem.innerHTML = '<i class="bi bi-trash-fill"></i>'
+                    btnRemoveItem.addEventListener('click', function(){
+                        document.getElementById('listProdAdd').removeChild(li)
+                        vl.value = (parseFloat(vl.value) - parseFloat(valor)).toFixed(1)
+                        rmvProdCart(idProd, valor)
+                    })
+            
+                    li.appendChild(btnRemoveItem)
+                    document.getElementById('listProdAdd').appendChild(li)
+                    addProdCart(idProd, nome, valor)
                 })
-        
-                li.appendChild(btnRemoveItem)
-                document.getElementById('listProdAdd').appendChild(li)
-                addProdCart(idProd, nome, valor)
+                if(quant <= 0 && config_estoque){btn.disabled = true}
+    
+                btnTd.appendChild(btn)
+                tr.appendChild(nomeTd)
+                tr.appendChild(btnTd)
+            
+                document.getElementById('listProd').appendChild(tr)
             })
-            if(quant <= 0 && config_estoque){btn.disabled = true}
-
-            btnTd.appendChild(btn)
-            tr.appendChild(nomeTd)
-            tr.appendChild(btnTd)
-        
-            document.getElementById('listProd').appendChild(tr)
-        })
+        }else{
+            document.getElementById('listProd').innerHTML = `
+            <div class="d-flex flex-column gap-4 align-items-center justify-content-center">
+                <span colspan="2" class="text-center">Nenhum produto cadastrado!</span>
+                <button class="btn btn-success" onclick="change_screen('estoque')">Cadastrar</button>
+            </div>  
+            `
+        }
     }
 }
 
@@ -990,90 +999,92 @@ async function getDadosOs() {
     const res = await req.json()
 
     if(req.ok){
-        res.forEach(item => {
-            const id = item['id']
-            const cpf = item['cpf']
-            const nome = item['nome']
-            const telefone = item['tel']
-            const modelo = item['modelo']
-            const marca = item['marca']
-            const cor = item['cor']
-            const endereco = item['endereco']
-            const imei = item['imei']
+        if(res[0]){
+            res.forEach(item => {
+                const id = item['id']
+                const cpf = item['cpf']
+                const nome = item['nome']
+                const telefone = item['tel']
+                const modelo = item['modelo']
+                const marca = item['marca']
+                const cor = item['cor']
+                const endereco = item['endereco']
+                const imei = item['imei']
+        
+                var ul = document.getElementById('listClient')
+        
+                var li = document.createElement('li')
+                li.classList.add('list-group-item')
     
-            var ul = document.getElementById('listClient')
+                var dv = document.createElement('div')
+                dv.classList.add("d-flex")
+                dv.classList.add("flex-row")
+                dv.classList.add("justify-content-between")
+        
+                var s = document.createElement('spam')
+                s.classList.add('d-flex')
+                s.classList.add('flex-column')
+                if(to_CPF(cpf)){
+                    s.innerHTML = `
+                        <spam class="fs-6 fw-bold text-truncate" style="max-width: 200px;">${nome}</spam>
+                        <spam style="font-size: 12px;">${to_CPF(cpf)}</spam>
+                    `
+                }else{
+                    s.innerHTML = `
+                        <spam class="fs-6 fw-bold text-truncate" style="max-width: 200px;">${nome}</spam>
+                        <spam class="badge text-bg-danger" style="font-size: 12px;">
+                            CPF Incorreto, Favor alterar! <a href="/manager/clientes.html">Aqui</a>
+                        </spam>
+                    `
     
-            var li = document.createElement('li')
-            li.classList.add('list-group-item')
-
-            var dv = document.createElement('div')
-            dv.classList.add("d-flex")
-            dv.classList.add("flex-row")
-            dv.classList.add("justify-content-between")
+                }
+        
+                var btnAdd = document.createElement('button')
+                btnAdd.classList.add('btn')
+                btnAdd.classList.add('btn-success')
+                btnAdd.classList.add('fw-bold')
+                btnAdd.textContent = '+'
+                btnAdd.type = 'button'
     
-            var s = document.createElement('spam')
-            s.classList.add('d-flex')
-            s.classList.add('flex-column')
-            if(to_CPF(cpf)){
-                s.innerHTML = `
-                    <spam class="fs-6 fw-bold text-truncate" style="max-width: 200px;">${nome}</spam>
-                    <spam style="font-size: 12px;">${to_CPF(cpf)}</spam>
-                `
-            }else{
-                s.innerHTML = `
-                    <spam class="fs-6 fw-bold text-truncate" style="max-width: 200px;">${nome}</spam>
-                    <spam class="badge text-bg-danger" style="font-size: 12px;">
-                        CPF Incorreto, Favor alterar! <a href="/manager/clientes.html">Aqui</a>
-                    </spam>
-                `
-
-            }
-    
-            var btnAdd = document.createElement('button')
-            btnAdd.classList.add('btn')
-            btnAdd.classList.add('btn-success')
-            btnAdd.classList.add('fw-bold')
-            btnAdd.textContent = '+'
-            btnAdd.type = 'button'
-
-            btnAdd.addEventListener('click', function(){
-                document.getElementById("CPF").value = id
-                document.getElementById("Nome").value = nome
-                document.getElementById("Telefone").value = telefone
-                document.getElementById("endereco").value = endereco
-                document.getElementById("imei").value = imei
-                document.getElementById("modelo").value = modelo
-                document.getElementById("cor").value = cor
-                document.getElementById("noMarca").value = marca
-                document.getElementById("ligar").checked = true
-                var date = new Date()
-                var day = date.getDate() + 1 // Pega um dia a mais
-                var month = date.getMonth() + 1 // Inicia em 0 por isso a adição de 1
-    
-                if(day < 10){day = '0' + day}
-                if(month < 10){month = '0' + month}
-                var dateEnd = `${date.getFullYear()}-${month}-${day}`
-    
-                document.getElementById("retirada").value = dateEnd
+                btnAdd.addEventListener('click', function(){
+                    document.getElementById("CPF").value = id
+                    document.getElementById("Nome").value = nome
+                    document.getElementById("Telefone").value = telefone
+                    document.getElementById("endereco").value = endereco
+                    document.getElementById("imei").value = imei
+                    document.getElementById("modelo").value = modelo
+                    document.getElementById("cor").value = cor
+                    document.getElementById("noMarca").value = marca
+                    document.getElementById("ligar").checked = true
+                    var date = new Date()
+                    var day = date.getDate() + 1 // Pega um dia a mais
+                    var month = date.getMonth() + 1 // Inicia em 0 por isso a adição de 1
+        
+                    if(day < 10){day = '0' + day}
+                    if(month < 10){month = '0' + month}
+                    var dateEnd = `${date.getFullYear()}-${month}-${day}`
+        
+                    document.getElementById("retirada").value = dateEnd
+                })
+        
+                dv.appendChild(s)
+                dv.appendChild(btnAdd)
+                li.appendChild(dv)
+                ul.appendChild(li)
             })
-    
-            dv.appendChild(s)
-            dv.appendChild(btnAdd)
-            li.appendChild(dv)
-            ul.appendChild(li)
-        })
-    }else{
+        }else{
         var ul = document.getElementById('listClient')
         var li = document.createElement('li')
-        li.classList.add('list-group-item')
-        li.innerHTML = `
-            <span>
-                Nenhum cliente cadastrado, 
-                <button class="btn btn-sm btn-success" onclick="change_screen('clientes', this)">
-                    bora começar ?
-                </button>
-            </span>`
-        ul.appendChild(li)
+            li.classList.add('list-group-item')
+            li.innerHTML = `
+                <span class="text-center">
+                    Nenhum cliente cadastrado, 
+                    <button class="btn btn-sm btn-success" onclick="change_screen('clientes')">
+                        Bora começar ?
+                    </button>
+                </span>`
+            ul.appendChild(li)
+        }
     }
 
     const res4 = await request('status')
