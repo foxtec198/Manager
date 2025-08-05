@@ -13,8 +13,8 @@ sessionStorage.setItem('filterRes', 'hoje')
 var filterRes = sessionStorage.getItem('filterRes')
 let timeout
 
-server = "https://api.hubbix.com.br"
-// server = "http://localhost:9560"
+// server = "https://api.hubbix.com.br"
+server = "http://localhost:9560"
 
 var api = server + '/manager/v1/'
 
@@ -962,6 +962,7 @@ async function vender(){
     form.append('desconto', desconto)
     form.append('mt_pag', sel)
     form.append('cart', JSON.stringify(cart))
+    console.log(cart)
     form.append('tipo', 'PRODUTOS')
 
     document.getElementById('btnVender').innerHTML = spinner
