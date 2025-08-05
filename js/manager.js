@@ -13,8 +13,8 @@ sessionStorage.setItem('filterRes', 'hoje')
 var filterRes = sessionStorage.getItem('filterRes')
 let timeout
 
-// server = "https://api.hubbix.com.br"
-server = "http://localhost:9560"
+server = "https://api.hubbix.com.br"
+// server = "http://localhost:9560"
 
 var api = server + '/manager/v1/'
 
