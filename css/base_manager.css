@@ -26,25 +26,62 @@ body, html{
   left: -10px;
 }
 
-/* .scroll-container {
-  width: 100%;
-  overflow: hidden;
-  /* background: #0b0b0d; */
-  /* padding: 0.5rem 0; */
-  /* border-top: 1px solid #2ecc7140; */
-  /* border-bottom: 1px solid #2ecc7140; */
-/* } */
+#tb_vendas{
+    background-color:#333;
+    border: 1px solid #333;
+    border-radius: 10px;
+}
 
-/* .scroll-content {
-  display: inline-block;
-  white-space: nowrap;
-  animation: scroll-left 15s linear infinite;
-  font-family: 'Orbitron', sans-serif;
-  font-weight: 700;
-  color: #2ecc71;
-  text-shadow: 0 0 6px #2ecc71aa;
-  font-size: 1.1rem;
-} */
+/*Theme the header*/
+#tb_vendas .tabulator-header {
+    background-color:#212529;
+    color:#fff;
+}
+
+/*Allow column header names to wrap lines*/
+#tb_vendas .tabulator-header .tabulator-col,
+#tb_vendas .tabulator-header .tabulator-col-row-handle {
+    white-space: normal;
+    background: #212529;
+}
+#tb_vendas .tabulator-paginator {
+    white-space: normal;
+    background: #212529;
+    color: white;
+}
+
+#tb_vendas .tabulator-paginator button{
+    white-space: normal;
+    background: #212529;
+    color: white;
+}
+
+.tabulator .tabulator-footer {
+  background-color: #212529;
+  color: white;
+}
+
+
+/*Color the table rows*/
+#tb_vendas .tabulator-tableholder .tabulator-table .tabulator-row{
+    color:#fff;
+    background-color: #212529;
+    padding-top: 2px;
+}
+
+/*Color even rows*/
+#tb_vendas .tabulator-tableholder .tabulator-table .tabulator-row:nth-child(even) {
+    background-color: #2c3034;
+}
+
+/* Hover */
+#tb_vendas .tabulator-tableholder .tabulator-table .tabulator-row:hover{
+    background-color: #323539;
+}
+
+#tb_vendas .tabulator-tableholder .tabulator-table .tabulator-row:nth-child(even):hover {
+    background-color: #323539;
+}
 
 @keyframes scroll-left {
   0% {
@@ -61,12 +98,12 @@ body, html{
     height: 100px;
     border: none;
 }
-nav{
+/* nav{
     background: var(--cinza2);
 }
 .nv{
     background-color: var(--cinza);
-}
+} */
 /* ::-webkit-scrollbar{
     width: 0px;
 } */

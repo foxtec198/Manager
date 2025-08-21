@@ -25,6 +25,7 @@ config_estoque = sessionStorage.getItem('estoque') == "true"
 perm = sessionStorage.getItem("perm")
 const meses = {1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril", 5: "Maio", 6: "Junho", 7: "Julho", 8: "Agosto", 9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"};
 const mesesAbreviados = {1: "Jan", 2: "Fev", 3: "Mar", 4: "Abr", 5: "Mai", 6: "Jun", 7: "Jul", 8: "Ago", 9: "Set", 10: "Out", 11: "Nov", 12: "Dez"};
+const icon_lixeira = "<i class='bi bi-trash-fill'></i>"
 
 // function openCalc(){
 //     const divCalc = document.getElementById('divCalc')
@@ -38,6 +39,11 @@ const mesesAbreviados = {1: "Jan", 2: "Fev", 3: "Mar", 4: "Abr", 5: "Mai", 6: "J
 //         btnCalc.innerHTML = '<i class="bi bi-caret-left-fill"></i>'
 //     }
 // }
+
+function real(str){ // Converte STR/INT em Moeda R$
+    str = parseFloat(str)
+    return str.toLocaleString('pt-br', {style:'currency', currency:'BRL'})
+}
 
 function create_modal(id, title, body, center='modal-dialog-centered'){
     container = document.createElement('div')
@@ -648,164 +654,235 @@ async function getSaidas(){
     const req = await request('saidas')
     const res = await req.json()
 
-    document.getElementById('divTableVendas').innerHTML = `
-        <table class="table table-hover" id="tablevendas">
-            <thead>
-                <td>Nome</td>
-                <td>Tipo</td>
-                <td>Valor</td>
-                <td>Cliente</td>
-                <td>Pagamento</td>
-                <td>Atendente</td>
-                <td>Data</td>
-                <td>Ação</td>
-            </thead>
-            <tbody id="tbVendas">
-            </tbody>
-        </table>
-    `
+    // document.getElementById('divTableVendas').innerHTML = `
+    //     <table class="table table-hover" id="tablevendas">
+    //         <thead>
+    //             <td>Nome</td>
+    //             <td>Tipo</td>
+    //             <td>Valor</td>
+    //             <td>Cliente</td>
+    //             <td>Pagamento</td>
+    //             <td>Atendente</td>
+    //             <td>Data</td>
+    //             <td>Ação</td>
+    //         </thead>
+    //         <tbody id="tbVendas">
+    //         </tbody>
+    //     </table>
+    // `
+
+    // if(req.ok){
+    //     res.forEach(item => {
+    //         const tr = document.createElement('tr')
+            
+    //         const nome = document.createElement('td')
+    //         nome.classList.add('text-truncate')
+    //         nome.textContent = item['nome']
+
+    //         var tipov = item['tipo']
+    //         const tipoTd = document.createElement('td')
+    //         tipoTd.classList.add('text-truncate')
+
+    //         const tipo = document.createElement('span')
+    //         tipo.classList.add('w-100')
+
+    //         if(tipov == 'PRODUTOS'){
+    //             tipo.classList.add("badge", "text-bg-success")
+    //         }else{
+    //             tipo.classList.add("badge", "text-bg-primary")
+    //         }
+    //         tipo.textContent = tipov
+    //         tipoTd.appendChild(tipo)
+    
+    //         const valor = document.createElement('td')
+    //         valor.textContent = to_real(item['valor'])
+    
+    //         const cliente = document.createElement('td')
+    //         cliente.classList.add('text-truncate')
+    //         cliente.textContent = item['cliente']
+    
+    //         const pagamento = document.createElement('td')
+    //         pagamento.classList.add('text-truncate')
+    //         if(item['pagamento'] == 'Em processamento.'){
+    //             pagamento.innerHTML = `
+    //                 ${item['pagamento']} <a href='payment.html?id=${item['idVenda']}&qr=${item['qr']}&key=${item['key']}' class='btn btn-secondary btn-sm'>Finalizar Pagamento</a>
+    //             `
+    //         }else{
+    //             pagamento.textContent = item['pagamento']
+    //         }
+    
+    //         const atendente = document.createElement('td')
+    //         atendente.textContent = item['atendente']
+    
+    //         const data = document.createElement('td')
+    //         data.classList.add('text-truncate')
+    //         data.textContent = new Date(item['data']).toLocaleDateString('pt-br', {'day':'2-digit','month':'long','hour':'2-digit','minute':'2-digit'})
+    
+    //         const id = item['id']
+    //         const idVenda = item['idVenda']
+    
+    //         // Buttons
+    //         const btngp = document.createElement('div')
+    //         btngp.classList.add('btn-group')
+    
+    //         const btnCancel = document.createElement('button')
+    //         var icon = document.createElement('i')
+    //         icon.classList.add('bi')
+    //         icon.classList.add('bi-trash-fill')
+    //         btnCancel.appendChild(icon)
+    //         btnCancel.classList.add('btn')
+    //         btnCancel.classList.add('btn-sm')
+    //         btnCancel.classList.add('btn-danger')
+            
+    //         new bootstrap.Tooltip(btnCancel, {title:'Excluir venda!'})
+    
+    //         btnCancel.addEventListener('click', async function(){
+    //             var conf = confirm('Deseja excluir permanentemente esta venda?')
+    //             if(conf){
+    //                 btnCancel.innerHTML = spinner
+    //                 const req = await request("vendas", "DELETE", {'id': id,'id_venda':idVenda})
+    //                 const res = await req.json()
+    //                 if(req.ok){location.reload()}
+    //                 else{toast(res)}
+    //             }
+    //         })
+    
+    //         const btnCancelItem = document.createElement('button')
+    //         var icon = document.createElement('i')
+    //         icon.classList.add('bi')
+    //         icon.classList.add('bi-phone')
+    //         btnCancelItem.appendChild(icon)
+    //         btnCancelItem.classList.add('btn')
+    //         btnCancelItem.classList.add('btn-sm')
+    //         btnCancelItem.classList.add('btn-warning')
+    
+    //         new bootstrap.Tooltip(btnCancelItem, {title:'Excluir item!'})
+    
+    //         btnCancelItem.addEventListener('click', async function(){
+    //             var conf = confirm('Deseja excluir permanentemente este item?')
+    //             if (conf){
+    //                 btnCancelItem.innerHTML = spinner
+    //                 const req = await request("saidas", "DELETE", {'id': id, 'id_venda':idVenda})
+    //                 const res = await req.json()
+    //                 if(req.ok){location.reload()}
+    //                 else{toast(res)}
+    //             }
+    //         })
+
+    //         const btnNota = document.createElement('button')
+    //         var icon = document.createElement('i')
+    //         icon.classList.add('bi')
+    //         icon.classList.add('bi-sticky-fill')
+    //         btnNota.appendChild(icon)
+    //         btnNota.classList.add('btn')
+    //         btnNota.classList.add('btn-sm')
+    //         btnNota.classList.add('btn-light')
+    
+    //         new bootstrap.Tooltip(btnNota, {title:'Salvar nota'})
+    
+    //         btnNota.addEventListener('click', async function(){
+    //             btnNota.innerHTML = '<span id="spin_ldg" class="spinner-border spinner-border-sm text-dark" role="status"></span>'
+    //             const req = await request('nnf?id=' + idVenda)
+    //             const res = await req.json()
+    //             if(req.ok){
+    //                 window.location = server + '/nnf/' + res
+    //             }
+    //         })
+    
+    //         btngp.appendChild(btnNota)
+    //         btngp.appendChild(btnCancelItem)
+    //         btngp.appendChild(btnCancel)
+    
+    //         const act = document.createElement('td')
+    //         act.appendChild(btngp)
+    
+    //         tr.appendChild(nome)
+    //         tr.appendChild(tipoTd)
+    //         tr.appendChild(valor)
+    //         tr.appendChild(cliente)
+    //         tr.appendChild(pagamento)
+    //         tr.appendChild(atendente)
+    //         tr.appendChild(data)
+    //         tr.appendChild(act)
+    
+    //         document.getElementById('tbVendas').appendChild(tr)  
+    //     })
+    // }
 
     if(req.ok){
+        const tableData = []
         res.forEach(item => {
-            const tr = document.createElement('tr')
-            
-            const nome = document.createElement('td')
-            nome.classList.add('text-truncate')
-            nome.textContent = item['nome']
-
-            var tipov = item['tipo']
-            const tipoTd = document.createElement('td')
-            tipoTd.classList.add('text-truncate')
-
-            const tipo = document.createElement('span')
-            tipo.classList.add('w-100')
-
-            if(tipov == 'PRODUTOS'){
-                tipo.classList.add("badge", "text-bg-success")
-            }else{
-                tipo.classList.add("badge", "text-bg-primary")
+            const id = item.id
+            const idVenda = item.idVenda
+            const datt = new Date(item.data).toLocaleDateString('pt-br', {month: 'numeric'})
+            const datA = new Date().toLocaleDateString('pt-br', {month: 'numeric'})
+            if(item.tipo == 'PRODUTOS'){color = 'text-bg-success' }
+            else{color = 'text-bg-primary' }
+            if(datt === datA){
+                tableData.push({
+                    nome: item.nome,
+                    tipo: `<spam class="badge ${color} w-100">${item.tipo}</spam>`,
+                    data: new Date(item.data).toLocaleDateString('pt-br', {day:'numeric', month:'long', hour:'numeric', minute:'numeric'}),
+                    valor: real(item.valor),
+                    pag: item.pagamento,
+                    cliente: item.cliente,
+                    func: item.atendente,
+                    btn: `
+                    <div class="btn-group">
+                        <button class="btn btn-light" onclick="gerar_nnf(this, ${idVenda})"><i class="bi bi-sticky-fill"></i></button>
+                        <button class="btn btn-warning" onclick="rmv_item_venda(this, ${id}, ${idVenda})"><i class="bi bi-phone"></i></button>
+                        <button class="btn btn-danger" onclick="rmv_venda(this, ${id}, ${idVenda})">${icon_lixeira}</button>
+                    </div>`
+                })
             }
-            tipo.textContent = tipov
-            tipoTd.appendChild(tipo)
-    
-            const valor = document.createElement('td')
-            valor.textContent = to_real(item['valor'])
-    
-            const cliente = document.createElement('td')
-            cliente.classList.add('text-truncate')
-            cliente.textContent = item['cliente']
-    
-            const pagamento = document.createElement('td')
-            pagamento.classList.add('text-truncate')
-            if(item['pagamento'] == 'Em processamento.'){
-                pagamento.innerHTML = `
-                    ${item['pagamento']} <a href='payment.html?id=${item['idVenda']}&qr=${item['qr']}&key=${item['key']}' class='btn btn-secondary btn-sm'>Finalizar Pagamento</a>
-                `
-            }else{
-                pagamento.textContent = item['pagamento']
-            }
-    
-            const atendente = document.createElement('td')
-            atendente.textContent = item['atendente']
-    
-            const data = document.createElement('td')
-            data.classList.add('text-truncate')
-            data.textContent = new Date(item['data']).toLocaleDateString('pt-br', {'day':'2-digit','month':'long','hour':'2-digit','minute':'2-digit'})
-    
-            const id = item['id']
-            const idVenda = item['idVenda']
-    
-            // Buttons
-            const btngp = document.createElement('div')
-            btngp.classList.add('btn-group')
-    
-            const btnCancel = document.createElement('button')
-            var icon = document.createElement('i')
-            icon.classList.add('bi')
-            icon.classList.add('bi-trash-fill')
-            btnCancel.appendChild(icon)
-            btnCancel.classList.add('btn')
-            btnCancel.classList.add('btn-sm')
-            btnCancel.classList.add('btn-danger')
-            
-            new bootstrap.Tooltip(btnCancel, {title:'Excluir venda!'})
-    
-            btnCancel.addEventListener('click', async function(){
-                var conf = confirm('Deseja excluir permanentemente esta venda?')
-                if(conf){
-                    btnCancel.innerHTML = spinner
-                    const req = await request("vendas", "DELETE", {'id': id,'id_venda':idVenda})
-                    const res = await req.json()
-                    if(req.ok){location.reload()}
-                    else{toast(res)}
-                }
-            })
-    
-            const btnCancelItem = document.createElement('button')
-            var icon = document.createElement('i')
-            icon.classList.add('bi')
-            icon.classList.add('bi-phone')
-            btnCancelItem.appendChild(icon)
-            btnCancelItem.classList.add('btn')
-            btnCancelItem.classList.add('btn-sm')
-            btnCancelItem.classList.add('btn-warning')
-    
-            new bootstrap.Tooltip(btnCancelItem, {title:'Excluir item!'})
-    
-            btnCancelItem.addEventListener('click', async function(){
-                var conf = confirm('Deseja excluir permanentemente este item?')
-                if (conf){
-                    btnCancelItem.innerHTML = spinner
-                    const req = await request("saidas", "DELETE", {'id': id, 'id_venda':idVenda})
-                    const res = await req.json()
-                    if(req.ok){location.reload()}
-                    else{toast(res)}
-                }
-            })
-
-            const btnNota = document.createElement('button')
-            var icon = document.createElement('i')
-            icon.classList.add('bi')
-            icon.classList.add('bi-sticky-fill')
-            btnNota.appendChild(icon)
-            btnNota.classList.add('btn')
-            btnNota.classList.add('btn-sm')
-            btnNota.classList.add('btn-light')
-    
-            new bootstrap.Tooltip(btnNota, {title:'Salvar nota'})
-    
-            btnNota.addEventListener('click', async function(){
-                btnNota.innerHTML = '<span id="spin_ldg" class="spinner-border spinner-border-sm text-dark" role="status"></span>'
-                const req = await request('nnf?id=' + idVenda)
-                const res = await req.json()
-                if(req.ok){
-                    window.location = server + '/nnf/' + res
-                }
-            })
-    
-            btngp.appendChild(btnNota)
-            btngp.appendChild(btnCancelItem)
-            btngp.appendChild(btnCancel)
-    
-            const act = document.createElement('td')
-            act.appendChild(btngp)
-    
-            tr.appendChild(nome)
-            tr.appendChild(tipoTd)
-            tr.appendChild(valor)
-            tr.appendChild(cliente)
-            tr.appendChild(pagamento)
-            tr.appendChild(atendente)
-            tr.appendChild(data)
-            tr.appendChild(act)
-    
-            document.getElementById('tbVendas').appendChild(tr)  
         })
+        new Tabulator("#tb_vendas", {
+            data: tableData,
+            layout: "fitColumns",
+            responsiveLayout: true,
+            paginationSize: 12,
+            paginationCounter:"rows",
+            pagination:"local",
+            columns: [
+                {title: "Nome", field: "nome", minWidth: 100},
+                {title: "Tipo", field: "tipo", minWidth: 100, formatter: 'html'},
+                {title:"Valor", field:"valor", minWidth: 50},
+                {title:"Cliente", field:"cliente", responsive:4, minWidth: 100},
+                {title:"Pagamento", field:"pag", minWidth: 100},   
+                {title:"Atendente", field:"func", minWidth: 100},   
+                {title:"Data", field:"data", minWidth: 200},   
+                {title:"Ações", field:"btn", hozAlign:"center", responsive: 0, minWidth: 100, formatter:"html"}
+            ]
+        });
     }
+}
 
-    //let table = new DataTable('#tablevendas', {
-    //    responsive: true
-    //});
+async function rmv_venda(t, id, idVenda){
+    if(confirm('Deseja excluir permanentemente esta venda?')){
+        t.innerHTML = spinner
+        const req = await request("vendas", "DELETE", {'id': id,'id_venda':idVenda})
+        const res = await req.json()
+        if(req.ok){location.reload()}
+        else{toast(res)}
+    }   
+}
+
+async function rmv_item_venda(t, id, idVenda){
+    if (confirm('Deseja excluir permanentemente este item?')){
+        btnCancelItem.innerHTML = spinner
+        const req = await request("saidas", "DELETE", {id: id, id_venda: idVenda})
+        const res = await req.json()
+        if(req.ok){location.reload()}
+        else{toast(res)}
+    }
+}
+
+async function gerar_nnf(t, idVenda){
+    t.innerHTML = '<span id="spin_ldg" class="spinner-border spinner-border-sm text-dark" role="status"></span>'
+    const req = await request('nnf?id=' + idVenda)
+    const res = await req.json()
+    if(req.ok){window.location = server + '/nnf/' + res; t.innerHTML = '<i class="bi bi-sticky-fill"></i>'}
+    else{toast(res); t.innerHTML = '<i class="bi bi-sticky-fill"></i>'}
 }
 
 async function vendasPorTipo(){
@@ -867,8 +944,7 @@ async function getProds(){
                 
                 const btnTd = document.createElement('td')
                 const btn = document.createElement('button')
-                btn.classList.add('btn')
-                btn.classList.add('btn-dark')
+                btn.classList.add('btn', 'btn-dark')
                 btn.innerHTML = '<i class="bi bi-plus-square-dotted"></i>'
                 btn.addEventListener('click', function(){
                     if(config_estoque){

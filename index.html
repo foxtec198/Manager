@@ -10,19 +10,7 @@
     <link rel="manifest" href="js/manifest.json">
     <link rel="stylesheet" href="css/base_manager.css">
 </head>
-<body data-bs-theme="dark">
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="toastHbx" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-          <div class="toast-header">
-            <img src="img/newFav.png" class="rounded me-2" alt="..." height="20vh">
-            <strong class="me-auto">Hubbix Manager</strong>
-            <small>Agora</small>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-          </div>
-          <div class="toast-body" id="toast-text"></div>
-        </div>
-    </div>
-
+<body data-bs-theme="dark" id="imgCont">
     <nav class="d-flex p-2 gap-2 justify-content-between align-items-center">
         <a href="/"><img src="img/logo.svg" height="30vh"></a>
     </nav>
@@ -55,15 +43,30 @@
 
     <!-- Chartjs --><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
-    <script src="../js/manager.js"></script>
+    <script src="js/three.min.js"></script>
+    <script src="js/vanta.net.min.js"></script>
+    <script src="js/manager.js"></script>
     <script>
         document.getElementById('form_login').addEventListener("submit", function (e){
             e.preventDefault()
 
             login()  
         })
-
+        VANTA.NET({
+            el: "#imgCont",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            color: 0x55ff3f,
+            backgroundColor: 0xf110f,
+            points: 9.00,
+            maxDistance: 19.00,
+            spacing: 19.00
+        })
     </script>
 </body>
 </html>
