@@ -410,7 +410,8 @@ async function get_loja(){
         label.classList.remove('placeholder')
         
         var img = document.getElementById('logoBase')
-        img.src = `${server}/img/${res['logo']}`
+        if(res.logo == 'logo.png'){img.src = `${server}/img/${res['logo']}`}
+        else{img.src = `${server}/img/manager/${res['logo']}`}
         img.classList.remove('placeholder')
 
     }
@@ -3025,7 +3026,13 @@ async function md_get_loja() {
     const req = await request("get_loja")
     const res = await req.json()
     if(req.ok){
-        document.getElementById('logoBase').src = server + '/img/' + res['logo']
+        console.log(res.logo);
+        
+        if(res.logo === 'logo.png'){
+            document.getElementById('logoBase').src = server + '/img/' + res.logo
+        }else{
+            document.getElementById('logoBase').src = server + '/img/manager/' + res.logo
+        }
     }
 }
 
