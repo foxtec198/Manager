@@ -27,6 +27,10 @@ const meses = {1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril", 5: "Maio",
 const mesesAbreviados = {1: "Jan", 2: "Fev", 3: "Mar", 4: "Abr", 5: "Mai", 6: "Jun", 7: "Jul", 8: "Ago", 9: "Set", 10: "Out", 11: "Nov", 12: "Dez"};
 const icon_lixeira = "<i class='bi bi-trash-fill'></i>"
 
+if(window.location.pathname !== "/index.html"){
+    if(!cr){window.location = '/index.html'}
+}
+
 // function openCalc(){
 //     const divCalc = document.getElementById('divCalc')
 //     const btnCalc = document.getElementById('btnCalc')
@@ -2504,6 +2508,57 @@ async function get_infos(opt='dia'){
             tp3.textContent = "Sem venda por marcas!"
         }
 
+        // Produtos
+        const estA = document.getElementById('est_alerta')
+        estA.innerHTML = ''
+        const estZ = document.getElementById('est_zerado')
+        estZ.innerHTML = ''
+        if(res.ALT[0]){
+            res.ALT.forEach(item => {
+                if(item.quantidade >= item.alerta && item.quantidade > 0){
+                    const li = document.createElement('li')
+                    li.classList.add(
+                        'd-flex', 'list-group-item',
+                        'justify-content-between'
+                    )
+
+                    const nome = document.createElement('span')
+                    nome.textContent = item.nome
+                    
+                    const quant = document.createElement('span')
+                    quant.classList.add(
+                        'badge',
+                        'text-bg-warning'
+                    )
+                    quant.textContent = item.quantidade
+
+                    li.appendChild(nome)
+                    li.appendChild(quant)
+                    estA.appendChild(li)
+                }else if(item.quantidade <= 0){
+                    const li = document.createElement('li')
+                    li.classList.add(
+                        'd-flex', 'list-group-item',
+                        'justify-content-between'
+                    )
+
+                    const nome = document.createElement('span')
+                    nome.textContent = item.nome
+                    
+                    const quant = document.createElement('span')
+                    quant.classList.add(
+                        'badge',
+                        'text-bg-danger'
+                    )
+                    quant.textContent = item.quantidade
+
+                    li.appendChild(nome)
+                    li.appendChild(quant)
+                    estZ.appendChild(li)
+                }
+            })
+        }
+
         // Dashboard Vendas
         var dv = document.getElementById('divDashVendas')
         dv.style.height = '300px'
@@ -3111,7 +3166,6 @@ if(window.location.pathname == "/manager/modo_caixa.html"){
         }else{}
     })
 }
-
 
 // JQuery ==================================================
 $(document).ready(function(){

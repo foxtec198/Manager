@@ -10,13 +10,26 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- Favicon -->
-    <link rel="icon" href="../img/newFav.png">
+    <link rel="icon" href="/img/newFav.png">
 
     <!-- Local Arch -->
-    <link rel="stylesheet" href="../css/base_manager.css">
+    <link rel="stylesheet" href="/css/base_manager.css">
     <style>
+        html, body {
+            height: 100%;
+        }
         body{
             zoom: 85%;
+        }
+
+        #frame_screen{
+            height: 100%;
+        }
+        
+        @media (max-width: 500px){
+            #frame_screen{
+                height: 90%;
+            }
         }
     </style>
 </head>
@@ -46,8 +59,8 @@
             <br>
         </div>
         <div class="d-flex flex-column w-100">
-            <!-- <marquee style="margin-top: 10px;" class="d-flex gap-4" loop direction="left" id="mq"></marquee> -->
-            <iframe class="p-2" src="/manager/caixa.html" id="frame_screen" width="100%" height="85%" frameborder="0"></iframe>
+            <marquee style="margin-top: 10px;" class="d-flex gap-4" loop direction="left" id="mq"></marquee>
+            <iframe class="p-2" src="/manager/caixa.html" id="frame_screen" width="100%" height="100%" frameborder="0"></iframe>
         </div>
     </div>
 
