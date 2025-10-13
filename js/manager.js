@@ -2769,7 +2769,11 @@ async function get_config() {
         document.getElementById('ckEstoque').checked = res['ct_es']
         document.getElementById('ckPeca').checked = res['pecas']
         document.getElementById('config_logo').classList.remove('placeholder')
-        document.getElementById('config_logo').src = server + '/img/' + res['logo']
+        if(res.logo === "logo.png"){
+            document.getElementById('config_logo').src = server + '/img/' + res['logo']
+        }else{
+            document.getElementById('config_logo').src = server + '/img/manager/' + res['logo']
+        }
 
         document.getElementById('emailFx').value = res['email']
         document.getElementById('ckCaixa').checked = res['caixa']
