@@ -1696,11 +1696,11 @@ async function getMarcasOs(){
     if(res2.ok){
         js2.forEach(item => {
             const sl = document.createElement('option')
-            sl.textContent = item['marca']
+            sl.textContent = item.nome
             document.getElementById('noMarca').appendChild(sl)
     
             const sl2 = document.createElement('option')
-            sl2.textContent = item['marca']
+            sl2.textContent = item.nome
             document.getElementById('eosMarca').appendChild(sl2)
         })
     }
@@ -1992,11 +1992,11 @@ async function getMarcasClientes(){
     if(res2.ok){
         js2.forEach(item => {
             var sl = document.createElement('option')
-            sl.textContent = item['marca']
+            sl.textContent = item.nome
             document.getElementById('ncMarca').appendChild(sl)
         
             var sl2 = document.createElement('option')
-            sl2.textContent = item['marca']
+            sl2.textContent = item.nome
             document.getElementById('ecMarca').appendChild(sl2)
         })
     }
