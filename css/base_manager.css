@@ -20,10 +20,10 @@ body, html{
 .adorno{
   position: relative; 
   z-index: 1;
-  transform: rotate(-15deg);
-  height: 80px; 
-  top: 0px;
-  left: -10px;
+  transform: rotate(-35deg);
+  height: 150px; 
+  top: -30px;
+  left: 170px;
 }
 
 #tb_vendas{
