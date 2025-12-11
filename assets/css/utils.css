@@ -1,0 +1,8 @@
+.bg-dark{
+    background: linear-gradient(#000, #2B3035) !important;
+    color: #fff !important;
+}
+
+.flex-basis{
+    flex-basis: 300px;
+}

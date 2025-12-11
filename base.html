@@ -16,13 +16,34 @@
     <link rel="stylesheet" href="assets/css/utils.css">
     <link rel="stylesheet" href="assets/css/base.css">
     <link rel="stylesheet" href="assets/css/fonts.css">
+    <style>
+        html, body {
+            height: 100%;
+        }
+        body{
+            zoom: 85%;
+        }
+
+        #frame_screen{
+            height: 100%;
+        }
+        
+        @media (max-width: 500px){
+            #frame_screen{
+                height: 90%;
+            }
+        }
+    </style>
 </head>
 <body data-bs-theme="dark">
-    <div class="d-flex h-100">
-        <div class="flex-adorno mobile-hide" id="adorno">
-            <img src="assets/img/laco.png" alt="adorno" class="adorno">
-        </div>
+    <!-- Adornos -->
+    <div class="flex-adorno mobile-hide" id="adorno" hidden>
+        <img src="assets/img/gorro.svg" alt="adorno" class="adorno">
+    </div>
 
+    <!-- Main Section -->
+    <section class="d-flex h-100">
+        <!-- Options Desktop -->
         <div class="d-flex flex-column overflow-hidden mobile-hide nv" style="min-width: 180px;">
             <span class="d-flex gap-2 flex-column w-100 align-items-center justify-content-center mt-3">
                 <img id="logoBase" class="logo img-fluid object-fit-contain placeholder">
@@ -42,12 +63,15 @@
             <button onclick="logout()" class="btnM-exit">Sair</button>
             <br>
         </div>
+
+        <!-- Frame e Marquee -->
         <div class="d-flex flex-column w-100">
             <marquee style="margin-top: 10px;" class="d-flex gap-4" loop direction="left" id="mq"></marquee>
             <iframe class="p-2" src="dashboards/init_reports.html" id="frame_screen" width="100%" height="100%" frameborder="0"></iframe>
         </div>
-    </div>
+    </section>
 
+    <!-- Options Mobile -->
     <div class="navBot mobile">
         <div class="d-flex mt-1 flex-row justify-content-around g-4">
             <a class="d-flex flex-column p-1 align-items-center navBot-item menu-caixa" onclick="change_screen('caixa')">
@@ -69,7 +93,7 @@
             <ul class="dropdown-menu text-bg-dark">
                 <li><button onclick="change_screen('clientes')" class="dropdown-item dp-item menu-clientes"><i class="bi bi-person-bounding-box"></i> Clientes</a></li>
                 <li><button onclick="change_screen('estoque')" class="dropdown-item dp-item menu-estoque"><i class="bi bi-archive-fill"></i> Estoque</a></li>
-                <li hidden><button onclick="change_screen('pecas')" class="dropdown-item dp-item menu-pecas"><i class="bi bi-gear-fill"></i> Peças</a></li>
+                <li><button onclick="change_screen('pecas')" class="dropdown-item dp-item menu-pecas"><i class="bi bi-gear-fill"></i> Peças</a></li>
                 <li><button onclick="change_screen('relatorios')" id="btnMrelatorios" class="dropdown-item dp-item menu-relatorios"><i class="bi bi-microsoft"></i> Relatórios</a></li>
                 <hr>
                 <li><button onclick="change_screen('config')" class="dropdown-item dp-item menu-config">Configurações</a></li>
@@ -78,25 +102,36 @@
         </div>
     </div>
 
-    <!-- Toast -->
-    <div id="snackbar"></div>
-
-    <!-- Scripts -->
     <!-- Jquery --> <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"></script>
     <!-- CHARTJS --> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
+
+    <script src="configs/js/configs.js"></script>
     <script src="assets/js/main.js"></script>
     <script> 
-        get_loja(); confer_perm(); restore_screen();
-
-        if(document.getElementById("adorno")){
-            datas_comemorativas('Feliz dia dos namorados! 💍💘', '12/06/2025');
+        async function set_store(){ // Seta os dados da loja na base
+            const res = await get_store()
+            // Seta o nome da loja
+            const label = document.getElementById('nomeLoja')
+            label.textContent = res.loja.nome_loja
+            label.classList.remove('placeholder')
+    
+            // Seta imagem da loja ou do Hubbix
+            const img = document.getElementById('logoBase')
+            img.src = `${server}/api/files/img/manager/${encodeURIComponent(res.logo)}`
+            img.classList.remove('placeholder')
         }
 
+        // Liga os adornos no Painel
+        // datas_comemorativas('Feliz Natal 🎅🏼🌲', 'Boas festas 🍾🥂', ["#1d351d", "#8b081d"]);
+        
+        // Quando no mobile seta o frame com 90% para nao interferir na barra de navegação
         if(window.innerWidth > 500){document.getElementById("frame_screen").height = "100%"}
         else{document.getElementById("frame_screen").height = "90%"}
+
+        set_store(); confer_perm(); restore_screen();
     </script>
 </body>
 </html>
