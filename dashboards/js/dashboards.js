@@ -234,3 +234,4 @@ function create_chart_payments(payments) {
             .style("text-anchor", "middle");
     }else{graf_div.textContent = "Nenhuma venda no periodo!"}
 }
+
