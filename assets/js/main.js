@@ -1,7 +1,6 @@
 // ================================================ Define a api e a baseURL
 // var server = "https://api.hubbix.com.br"
-// const server = "http://0.0.0.0:9560"
-const server = "http://10.0.0.75:9560"
+const server = "http://0.0.0.0:9560"
 const api = server + "/api/manager/"
 
 // ================================================ VARS
@@ -16,6 +15,13 @@ const config_pecas = sessionStorage.getItem("peca") == "true"
 const config_estoque = sessionStorage.getItem("estoque") == "true"
 const spinner = '<span id="spin_ldg" class="spinner-border spinner-border-sm text-light" role="status"></span>'
 const divLdg = document.createElement('div')
+const root_style = getComputedStyle(document.body)
+const primary = root_style.getPropertyValue("--primary").trim()
+
+// ================================================ ICONS
+const icon_lixeira = "<i class='bi bi-trash-fill'></i>"
+const icon_eye = '<i class="bi bi-eye"></i>'
+const icon_cart = '<i class="bi bi-cart4"></i>'
 
 // ================================================ HTML do Toast em si com MSG, IMG e Title
 if (window.location.pathname != "/") { if (!cr || !gc || !perm) { window.location = "/" } }
@@ -59,16 +65,16 @@ function create_modal(id, title, body, center = 'modal-dialog-centered') {
 
 // ================================================ Cria um toast para exibir uma mensagem
 function show_toast(msg, type = "info") {
-    const manager_toast = document.getElementById('manager_toast')
-    const divMsg = document.getElementById("toast_msg")
+    const manager_toast = parent.document.getElementById('manager_toast')
+    const divMsg = parent.document.getElementById("toast_msg")
 
     if (type == "info") {
-        document.getElementById("toast_title").textContent = "Hubbix Manager"
+        parent.document.getElementById("toast_title").textContent = "Hubbix Manager"
     } else if (type == "alert") {
-        document.getElementById("toast_title").textContent = "Hubbix Manager - Alerta!"
+        parent.document.getElementById("toast_title").textContent = "Hubbix Manager - Alerta!"
         manager_toast.classList.add("text-bg-warning")
     } else if (type == "danger") {
-        document.getElementById("toast_title").textContent = "Hubbix Manager - Perigo!"
+        parent.document.getElementById("toast_title").textContent = "Hubbix Manager - Perigo!"
         manager_toast.classList.add("text-bg-danger")
     } else {
         console.warn("Tipo de toast não suportado")
@@ -131,24 +137,26 @@ function change_screen(screnn, t = null) {
         t.style.background = "rgba(41, 201, 108, 0.08)";
         t.style.color = '#2ecc71';
         t.style.boxShadow = "inset 0 0 0 1px #2ecc71aa, 0 0 6px #2ecc7190;"
+        t.style.borderRadius = "30px"
     }
     frame = parent.document.getElementById('frame_screen')
-    sessionStorage.setItem('frame', `/manager/${screnn}.html`)
-    frame.src = `/manager/${screnn}.html`
+    sessionStorage.setItem('frame', `/${screnn}.html`)
+    frame.src = `/${screnn}.html`
 }
 
 // ================================================ Recupera a tela mesmo que atualize a pagina
 function restore_screen() {
     frame = sessionStorage.getItem('frame')
     frameWidget = parent.document.getElementById('frame_screen')
-
     if (frame) {
-        txt1 = frame.replace('/manager/', '')
-        txt2 = txt1.replace('.html', '')
+        txt1 = frame.replace('/', '')
+        txt2 = txt1.replace('.html', '').split("/")[1]
+        
         frameWidget.src = frame
         const t = parent.document.querySelector(`.menu-${txt2}`)
         t.style.background = "rgba(41, 201, 108, 0.08)";
         t.style.color = '#2ecc71';
+        t.style.borderRadius = "30px"
         t.style.boxShadow = "inset 0 0 0 1px #2ecc71aa, 0 0 6px #2ecc7190;"
     }
 }

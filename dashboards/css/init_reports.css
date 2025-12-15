@@ -5,6 +5,7 @@ html {
 }
 
 #person {
+    background: url("../../assets/img/blank.png");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -29,7 +30,7 @@ html {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: #fff;
+    color: #000;
 }
 
 #person_sales {
