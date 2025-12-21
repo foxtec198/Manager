@@ -22,9 +22,12 @@ const primary = root_style.getPropertyValue("--primary").trim()
 const icon_lixeira = "<i class='bi bi-trash-fill'></i>"
 const icon_eye = '<i class="bi bi-eye"></i>'
 const icon_cart = '<i class="bi bi-cart4"></i>'
+const icon_rocket = "<i class='bi bi-rocket-takeoff-fill'></i>"
+const icon_graph_up = '<i class="bi bi-graph-up-arrow"></i>'
+const icon_graph_down = '<i class="bi bi-graph-down-arrow"></i>'
 
 // ================================================ HTML do Toast em si com MSG, IMG e Title
-if (window.location.pathname != "/") { if (!cr || !gc || !perm) { window.location = "/" } }
+// if (window.location.pathname != "/") { if (!cr || !gc || !perm) { window.location = "/" } }
 
 // ================================================ HTML do Toast em si com MSG, IMG e Title
 const options = `
@@ -70,6 +73,7 @@ function show_toast(msg, type = "info") {
 
     if (type == "info") {
         parent.document.getElementById("toast_title").textContent = "Hubbix Manager"
+        manager_toast.classList.remove("text-bg-warning", "text-bg-danger")
     } else if (type == "alert") {
         parent.document.getElementById("toast_title").textContent = "Hubbix Manager - Alerta!"
         manager_toast.classList.add("text-bg-warning")
@@ -91,6 +95,7 @@ function request(path, method = "GET", data = null, type = null) {
     const headers = new Headers();
     headers.append("cr", cr)
     headers.append("gc", gc)
+    headers.append("perm", perm)
     headers.append("Content-Type", "application/json")
 
     var options = { method: method, headers: headers, };
@@ -127,7 +132,7 @@ function datas_comemorativas(msg, data, bgs = ["#fff", "#777"], fgs = ["#fff", "
 }
 
 // ================================================ Troca e memoriza a screen
-function change_screen(screnn, t = null) {
+function change_screen(screnn, t=null) {
     others = parent.document.querySelectorAll('.menu-item')
     others.forEach(element => {
         element.style.background = null
@@ -154,10 +159,12 @@ function restore_screen() {
         
         frameWidget.src = frame
         const t = parent.document.querySelector(`.menu-${txt2}`)
-        t.style.background = "rgba(41, 201, 108, 0.08)";
-        t.style.color = '#2ecc71';
-        t.style.borderRadius = "30px"
-        t.style.boxShadow = "inset 0 0 0 1px #2ecc71aa, 0 0 6px #2ecc7190;"
+        if(t){
+            t.style.background = "rgba(41, 201, 108, 0.08)";
+            t.style.color = '#2ecc71';
+            t.style.borderRadius = "30px"
+            t.style.boxShadow = "inset 0 0 0 1px #2ecc71aa, 0 0 6px #2ecc7190;"
+        }
     }
 }
 
@@ -230,14 +237,14 @@ function closeLdg() {
 
 // ================================================ REQUESTS GERAIS
 async function get_store() { // Pega os dados da loja
-    const req = await request("lojas/", "GET", null, "general")
+    const req = await request("lojas", "GET", null, "general")
     const res = await req.json()
     if (req.ok) { return res }
     else { show_toast(res, "alert"); return false }
 }
 
 async function get_person() { // Obtem os dados do usuario logado
-    const req = await request(`funcionarios/?mat=${mat}`, "GET")
+    const req = await request(`funcionarios?mat=${mat}`, "GET")
     const res = await req.json()
     if (req.ok) { return res }
     else { return false }

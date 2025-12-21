@@ -31,7 +31,7 @@ async function info_person() {
 }
 
 async function get_infos() {
-    const req = await request("dashboards/?mat=" + mat)
+    const req = await request("dashboards?mat=" + mat)
     const res = await req.json()
     const div_goals = document.getElementById("div_goal")
 
@@ -136,102 +136,98 @@ function create_progress_bar(title, valor_atual, meta, percent = false, value = 
 
 function create_chart_payments(payments) {
     const graf_div = document.getElementById("grafDiv")
-    if(payments[0]){
-        graf_div.innerHTML = '' // Zera o conteudo atual
+    graf_div.innerHTML = '' // Zera o conteudo atual
 
-        pays = {}
-
-        for(item in payments){
-            if(payments[item] > 0){
-                pays[item] = payments[item]
-            }
+    pays = {}
+    for(item in payments){
+        if(payments[item] > 0){
+            pays[item] = payments[item]
         }
+    }
 
-        const graf = document.createElement("div")
-        
-        // Converter JSON para array de objetos
-        const data = Object.entries(pays).map(([label, value]) => ({
-            label,
-            value
-        }));
-    
-        // Dimensões
-        const width = 350;
-        const height = 350;
-        const radius = Math.min(width, height) / 2;
-    
-        // Cores
-        const color = d3.scaleOrdinal()
-            .domain(data.map(d => d.label))
-            .range([primary]); // Cores dos graficos
-    
-        // Criar SVG
-        const svg = d3.select(graf)
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height)
-            .append("g")
-            .attr("transform", `translate(${width / 2}, ${height / 2})`);
-    
-        // Gerador de arco (donut)
-        const arc = d3.arc()
-            .innerRadius(radius * .75) // tamanho do Arco
-            .outerRadius(radius * 0.95)
-            .padAngle(0.05) // Separa
-            .cornerRadius(15); // arredonda
-    
-        // Gerador de pizza
-        const pie = d3.pie()
-            .value(d => d.value)
-            .sort(null); // mantém ordem original
-    
-        // Criação
-        svg
-            .selectAll("path")
-            .data(pie(data))
-            .join("path")
-            .attr("d", arc)
-            .attr("fill", d => color(d.data.label))
-            .attr("stroke", primary)
-            .style("stroke-width", "2px")
-            .style("opacity", 0.9)
-            .on("mouseover", function (event, d) {
-                d3.select(this).style("opacity", 1);
-                tooltip.style("opacity", 1)
-                    .html(`<strong>${d.data.label}</strong>: ${to_real(d.data.value)}`)
-                    .style("left", (event.pageX + 10) + "px")
-                    .style("top", (event.pageY - 20) + "px");
-            })
-            .on("mouseout", function () {
-                d3.select(this).style("opacity", 0.9);
-                tooltip.style("opacity", 0);
-            })
-            .join("text")
-            .text(d => d.data.label);
-    
-        // Tooltip (opcional)
-        const tooltip = d3.select("body")
-            .append("div")
-            .style("position", "absolute")
-            .style("padding", "6px 10px")
-            .style("background", "#222")
-            .style("font-size", "20px")
-            .style("color", "white")
-            .style("border-radius", "4px")
-            .style("pointer-events", "none")
-            .style("opacity", 0);
-    
-        // Labels internas no gráfico (opcional)
-        svg
-            .selectAll("text")
-            .data(pie(data))
-            .join("text")
-            .text(d => d.data.value > 0 ? d.data.label : "")
-            .style("fill", "#fff")
-            .attr("transform", d => `translate(${arc.centroid(d)})`)
-            .style("font-size", "14px")
-            .style("font-weight", "bold")
-            .style("text-anchor", "middle");
-    }else{graf_div.textContent = "Nenhuma venda no periodo!"}
+    const graf = document.createElement("div")
+    // Converter JSON para array de objetos
+    const data = Object.entries(pays).map(([label, value]) => ({
+        label,
+        value
+    }));
+
+    // Dimensões
+    const width = 350;
+    const height = 350;
+    const radius = Math.min(width, height) / 2;
+
+    // Cores
+    const color = d3.scaleOrdinal()
+        .domain(data.map(d => d.label))
+        .range([primary]); // Cores dos graficos
+
+    // Criar SVG
+    const svg = d3.select(graf)
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+    // Gerador de arco (donut)
+    const arc = d3.arc()
+        .innerRadius(radius * .75) // tamanho do Arco
+        .outerRadius(radius * 0.95)
+        .padAngle(0.05) // Separa
+        .cornerRadius(15); // arredonda
+
+    // Gerador de pizza
+    const pie = d3.pie()
+        .value(d => d.value)
+        .sort(null); // mantém ordem original
+
+    // Criação
+    svg
+        .selectAll("path")
+        .data(pie(data))
+        .join("path")
+        .attr("d", arc)
+        .attr("fill", d => color(d.data.label))
+        .attr("stroke", primary)
+        .style("stroke-width", "2px")
+        .style("opacity", 0.9)
+        .on("mouseover", function (event, d) {
+            d3.select(this).style("opacity", 1);
+            tooltip.style("opacity", 1)
+                .html(`<strong>${d.data.label}</strong>: ${to_real(d.data.value)}`)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 20) + "px");
+        })
+        .on("mouseout", function () {
+            d3.select(this).style("opacity", 0.9);
+            tooltip.style("opacity", 0);
+        })
+        .join("text")
+        .text(d => d.data.label);
+
+    // Tooltip (opcional)
+    const tooltip = d3.select("body")
+        .append("div")
+        .style("position", "absolute")
+        .style("padding", "6px 10px")
+        .style("background", "#222")
+        .style("font-size", "20px")
+        .style("color", "white")
+        .style("border-radius", "4px")
+        .style("pointer-events", "none")
+        .style("opacity", 0);
+
+    // Labels internas no gráfico (opcional)
+    svg
+        .selectAll("text")
+        .data(pie(data))
+        .join("text")
+        .text(d => d.data.value > 0 ? d.data.label : "")
+        .style("fill", "#fff")
+        .attr("transform", d => `translate(${arc.centroid(d)})`)
+        .style("font-size", "14px")
+        .style("font-weight", "bold")
+        .style("text-anchor", "middle");
 }
 
