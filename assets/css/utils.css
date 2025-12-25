@@ -19,6 +19,21 @@
     --red2: rgb(202, 49, 60);
 }
 
+.card-carousel {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-carousel-track {
+  display: flex;
+  width: 100%;
+  transition: transform 0.35s ease;
+}
+
+.card-view {
+  min-width: 100%;
+}
+
 .flex-basis {
     flex-basis: 100px;
 }
@@ -139,4 +154,13 @@
 
 .min-widht-800 {
     min-width: 800px;
+}
+
+/* TEXTOS */
+.text-primary {
+    color: var(--primary) !important;
+}
+
+.text-red {
+    color: var(--red) !important;
 }

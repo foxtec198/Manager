@@ -17,28 +17,54 @@ async function set_badge_pos() { // DOM do status do caixa
     }
 }
 
-async function set_expenses() { // DOM referente a tabela de despesas
-    const expenses = await get_expenses(); // Requisição das despesas
-    const data = expenses.map(expense => {
-        return [
-            new Date(expense.data).toLocaleDateString('pt-br', {'day': '2-digit', 'month': 'long', 'hour': '2-digit', 'minute': "2-digit"}), 
-            expense.motivo, 
-            expense.funcionario.toUpperCase(),
-            to_real(expense.valor),
-            gridjs.html(`
-                <button class="btn btn-secondary">${icon_eye}</button>
-                <button class="btn btn-danger">${icon_trash}</button>
-            `)
-        ]
-    }); // Data usando map para formatar os dados da tabela
-    const columns = ["Data", "Motivo", "Funcionário", "Valor", "Ações"] // Colunas da Tabela
-    create_table("lista_de_despesas", data, columns); // Cria a tabela e indexa
+async function set_state() { // Altera o estado da screen de abertura ou fechamento
+    const state_title = document.getElementById('state_title') // Titulo do estado do caixa
+    const form_status = document.getElementById("status_caixa") // Formulario 
+    const btn = form_status.btn_status // Botao de abrir caixa 
+    const troco = form_status.troco
+    const js = await get_pos() // Obtem os status do caixa   
+    if(js.status){
+        state_title.innerHTML = '<i class="bi bi-currency-exchange"></i> Fechar Caixa.'
+        troco ? troco.parentElement.hidden = true : null
+        btn_status.textContent = "Fechar Caixa."
+        btn_status.classList.remove("btn-primary")
+        btn_status.classList.add("btn-red")
+    }else{
+        state_title.innerHTML = '<i class="bi bi-currency-exchange"></i>  Abrir Caixa.'
+        troco ? troco.parentElement.hidden = false : null
+        btn_status.textContent = "Abrir Caixa."
+        btn_status.classList.remove("btn-red")
+        btn_status.classList.add("btn-primary")
+    }
+}
+
+async function set_expenses(nocons=false) { // DOM referente a tabela de despesas
+    const expenses = nocons ? null : await get_expenses(); // Requisição das despesas    
+    const lista = document.getElementById("lista_de_despesas")
+    if(lista){
+        lista.innerHTML = ''
+        const data = expenses ? expenses.map(expense => {
+            return [
+                new Date(expense.data).toLocaleDateString('pt-br', {'day': '2-digit', 'month': 'long', 'hour': '2-digit', 'minute': "2-digit"}), 
+                expense.motivo, 
+                expense.funcionario.toUpperCase(),
+                to_real(expense.valor),
+                gridjs.html(`
+                    <button class="btn btn-danger" onclick="set_delete_expense(${expense.id})">${icon_trash} Remover</button>
+                `)
+            ]
+        }) : {}; // Data usando map para formatar os dados da tabela
+        const columns = ["Data", "Motivo", "Funcionário", "Valor", "Ações"] // Colunas da Tabela
+        return create_table("lista_de_despesas", data, columns); // Cria a tabela e indexa
+    }
 }
 
 async function set_mini_dashboard(filter = "week") { // DOM referente ao Mini Dashboard 
     const payments = await get_infos_payments(filter)
     const div_mini_report = document.getElementById("mini_report")
-    if (Object.keys(payments).length > 1) {
+    
+    if (payments.total > 0) {
+        div_mini_report.classList.remove("flex-column", "justify-content-center", "align-items-center")
         div_mini_report.innerHTML = '';
         // Varuaveis
         const orders_total = payments.orders // Valor de vendas p Orndens
@@ -59,20 +85,23 @@ async function set_mini_dashboard(filter = "week") { // DOM referente ao Mini Da
         const lbl_total_prods = document.getElementById("prods_total")
         const lbl_percent_prods = document.getElementById("prods_percent")
 
-        lbl_total_prods.textContent = to_real(prods_total)
+        console.log(prods_total)
+        lbl_total_prods.textContent = to_real(prods_total) 
         lbl_total_os.textContent = to_real(orders_total)
 
+        const consider_percent = 40
+
         // Coloração da porcentagem das OPRDENS
-        if (orders_percent < 50) {
+        if (orders_percent < consider_percent) {
             lbl_percent_os.innerHTML = `<span class="text-danger">${orders_percent.toFixed(2)}% ${icon_graph_down}</span> <span>( ${orders_count} )</span>`
-        } else if (orders_percent >= 50 && orders_percent < 70) {
+        } else if (orders_percent >= consider_percent) {
             lbl_percent_os.innerHTML = `<span class="text-success">${orders_percent.toFixed(2)}% ${icon_graph_up}</span> <span>( ${orders_count} )</span>`
         }
 
         // Coloração da porcentagem dos PRODUTOS
-        if (prods_percent < 50) {
+        if (prods_percent < consider_percent) {
             lbl_percent_prods.innerHTML = `<span class="text-danger">${prods_percent.toFixed(2)}% ${icon_graph_down}</span> <span>( ${prods_count} )</span>`
-        } else if (prods_percent >= 50) {
+        } else if (prods_percent >= consider_percent) {
             lbl_percent_prods.innerHTML = `<span class="text-success">${prods_percent.toFixed(2)}% ${icon_graph_up}</span> <span>( ${prods_count} )</span>`
         }
 
@@ -102,6 +131,16 @@ async function set_mini_dashboard(filter = "week") { // DOM referente ao Mini Da
         }
 
     } else {
+        const lbl_total_os = document.getElementById("os_total")
+        const lbl_percent_os = document.getElementById("os_percent")
+        const lbl_total_prods = document.getElementById("prods_total")
+        const lbl_percent_prods = document.getElementById("prods_percent")
+
+        lbl_total_os.textContent = to_real(0)
+        lbl_percent_os.innerHTML = `<span class="text-danger">0% ${icon_graph_down}</span> <span>( 0 )</span>`
+        lbl_total_prods.textContent = to_real(0)
+        lbl_percent_prods.innerHTML = `<span class="text-danger">0% ${icon_graph_down}</span> <span>( 0 )</span>`
+        
         div_mini_report.innerHTML = '';
         const spn = document.createElement("span")
         spn.classList.add("fs-4")
@@ -127,7 +166,6 @@ async function set_last_value_pos() { // DOM ultimo valor do caixa fehcado
         pos_value_input.value = status
     }
     const btn = document.getElementById("btn_open_pos")
-    btn.disabled = ""
 }
 
 function alter_expense(select) { // Mostra/Oculta o campo para declarar o motivo da despesa (Caso nao seja uma sangria)
@@ -135,31 +173,73 @@ function alter_expense(select) { // Mostra/Oculta o campo para declarar o motivo
     if(select.value == 'Despesa'){ motivoD.parentElement.hidden = false;}
     else{ motivoD.parentElement.hidden = true }
 }
+
+async function set_delete_expense(expense_id) {
+    is_loading();
+    const res = await delete_expense(expense_id);
+    if(res){
+        const expenses = await get_expenses();
+        const grid = await set_expenses(true);
+        grid.updateConfig({
+            data: expenses.map(expense => {
+                return [
+                    new Date(expense.data).toLocaleDateString('pt-br', {'day': '2-digit', 'month': 'long', 'hour': '2-digit', 'minute': "2-digit"}), 
+                    expense.motivo, 
+                    expense.funcionario.toUpperCase(),
+                    to_real(expense.valor),
+                    gridjs.html(`
+                        <button class="btn btn-danger" onclick="set_delete_expense(${expense.id})">${icon_trash} Remover</button>
+                    `)
+                ]
+            })
+        }).forceRender();
+        show_toast("Depesa removida")
+        is_loading(false)
+    }
+}
 // ============================================================================================ FORMS
-const form_open_pos = document.getElementById("form_open_pos") // Formulario de abertura de caixa
-if (form_open_pos) {
-    form_open_pos.addEventListener("submit", async function (e) {
+const form_status_pos = document.getElementById("status_caixa") // Formulario de abertura de caixa
+if (form_status_pos) {
+    form_status_pos.addEventListener("submit", async function (e) {
+        is_loading();
         e.preventDefault()
-        const res = await open_pos(this.mat.value, this.troco.value)
-        if (res) {
-            show_toast(res, "info")
-            set_badge_pos();
-        }
-        this.troco.value = ''
-        this.mat.value = ''
+        if(this.btn_status.textContent.includes("Fechar")){
+            const res = await close_pos(this.mat.value)
+            if (res) {
+                show_toast(res)
+                set_badge_pos();
+            }
+            this.reset();
+            set_state();
+        }else{
+            const res = await open_pos(this.mat.value, this.troco.value)
+            if (res) {
+                show_toast(res, "info")
+                set_badge_pos();
+            }
+            this.reset()
+            set_state();
+            set_last_value_pos();
+        };
+        is_loading(false)
     })
 }
 
-const form_close_pos = document.getElementById("form_close_pos") // Formulario de fechamento de caixa
-if (form_close_pos) {
-    form_close_pos.addEventListener("submit", async function (e) {
-        e.preventDefault()
-        const res = await close_pos(this.mat.value)
-        if (res) {
-            show_toast(res)
-            set_badge_pos();
-        }
-        this.mat.value = ''
+const form_add_value = document.getElementById("form_add_value") // Formulario de adição de valor
+if (form_add_value) {
+    form_add_value.addEventListener("submit", async function (e) {
+        is_loading();
+        e.preventDefault();
+        const valor = form_add_value.valor ? form_add_value.valor.value : null;
+        const matricula = form_add_value.matricula ? form_add_value.matricula.value : null;
+        if(valor, matricula) {
+            const res = await add_value(valor, matricula);
+            if(res){
+                set_badge_pos();
+                show_toast(res);
+                is_loading(false);
+            }
+        };
     })
 }
 
@@ -167,11 +247,31 @@ const form_add_expense = document.getElementById("form_add_expense") // Formular
 if(form_add_expense) {
     form_add_expense.addEventListener("submit", async (e) => {
         e.preventDefault();
-        let motivo;
-        console.log(this.motivo)
-        if(this.motivo.value != 'Sangria'){ motivo = this.motivo_declarado.value; }
-        else{ motivo = this.motivo.value; }
-        const res = await create_expense(motivo, this.valor.value, this.mat.value)
+        is_loading();
+        const matricula = form_add_expense.matricula.value;
+        const valor = form_add_expense.valor.value;
+        const motivo = form_add_expense.motivo.value != 'Sangria' ? form_add_expense.motivo_declarado.value : form_add_expense.motivo.value;
+        const res = await create_expense(motivo, valor, matricula);
+        if(res){
+            set_badge_pos();
+            const grid = await set_expenses(true);
+            const expenses = await get_expenses();
+            grid.updateConfig({
+                data: expenses.map(expense => {
+                    return [
+                        new Date(expense.data).toLocaleDateString('pt-br', {'day': '2-digit', 'month': 'long', 'hour': '2-digit', 'minute': "2-digit"}),
+                        expense.motivo, 
+                        expense.funcionario.toUpperCase(),
+                        to_real(expense.valor),
+                        gridjs.html(`
+                            <button class="btn btn-danger" onclick="set_delete_expense(${expense.id})">${icon_trash} Remover</button>
+                        `)
+                    ]
+                })
+            }).forceRender();
+            form_add_expense.reset();
+            is_loading(false);
+        }
     })
 }
 
@@ -207,6 +307,18 @@ async function get_last_closed() { //Obtem o ultimo valor de fechmento
     else { show_toast(res, "danger"); return false }
 }
 
+async function add_value(value, matricula) {
+    data = {
+        "valor": value,
+        "mat": matricula
+    }
+    const req = await request("caixa", "PATCH", data)
+    const res = await req.json()
+
+    if(req.ok) { return res }
+    else{ show_toast(res, "danger"); return false}
+}
+
 // ============================================================================================ DESPESAS
 async function get_expenses(data = null, id = null) { // Obtem despesas cadastradas
     if (data) { req = await request("despesas?date=" + data) }
@@ -228,6 +340,14 @@ async function create_expense(motivo, valor, matricula) { // Cria uma despesa no
     const res = await req.json()
     if (req.ok) { return res }
     else { show_toast(res, "danger"); return false }
+}
+
+async function delete_expense(id) { // Remove uma despesas no BD
+    const req = await request("despesas?id=" + id, "DELETE")
+    const res = await req.json()
+
+    if(req.ok) { return res}
+    else{ show_toast(res, "danger"); return false}
 }
 
 async function delete_expense(expense_id) { // Deleta uma despesa

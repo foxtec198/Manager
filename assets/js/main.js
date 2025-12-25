@@ -68,7 +68,7 @@ function create_modal(id, title, body, center = 'modal-dialog-centered') {
 }
 
 function create_table(id, data, columns = []) {
-    new gridjs.Grid({ 
+    const grid = new gridjs.Grid({ 
         search: true, // Pesquisa das colunas
         pagination: true, // Paginação padrao
         columns: columns, // Colunas da Tabela
@@ -86,7 +86,9 @@ function create_table(id, data, columns = []) {
                 "results": "despesas"
             }
         }
-    }).render(document.getElementById(id));
+    })
+    grid.render(document.getElementById(id));
+    return grid
 }
 
 // ================================================ Cria um toast para exibir uma mensagem
@@ -311,4 +313,34 @@ async function get_person() { // Obtem os dados do usuario logado
     const res = await req.json()
     if (req.ok) { return res }
     else { return false }
+}
+
+class CardCarousel {
+  constructor(root) {
+    this.root = root
+    this.track = root.querySelector('.card-carousel-track')
+    this.views = root.querySelectorAll('.card-view')
+    this.index = 0
+
+    root.querySelector('.next')?.addEventListener('click', () => this.next())
+    root.querySelector('.prev')?.addEventListener('click', () => this.prev())
+  }
+
+  update() {
+    this.track.style.transform = `translateX(-${this.index * 100}%)`
+  }
+
+  next() {
+    if (this.index < this.views.length - 1) {
+      this.index++
+      this.update()
+    }
+  }
+
+  prev() {
+    if (this.index > 0) {
+      this.index--
+      this.update()
+    }
+  }
 }
