@@ -16,9 +16,6 @@ html {
   height: 100%;
 }
 
-/* Nav */
-
-
 .flex-adorno {
   position: absolute;
 }
@@ -71,11 +68,11 @@ html {
   border: none;
 }
 
-.nv{
+.nv {
   height: 10vh;
 }
 
-.newNav{
+.newNav {
   display: flex;
   flex-direction: row;
   gap: 0px;
@@ -84,7 +81,7 @@ html {
   padding: .4rem;
 }
 
-.btnNewNav{
+.btnNewNav {
   background: none;
   padding: .4rem 2rem;
   border: none;

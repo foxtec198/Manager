@@ -5,7 +5,8 @@
 
     --cinza_escuro: #282729;
     --cinza_claro: #2B3035;
-
+    
+    --primary-foreground: #fff;
     --blue: #023047;
 
     --violet: #8338ec;
@@ -16,14 +17,30 @@
 
     --red: #c1121f;
     --red2: rgb(202, 49, 60);
-
 }
 
 .flex-basis {
+    flex-basis: 100px;
+}
+
+.flex-basis-200 {
+    flex-basis: 200px;
+}
+
+.flex-basis-300 {
     flex-basis: 300px;
 }
+
+.flex-basis-400 {
+    flex-basis: 400px;
+}
+
 .flex-basis-500 {
     flex-basis: 500px;
+}
+
+.flex-basis-600 {
+    flex-basis: 600px;
 }
 
 .flex-basis-700 {
@@ -36,31 +53,31 @@
     color: #fff !important;
 }
 
-.bg-primary{
+.bg-primary {
     background-color: var(--primary) !important;
     color: #fff;
 }
 
-.bg-outline-primary{
+.bg-outline-primary {
     background: none !important;
     border: 3px solid var(--primary) !important;
     color: var(--primary) !important;
 }
 
-.bg-blue{
+.bg-blue {
     background: var(--blue) !important;
 }
 
-.bg-violet{
+.bg-violet {
     background: var(--violet) !important;
 }
 
-.bg-red{
+.bg-red {
     background: var(--red) !important;
     color: #fff !important;
 }
 
-.bg-outline-red{
+.bg-outline-red {
     background: none !important;
     border: 3px solid var(--red) !important;
     color: var(--red) !important;
@@ -112,14 +129,14 @@
 }
 
 /* TAMANHOS */
-.min-widht-300{
+.min-widht-300 {
     min-width: 300px;
 }
 
-.min-widht-500{
+.min-widht-500 {
     min-width: 500px;
 }
 
-.min-widht-800{
+.min-widht-800 {
     min-width: 800px;
 }

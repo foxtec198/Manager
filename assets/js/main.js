@@ -19,12 +19,13 @@ const root_style = getComputedStyle(document.body)
 const primary = root_style.getPropertyValue("--primary").trim()
 
 // ================================================ ICONS
-const icon_lixeira = "<i class='bi bi-trash-fill'></i>"
+const icon_trash = "<i class='bi bi-trash-fill'></i>"
 const icon_eye = '<i class="bi bi-eye"></i>'
 const icon_cart = '<i class="bi bi-cart4"></i>'
 const icon_rocket = "<i class='bi bi-rocket-takeoff-fill'></i>"
 const icon_graph_up = '<i class="bi bi-graph-up-arrow"></i>'
 const icon_graph_down = '<i class="bi bi-graph-down-arrow"></i>'
+const icon_engine = '<i class="bi bi-engine"></i>'
 
 // ================================================ HTML do Toast em si com MSG, IMG e Title
 // if (window.location.pathname != "/") { if (!cr || !gc || !perm) { window.location = "/" } }
@@ -64,6 +65,28 @@ function create_modal(id, title, body, center = 'modal-dialog-centered') {
     container.innerHTML = modalHtml
     document.body.appendChild(container)
     return new bootstrap.Modal(document.getElementById(id), { 'show': true, 'backdrop': 'static' })
+}
+
+function create_table(id, data, columns = []) {
+    new gridjs.Grid({ 
+        search: true, // Pesquisa das colunas
+        pagination: true, // Paginação padrao
+        columns: columns, // Colunas da Tabela
+        data: data, // Dados da Tabela
+        language:{ // Seta a tradução da tabela
+            search: {
+                "placeholder": "Buscar..."
+            },
+            pagination: {
+                "previous": "Anterior",
+                "next": "Próximo",
+                "showing": "Mostrando",
+                "to": "até",
+                "of": "de",
+                "results": "despesas"
+            }
+        }
+    }).render(document.getElementById(id));
 }
 
 // ================================================ Cria um toast para exibir uma mensagem
@@ -205,7 +228,7 @@ function to_real(valor) {
     return valor.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })
 }
 
-// ================================================ Cria um Loading
+// ================================================ Loading
 function ldg() {
     divLdg.hidden = ''
     divLdg.style.width = '100%'
@@ -230,9 +253,49 @@ function ldg() {
     document.body.appendChild(divLdg)
 }
 
-// ================================================ Fecha o Loading
+function is_loading(loading=true) {
+    if(loading){
+        divLdg.hidden = ''
+        divLdg.style.width = '100%'
+        divLdg.style.height = '100%'
+        divLdg.style.display = 'flex'
+        divLdg.style.justifyContent = 'center'
+        divLdg.style.alignItems = 'center'
+        divLdg.style.position = 'absolute'
+        divLdg.style.zIndex = "5000000000"
+        divLdg.style.top = 0
+        // divLdg.style.background = '#2B3035'
+        divLdg.innerHTML = `
+            <div class="loader">
+            <div class="loader-square"></div>
+            <div class="loader-square"></div>
+            <div class="loader-square"></div>
+            <div class="loader-square"></div>
+            <div class="loader-square"></div>
+            <div class="loader-square"></div>
+            <div class="loader-square"></div>
+            </div>`
+        document.body.appendChild(divLdg)
+    }else{ divLdg.hidden = 'none' }
+}
+
 function closeLdg() {
     divLdg.hidden = 'none'
+}
+
+// ================================================ Seta os dados da loja na base
+async function set_store() { 
+    const res = await get_store() // Obtem os dados da loja
+
+    // Seta o nome da loja
+    const label = document.getElementById('nomeLoja')
+    label.textContent = res.loja.nome_loja
+    label.classList.remove('placeholder')
+
+    // Seta imagem da loja ou do Hubbix
+    const img = document.getElementById('logoBase')
+    img.src = `${server}/api/files/img/manager/${encodeURIComponent(res.logo)}`
+    img.classList.remove('placeholder')
 }
 
 // ================================================ REQUESTS GERAIS

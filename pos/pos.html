@@ -13,100 +13,105 @@
 
     <!-- Local Arch -->
     <link rel="stylesheet" href="../assets/css/fonts.css">
-    <link rel="stylesheet" href="../assets/css/base.css">
     <link rel="stylesheet" href="../assets/css/utils.css">
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/tables.css">
     <link rel="stylesheet" href="css/pos.css">
 </head>
 
 <body data-bs-theme="dark">
-    <div class="d-flex flex-wrap gap-2 justify-content-center">
+    <div class="d-flex flex-wrap gap-2 mb-2 justify-content-center">
+        <!-- Abertura e Adição de valor -->
         <div class="d-flex flex-column flex-grow-1 gap-2">
             <!-- Abrir Caixa -->
-            <div class="card p-4">
-                <p class="fs-5 fw-bold">Abrir Caixa</p>
-                <form id="form_open_pos" class="d-flex flex-column gap-1">
-                    <div class="form-floating">
-                        <input class="form-control" placeholder="Matricula"
-                            type="number" name="mat" required>
-                        <label for="mattroco">Matricula</label>
+            <div class="card p-4 flex-grow-1 flex-basis-300">
+                <p class="fs-5 fw-bold"><i class="bi bi-inbox"></i> Abrir Caixa.</p>
+                <form id="form_open_pos" class="d-flex flex-column flex-wrap gap-2">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <div class="form-floating flex-grow-1 flex-basis-200">
+                            <input class="form-control rounded-5 px-3" placeholder="Matricula" type="number" name="mat"
+                                required>
+                            <label for="mattroco">Matricula</label>
+                        </div>
+                        <div class="form-floating flex-grow-1 flex-basis-200">
+                            <input class="form-control rounded-5 px-3 money-mask" id="troco" placeholder="Troco"
+                                type="text" name="troco" required>
+                            <label for="troco">Troco</label>
+                        </div>
                     </div>
-                    <div class="form-floating">
-                        <input class="form-control money-mask" id="troco" placeholder="Troco" type="text" name="troco"
-                            required>
-                        <label for="troco">Troco</label>
-                    </div>
-    
-                    <button class="btn btn-primary" id="btn_open_pos" disabled name="btn" type="submit">Abrir</button>
+                    <button class="btn btn-primary mt-5" id="btn_open_pos" disabled name="btn" type="submit">Abrir</button>
                 </form>
             </div>
+
             <!-- ADD Valor -->
-            <div class="card p-4">
-                <p class="fs-5 fw-bold">Aplicar Valor</p>
-                <form class="d-flex flex-column gap-1">
-                    <div class="form-floating">
-                        <input class="form-control" id="aplicarMat" placeholder="Matricula" onblur="conferMatricula(this)"
-                            type="number" name="mat" required>
-                        <label for="aplicarMat">Matricula</label>
+            <div class="card p-4 flex-grow-1 flex-basis-300">
+                <p class="fs-5 fw-bold"><i class="bi bi-plus-slash-minus"></i> Adicionar Valor.</p>
+                <form class="d-flex flex-column gap-2">
+                    <div class="d-flex flex-wrap gap-2">
+                        <div class="form-floating flex-grow-1 flex-basis-200">
+                            <input class="form-control rounded-5 px-3" placeholder="Matricula" type="number" name="mat"
+                                required>
+                            <label for="aplicarMat">Matricula</label>
+                        </div>
+                        <div class="form-floating flex-grow-1 flex-basis-200">
+                            <input class="form-control rounded-5 px-3 money-mask" id="aplicarValor" placeholder="Valor"
+                                type="text" name="valor" required>
+                            <label for="aplicarValor">Valor</label>
+                        </div>
                     </div>
-                    <div class="form-floating">
-                        <input class="form-control money-mask" id="aplicarValor" placeholder="Valor" type="text"
-                            name="valor" required>
-                        <label for="aplicarValor">Valor</label>
-                    </div>
-                    <button class="btn btn-success" type="button" onclick="aplicarVlr(this)">Aplicar</button>
+                    <button class="btn btn-primary mt-5" type="button" onclick="aplicarVlr(this)">Aplicar</button>
                 </form>
             </div>
         </div>
-        <div class="d-flex flex-column gap-2 flex-grow-1">
+        <!-- Despesas e Fechamento -->
+        <div class="d-flex flex-column flex-wrap flex-grow-1 gap-2">
             <!-- ADD Despesa -->
-            <div class="card p-4 flex-grow-1 flex-basis">
-                <p class="fs-5 fw-bold">Despesas e Sangrias</p>
-                <form class="d-flex flex-column gap-1">
-                    <div class="form-floating">
-                        <input class="form-control" id="retirarMat" placeholder="Matricula" onblur="conferMatricula(this)"
-                            type="number" name="mat" required>
-                        <label for="retiraMat">Matricula</label>
-                    </div>
-                    <div class="form-floating">
-                        <select class="form-select" name="motivo" id="retirarMotivo" aria-placeholder="Motivo"
-                            onchange="motivoF(this)">
-                            <option>Sangria</option>
-                            <option>Despesa</option>
-                        </select>
-                        <label for="retirarMotivo">Motivo</label>
-                    </div>
+            <div class="card p-4 flex-grow-1 flex-basis-300">
+                <p class="fs-5 fw-bold"><i class="bi bi-wallet2"></i> Despesa | Sangria.</p>
+                <form class="d-flex flex-column gap-2" id="form_add_expense">
+                    <div class="d-flex flex-wrap gap-2">
+                        <div class="form-floating flex-grow-1 flex-basis-200">
+                            <input class="form-control rounded-5 px-3" placeholder="Matricula"
+                                type="number" id="mat" required>
+                            <label for="retiraMat">Matricula</label>
+                        </div>
+                        <div class="form-floating flex-grow-1 flex-basis-200">
+                            <select class="form-select rounded-5 px-3" id="motivo" aria-placeholder="Motivo" onchange="alter_expense(this)">
+                                <option>Sangria</option>
+                                <option>Despesa</option>
+                            </select>
+                            <label for="retirarMotivo">Motivo</label>
+                        </div>
+                        <div class="form-floating flex-grow-1 flex-basis-200" hidden>
+                            <input class="form-control rounded-5 px-3" id="motivo_declarado" placeholder="Qual a despesa?" type="text">
+                            <label for="motivoIn">Qual a despesa?</label>
+                        </div>
 
-                    <div class="form-floating" id="motivoDespesa" hidden>
-                        <input class="form-control" id="motivoIn" placeholder="Qual a despesa?" type="text"
-                            name="motivoDet">
-                        <label for="motivoIn">Qual a despesa?</label>
+                        <div class="form-floating flex-grow-1 flex-basis-200">
+                            <input class="form-control rounded-5 px-3 money-mask" placeholder="Valor" type="text" id="valor" required>
+                            <label for="retirarV">Valor</label>
+                        </div>
                     </div>
-
-                    <div class="form-floating">
-                        <input class="form-control money-mask" id="retirarV" placeholder="Valor" type="text" name="valor"
-                            required>
-                        <label for="retirarV">Valor</label>
-                    </div>
-
-                    <button class="btn btn-success" type="button" onclick="adicionar_despesa(this)">Retirar</button>
+                    <button class="btn btn-primary mt-5" type="submit">Adicionar Despesa</button>
                 </form>
             </div>
             <!-- Fechamento de Caixa -->
-            <div class="card p-4 flex-grow-1 flex-basis">
-                <p class="fs-5 fw-bold">Fechamento</p>
+            <div class="card p-4 flex-grow-1 flex-basis-300">
+                <p class="fs-5 fw-bold"><i class="bi bi-bounding-box"></i> Fechar Caixa.</p>
                 <form class="d-flex flex-column gap-2" id="form_close_pos">
                     <div class="form-floating">
-                        <input class="form-control" placeholder="Matricula" type="number" name="mat" required>
+                        <input class="form-control rounded-5 px-3" placeholder="Matricula" type="number" name="mat"
+                            required>
                         <label for="fecharMat">Matricula</label>
                     </div>
-                    <button class="btn btn-danger" type="submit">Fechar Caixa</button>
+                    <button class="btn btn-red mt-5" type="submit">Fechar Caixa</button>
                 </form>
             </div>
         </div>
         <!-- Mini Relatório -->
-        <div class="d-flex text-truncate flex-column gap-2 p-3 card flex-basis-700">
+        <div class="d-flex flex-column gap-2 p-2 card flex-grow-1 flex-basis-500">
             <div class="d-flex justify-content-between align-items-center">
-                <span class="fs-3 fw-bold">Análise Financeira</span>
+                <span class="fs-5 fw-bold"><i class="bi bi-bar-chart-fill"></i> Análise Financeira</span>
                 <span class="badge fs-5 rounded-pill placeholder" id="pos_status">[STATUS CAIXA]</span>
             </div>
             <div class="d-flex justify-content-between gap-4">
@@ -121,35 +126,34 @@
                     <span class="fs-5" id="os_percent">0%</span>
                 </div>
             </div>
-            <div class="d-flex justify-content-center flex-grow-1 p-4 bg-dark rounded" id="mini_report">
+            <div class="d-flex flex-row align-items-start justify-content-around w-100 h-100 flex-grow-1 p-4 gap-4 bg-dark rounded"
+                id="mini_report">
                 <span id="spin_ldg" class="spinner-border spinner-border-sm text-light" role="status"></span>
             </div>
             <div class="d-flex gap-4 mt-5 justify-content-between">
-                <div class="form-floating flex-grow-1 flex-basis">
-                    <select class="form-control" id="filter_select" aria-placeholder="Selecione um periodo">
+                <div class="form-floating flex-grow-1 flex-basis-500">
+                    <select class="form-control rounded-5 px-3" id="filter_select" aria-placeholder="Selecione um periodo">
                         <option value="week">Ultimos 7 dias</option>
                         <option value="week">Hoje</option>
                         <option value="week">Este Mes</option>
                     </select>
                     <label for="filter_select">Selecione um periodo</label>
                 </div>
-                <button class="btn btn-primary flex-grow-1" style="flex-basis: 20px;">Ver Mais ></button>
+                <button class="btn btn-primary flex-grow-1 flex-basis" onclick="change_screen('dashboards/reports')">Ver Mais ></button>
             </div>
         </div>
     </div>
-    <br>
     <!-- Despesas -->
-    <div class="card p-4 flex-grow-1" style="flex-basis: 300px;">
-        <p class="fs-5 fw-bold">Despesas <br> <span class="fs-6 fw-light">Motivo - Valor - Data</span></p>
-        <ul class="list-group" id="lista_de_despesas"></ul>
+    <div class="card p-4 flex-grow-1 overflow-auto">
+        <p class="fs-5 fw-bold"><i class="bi bi-back"></i> Despesas</p>
+        <div id="lista_de_despesas"></div>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
     <script src="../assets/js/main.js"></script>
     <script src="js/pos.js"></script>
     <script>set_badge_pos(); set_expenses(); set_mini_dashboard(); set_last_value_pos();</script>
