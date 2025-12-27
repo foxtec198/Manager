@@ -1,0 +1,12 @@
+.sale-card .btn-categ {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    background-color: var(--cinza_escuro);
+    border: none;
+    padding: 1rem;
+}
+
+.btn-categ.active {
+    background: var(--primary);
+    transition: ease-in-out;
+}

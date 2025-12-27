@@ -2,16 +2,16 @@
 async function set_badge_pos() { // DOM do status do caixa
     const status = document.getElementById('pos_status')
     if(status){
-        status.classList.remove('bg-outline-primary', 'bg-outline-red')
+        status.classList.remove('bg-primary', 'bg-red')
         status.classList.add('placeholder')
         const js = await get_pos() // Obtem os status do caixa
         if (js.status) {
             status.classList.remove('placeholder')
-            status.classList.add('bg-outline-primary')
+            status.classList.add('bg-primary')
             status.textContent = 'Caixa Aberto - ' + to_real(js.valor)
         } else {
             status.classList.remove('placeholder')
-            status.classList.add('bg-outline-red')
+            status.classList.add('bg-red')
             status.textContent = `Caixa Fechado - R$ 0`
         }
     }
@@ -174,7 +174,7 @@ function alter_expense(select) { // Mostra/Oculta o campo para declarar o motivo
     else{ motivoD.parentElement.hidden = true }
 }
 
-async function set_delete_expense(expense_id) {
+async function set_delete_expense(expense_id) { // Remove uma despesa e atualiza a tabela de despesas
     is_loading();
     const res = await delete_expense(expense_id);
     if(res){
@@ -193,9 +193,9 @@ async function set_delete_expense(expense_id) {
                 ]
             })
         }).forceRender();
-        show_toast("Depesa removida")
-        is_loading(false)
+        show_toast(res)
     }
+    is_loading(false)
 }
 // ============================================================================================ FORMS
 const form_status_pos = document.getElementById("status_caixa") // Formulario de abertura de caixa
@@ -237,9 +237,9 @@ if (form_add_value) {
             if(res){
                 set_badge_pos();
                 show_toast(res);
-                is_loading(false);
             }
         };
+        is_loading(false);
     })
 }
 
@@ -307,7 +307,7 @@ async function get_last_closed() { //Obtem o ultimo valor de fechmento
     else { show_toast(res, "danger"); return false }
 }
 
-async function add_value(value, matricula) {
+async function add_value(value, matricula) { // Adiciona um reforço ao caixa, uma adição de troco
     data = {
         "valor": value,
         "mat": matricula

@@ -68,6 +68,11 @@
     color: #fff !important;
 }
 
+.bg-gray{
+    background: var(--cinza_claro) !important;
+    color: var(--primary-foreground) !important;
+}
+
 .bg-primary {
     background-color: var(--primary) !important;
     color: #fff;
