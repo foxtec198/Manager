@@ -1,12 +1,54 @@
 .sale-card .btn-categ {
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
-    background-color: var(--cinza_escuro);
+    background-color: var(--cinza_claro);
     border: none;
-    padding: 1rem;
+    padding: 1.6rem;
+    font-size: larger;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
 .btn-categ.active {
-    background: var(--primary);
-    transition: ease-in-out;
+    background: var(--cinza_escuro);
+}
+
+.sale_card_frame {
+    display: none !important;
+}
+
+.sale_card_frame.active {
+    display: flex !important;
+}
+
+.produto{
+    display: flex !important;
+}
+
+.produto.hidden{
+    display: none !important;
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--cinza_escuro) !important;
+}
+
+.mtable tbody tr {
+    padding: 2rem !important;
+}
+.mtable tbody tr.active {
+    background-color: #111;
+}
+
+.btn-payment{
+    background: none;
+    border: 2px solid var(--cinza_claro);
+    border-radius: 30px;
+}
+
+.btn-payment:hover{
+    background: var(--cinza_claro);
+}
+
+.btn-payment:focus {
+    background: var(--cinza_claro);
 }

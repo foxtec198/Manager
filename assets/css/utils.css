@@ -73,6 +73,11 @@
     color: var(--primary-foreground) !important;
 }
 
+.bg-dark-gray{
+    background: var(--cinza_escuro) !important;
+    color: var(--primary-foreground) !important;
+}
+
 .bg-primary {
     background-color: var(--primary) !important;
     color: #fff;

@@ -1,6 +1,6 @@
 // ================================================ Define a api e a baseURL
 // var server = "https://api.hubbix.com.br"
-const server = "http://0.0.0.0:9560"
+const server = "http://localhost:9560"
 const api = server + "/api/manager/"
 
 // ================================================ VARS
@@ -68,12 +68,12 @@ function create_modal(id, title, body, center = 'modal-dialog-centered') {
 }
 
 function create_table(id, data, columns = []) {
-    const grid = new gridjs.Grid({ 
+    const grid = new gridjs.Grid({
         search: true, // Pesquisa das colunas
         pagination: true, // Paginação padrao
         columns: columns, // Colunas da Tabela
         data: data, // Dados da Tabela
-        language:{ // Seta a tradução da tabela
+        language: { // Seta a tradução da tabela
             search: {
                 "placeholder": "Buscar..."
             },
@@ -157,7 +157,7 @@ function datas_comemorativas(msg, data, bgs = ["#fff", "#777"], fgs = ["#fff", "
 }
 
 // ================================================ Troca e memoriza a screen
-function change_screen(screnn, t=null) {
+function change_screen(screnn, t = null) {
     others = parent.document.querySelectorAll('.menu-item')
     others.forEach(element => {
         element.style.background = null
@@ -181,10 +181,10 @@ function restore_screen() {
     if (frame) {
         txt1 = frame.replace('/', '')
         txt2 = txt1.replace('.html', '').split("/")[1]
-        
+
         frameWidget.src = frame
         const t = parent.document.querySelector(`.menu-${txt2}`)
-        if(t){
+        if (t) {
             t.style.background = "rgba(41, 201, 108, 0.08)";
             t.style.color = '#2ecc71';
             t.style.borderRadius = "30px"
@@ -255,8 +255,8 @@ function ldg() {
     document.body.appendChild(divLdg)
 }
 
-function is_loading(loading=true) {
-    if(loading){
+function is_loading(loading = true) {
+    if (loading) {
         divLdg.hidden = ''
         divLdg.style.width = '100%'
         divLdg.style.height = '100%'
@@ -278,7 +278,7 @@ function is_loading(loading=true) {
             <div class="loader-square"></div>
             </div>`
         document.body.appendChild(divLdg)
-    }else{ divLdg.hidden = 'none' }
+    } else { divLdg.hidden = 'none' }
 }
 
 function closeLdg() {
@@ -286,7 +286,7 @@ function closeLdg() {
 }
 
 // ================================================ Seta os dados da loja na base
-async function set_store() { 
+async function set_store() {
     const res = await get_store() // Obtem os dados da loja
 
     // Seta o nome da loja
@@ -316,31 +316,31 @@ async function get_person() { // Obtem os dados do usuario logado
 }
 
 class CardCarousel {
-  constructor(root) {
-    this.root = root
-    this.track = root.querySelector('.card-carousel-track')
-    this.views = root.querySelectorAll('.card-view')
-    this.index = 0
+    constructor(root) {
+        this.root = root
+        this.track = root.querySelector('.card-carousel-track')
+        this.views = root.querySelectorAll('.card-view')
+        this.index = 0
 
-    root.querySelector('.next')?.addEventListener('click', () => this.next())
-    root.querySelector('.prev')?.addEventListener('click', () => this.prev())
-  }
-
-  update() {
-    this.track.style.transform = `translateX(-${this.index * 100}%)`
-  }
-
-  next() {
-    if (this.index < this.views.length - 1) {
-      this.index++
-      this.update()
+        root.querySelector('.next')?.addEventListener('click', () => this.next())
+        root.querySelector('.prev')?.addEventListener('click', () => this.prev())
     }
-  }
 
-  prev() {
-    if (this.index > 0) {
-      this.index--
-      this.update()
+    update() {
+        this.track.style.transform = `translateX(-${this.index * 100}%)`
     }
-  }
+
+    next() {
+        if (this.index < this.views.length - 1) {
+            this.index++
+            this.update()
+        }
+    }
+
+    prev() {
+        if (this.index > 0) {
+            this.index--
+            this.update()
+        }
+    }
 }
