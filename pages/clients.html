@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- INIT CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../assets/css/utils.css">
+    <link rel="stylesheet" href="../assets/css/fonts.css">
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/clients.css">
+    <!-- END CSS -->
+</head>
+<body data-bs-theme="dark">
+    <!-- Modal novo Cliente -->
+    <div class="modal fade modal-lg" id="newClienteModal" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form id="form-new-client">
+                <div class="modal-content">
+                  <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="staticBackdropLabel"><i class="bi bi-person-fill-add"></i> Cadastrar Cliente</h1>
+                  </div>
+                  <div class="modal-body gap-4" style="overflow-x: auto;">
+                    <div class="d-flex flex-column">
+                        <div class="d-flex gap-2 p-2 flex-wrap">
+                            <div class="alert alert-info d-flex gap-4 align-items-center mobile-hide" role="alert">
+                                <span class='fs-6 text-center mb-3'>Caso o cliente se negue a informar o CPF, mantenha em branco, e prossiga com os demais dados, nosso sistema irá preencher de forma automática!</span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+    
+                            <div class="d-flex flex-column gap-2 form-floating" style="flex-grow: 1; flex-basis: 200px;">
+                                <input class="w-100 form-control cpf-mask" minlength="14" placeholder="CPF" id="ncCpf">
+                                <label for="ncCpf">CPF</label>
+                            </div>
+                            <div class="d-flex gap-2 align-items-center justify-content-center form-floating" style="flex-grow: 1; flex-basis: 200px;">
+                                <input class="w-100 form-control" placeholder="Nome Completo *" id="ncNome" required>
+                                <label for="ncNome">Nome Completo *</label>
+                            </div>
+    
+                            <div class="d-flex gap-2 align-items-center justify-content-center form-floating" style="flex-grow: 1; flex-basis: 200px;">
+                                <input class="w-100 form-control tel-mask" placeholder="Telefone *" id="ncTel" required>
+                                <label for="ncTel">Telefone *</label>
+                            </div>
+                            <div class="d-flex gap-2 align-items-center justify-content-center form-floating" style="flex-grow: 1; flex-basis: 200px;">
+                                <input class="w-100 form-control tel-mask" placeholder="Telefone 2" id="ncTel2" >
+                                <label for="ncTel">Telefone 2</label>
+                            </div>
+                            <div class="d-flex gap-2 align-items-center justify-content-center form-floating" style="flex-grow: 1; flex-basis: 200px;">
+                                <input class="w-100 form-control" placeholder="Modelo *" id="ncModelo" required>
+                                <label for="ncModelo">Modelo *</label>
+                            </div>
+                            <div class="d-flex gap-2 align-items-center justify-content-center form-floating" style="flex-grow: 1; flex-basis: 200px;">
+                                <input class="w-100 form-control" placeholder="Cor *" id="ncCor" required>
+                                <label for="ncCor">Cor *</label>
+                            </div>
+                            <div class="d-flex gap-2 align-items-center justify-content-center form-floating" style="flex-grow: 1; flex-basis: 200px;">
+                                <input class="w-100 form-control" placeholder="IMEI" id="ncImei">
+                                <label for="ncImei">IMEI</label>
+                            </div>
+                            <div class="d-flex" style="flex-grow: 1; flex-basis: 200px;">
+                                <select class="form-control" id="ncMarca"></select>
+                            </div>
+                            <div class="d-flex flex-column gap-2 align-items-center justify-content-center form-floating" style="flex-grow: 1; flex-basis: 200px;">
+                                <input class="w-100 form-control" placeholder="Endereço" id="ncEnd">
+                                <label for="ncEnd">Endereço</label>
+                            </div>
+                            <div class="d-flex flex-column gap-2 align-items-center justify-content-center form-floating" style="flex-grow: 1; flex-basis: 200px;">
+                                <input class="w-100 form-control" placeholder="Obs" id="ncObs">
+                                <label for="ncObs">Obs</label>
+                            </div>
+                        </div>
+                        <br>
+                        <span class="text-end">Items com asterisco(*) são de preenchimento obrigatório!</span>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                      <button type="submit" id="btnNovoCliente" class="btn btn-success">
+                        <i class="bi bi-floppy-fill"></i> 
+                        Cadastrar
+                      </button>
+                  </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal editar Cliente -->
+    <div class="modal fade modal-lg" id="editarClienteModal" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form id="form-editar-client">
+                <div class="modal-content">
+                  <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="staticBackdropLabel"><i class="bi bi-pencil-square"></i> Editar Cliente</h1>
+                  </div>
+                  <div class="modal-body gap-4" style="overflow-x: auto;">
+                    <div class="d-flex flex-column gap-2 justify-content-center">
+                        <div class="alert alert-warning d-flex gap-4 align-items-center justify-content-between mobile-hide" role="alert">
+                            <span class='fs-6 text-center mb-3'>Indica-se a utilização da Observação (Obs) somente em casos importantes sobre o cliente!</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <input class="form-control" id="ecId" type="text" hidden>
+                            <div class="d-flex gap-2 align-items-center form-floating" style="flex-grow: 1; flex-basis: 200px;">
+                                <input class="form-control" id="ecCpf" placeholder="CPF" type="text" required>
+                                <label for="ecCpf">CPF</label>
+                            </div>
+                            <div class="d-flex gap-2 align-items-center form-floating" style="flex-grow: 1; flex-basis: 200px;">
+                                <input class="form-control" id="ecNome" placeholder="Nome *" type="text" required>
+                                <label for="ecNome">Nome *</label>
+                            </div>
+                            <div class="d-flex gap-2 align-items-center form-floating" style="flex-grow: 1; flex-basis: 200px;">
+                                <input class="form-control tel-mask" id="ecTel" placeholder="Telefone" type="text">
+                                <label for="ecTel">Telefone</label>
+                            </div>
+                            <div class="d-flex gap-2 align-items-center form-floating" style="flex-grow: 1; flex-basis: 200px;">
+                                <input class="form-control tel-mask" id="ecTel2" placeholder="Telefone 2" type="text">
+                                <label for="ecTel">Telefone 2</label>
+                            </div>
+                        </div>
+    
+                        <div class="d-flex gap-2 flex-wrap">
+                        <div class="d-flex gap-2 align-items-center form-floating" style="flex-grow: 1; flex-basis: 200px;">
+                            <input class="form-control" id="ecImei" placeholder="IMEI" type="text">
+                            <label for="ecImei">IMEI</label>
+                        </div>
+    
+                        <div class="d-flex gap-2 align-items-center form-floating" style="flex-grow: 1; flex-basis: 200px;">
+                            <input class="form-control" placeholder="Modelo *" id="ecModelo" type="text" required>
+                            <label for="ecModelo">Modelo *</label>
+                        </div>
+                        </div>
+    
+                        <div class="d-flex gap-2 flex-wrap">
+                        <div class="d-flex gap-2 align-items-center form-floating" style="flex-grow: 1; flex-basis: 200px;">
+                            <input class="form-control" id="ecCor" placeholder="Cor *" type="text" required>
+                            <label for="ecCor">Cor *</label>
+                        </div>
+    
+                        <div class="d-flex" style="flex-grow: 1; flex-basis: 200px;">
+                            <select id="ecMarca" class="form-select"></select>
+                        </div>
+                        </div>
+    
+                        <div class="d-flex gap-2 flex-wrap">
+                        <div class="d-flex gap-2 align-items-center form-floating" style="flex-grow: 1; flex-basis: 200px;">
+                            <input class="form-control form-floating" id="ecEnd" placeholder="Endereço" type="text">
+                            <label for="ecEnd">Endereço</label>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center form-floating" style="flex-grow: 1; flex-basis: 200px;">
+                            <input class="form-control"  placeholder="Obs" id="ecObs" type="text">
+                            <label for="ecObs">Obs</label>
+                        </div>
+                        </div>
+                    
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                      <button type="submit" id="btnEditarCliente" class="btn btn-success">
+                        <i class="bi bi-floppy-fill"></i> 
+                        Editar Cliente
+                      </button>
+                  </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Corpo da Pagina -->
+    <div class="p-2">
+        <div class="d-flex flex-row justify-content-between align-items-center">
+            <p class="fs-2 fw-bold">Clientes.</p>
+            <button data-bs-toggle="modal" data-bs-target="#newClienteModal" class="btn btn-success btn-sm mobile-hide"><i class="bi bi-person-fill-add"></i> Novo Cliente</button>
+            <button data-bs-toggle="modal" data-bs-target="#newClienteModal" class="btn btn-success btn-sm mobile"><i class="bi bi-person-fill-add"></i></button>
+        </div>
+        <div class="d-flex flex-column gap-2">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" placeholder="Busque por um elemento da tabela!" id="busca">
+            </div>
+            <div class="card table-responsive-sm p-2 overflow-auto">
+                <table class="table table-hover" id="table">
+                    <thead>
+                        <th>Id</th>
+                        <th>CPF</th>
+                        <th>Nome</th>
+                        <th>Telefone</th>
+                        <th>Modelo</th>
+                        <th>Marca</th>
+                        <th>Cor</th>
+                        <th>Endereço</th>
+                        <!-- <th>Obs</th> -->
+                        <th>Ação</th>
+                    </thead>
+                    <tbody id="tableClientes">
+    
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+
+    </div>
+
+    <!-- INIT JAVASCRIPTS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/clients.js"></script>
+    <script>
+        document.getElementById("form-editar-client").addEventListener("submit", function (e){
+            e.preventDefault()
+            
+            editarCliente(document.getElementById('btnEditarCliente'))
+        })
+        
+        document.getElementById("form-new-client").addEventListener("submit", function (e){
+            e.preventDefault()
+            
+            newClient(document.getElementById('btnNovoCliente'))
+        })
+    </script>
+    <!-- END JAVASCRIPTS -->
+</body>
+</html>

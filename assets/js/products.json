@@ -1,0 +1,35 @@
+[
+    {
+        "id": 1,
+        "nome": "A22 BRANCO",
+        "quantidade": 1,
+        "valor": 450,
+        "categoria": "Celulares",
+        "fornecedor": "ODC",
+        "desconto": 0,
+        "ean": 1,
+        "img": "blank.png"
+    },
+    {
+        "id": 2,
+        "nome": "G85",
+        "quantidade": 1,
+        "valor": 600,
+        "categoria": "Celulares",
+        "fornecedor": "ODC",
+        "desconto": 0,
+        "ean": 2,
+        "img": "blank.png"
+    },
+    {
+        "id": 3,
+        "nome": "FONE DE OUVIDO HMASTON",
+        "quantidade": 10,
+        "valor": 20,
+        "categoria": "Acessorios",
+        "fornecedor": "ODC",
+        "desconto": 0,
+        "ean": 1,
+        "img": "blank.png"
+    }
+]

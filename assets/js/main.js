@@ -157,7 +157,7 @@ function datas_comemorativas(msg, data, bgs = ["#fff", "#777"], fgs = ["#fff", "
 }
 
 // ================================================ Troca e memoriza a screen
-function change_screen(screnn, t = null) {
+function change_screen(screen, t = null) {
     others = parent.document.querySelectorAll('.menu-item')
     others.forEach(element => {
         element.style.background = null
@@ -169,9 +169,10 @@ function change_screen(screnn, t = null) {
         t.style.boxShadow = "inset 0 0 0 1px #2ecc71aa, 0 0 6px #2ecc7190;"
         t.style.borderRadius = "30px"
     }
+
     frame = parent.document.getElementById('frame_screen')
-    sessionStorage.setItem('frame', `/${screnn}.html`)
-    frame.src = `/${screnn}.html`
+    sessionStorage.setItem('frame', `../pages/${screen}.html`)
+    frame.src = `../pages/${screen}.html`
 }
 
 // ================================================ Recupera a tela mesmo que atualize a pagina
@@ -180,6 +181,7 @@ function restore_screen() {
     frameWidget = parent.document.getElementById('frame_screen')
     if (frame) {
         txt1 = frame.replace('/', '')
+        txt1 = frame.replace('../', '')
         txt2 = txt1.replace('.html', '').split("/")[1]
 
         frameWidget.src = frame
