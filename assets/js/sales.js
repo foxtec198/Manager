@@ -1,5 +1,7 @@
 // ======================================================================== LOGIC AND DOM
 const cart = {} // Carinho local
+let id_client;
+let desconto = 0;
 let total = 0 // Valor total
 
 function create_btn_sales(produto) { // Cria os botaos dos produtos de forma estrategica
@@ -75,6 +77,7 @@ function create_prod_table(produto) { // Cria a tabela de produtos
 }
 
 function add_row_prod_table(produto, tb = null) { // Adiciona um produto a tabela acima
+    const subtotal = document.getElementById("subtotal")
     const total_prod = document.getElementById("total_prod")
     const tbody = tb ? tb : document.getElementById("table_prod_body") // TBody da tabela
     if (cart[produto.nome]) {
@@ -140,7 +143,8 @@ function add_row_prod_table(produto, tb = null) { // Adiciona um produto a tabel
         tbody.appendChild(tr)
     }
     total += produto.valor
-    total_prod.textContent = "Total: " + to_real(total)
+    total_prod.textContent = "Total: " + to_real(total - desconto)
+    subtotal.textContent = "Sub-Total: " + to_real(total)
 }
 
 async function set_products() { // Cria os produtos de acordo com a categoria
@@ -197,6 +201,14 @@ async function set_clients() { // Seta os clientes e sem DOM Elements
         const btn = document.createElement("button")
         btn.classList.add("btn", "btn-lg", "btn-primary", "rounded")
         btn.textContent = " + "
+        btn.addEventListener("click", function() {
+            id_client = client.id
+            document.getElementById("client_name_pay").textContent = client.nome
+            const form_client = document.getElementById("sale_client")
+            form_client.name.value = client.nome
+            form_client.cpf.value = client.cpf
+            form_client.cpf.obs = client.obs
+        })
 
         div_nome.appendChild(span_nome)
         div_nome.appendChild(span_cpf)
