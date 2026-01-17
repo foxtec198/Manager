@@ -4,5 +4,5 @@ async function get_clients() { // Obtem a lista de clientes via API
     const res = await req.json()
 
     if ( req.ok ) { return res }
-    else { show_toast(res, "fanger"); return }
+    else { show_toast(res, "danger"); return }
 }

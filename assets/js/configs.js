@@ -14,6 +14,7 @@ async function login(form){
         sessionStorage.setItem("peca", res.peca)
         sessionStorage.setItem("estoque", res.estoque)
         sessionStorage.setItem("matricula", mat)
+        sessionStorage.setItem("access_token", res.access_token)
         window.location = "/pages/base.html"
     }
     else{closeLdg(); show_toast(res, "alert")}

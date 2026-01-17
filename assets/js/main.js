@@ -5,7 +5,7 @@ const api = server + "/api/manager/"
 
 // ================================================ VARS
 const div = document.createElement("div"); // Cria um elemento DIV para o Toast
-const img = "assets/img/fav.png"; // Define o caminho da imagem padrão, pode ser Utilizado com links também
+const img = "../assets/img/fav.png"; // Define o caminho da imagem padrão, pode ser Utilizado com links também
 const cr = sessionStorage.getItem("cr")
 const gc = sessionStorage.getItem("gc")
 const perm = sessionStorage.getItem("perm")
@@ -47,24 +47,35 @@ div.innerHTML = options;
 parent.document.body.appendChild(div);
 
 // ================================================ Cria um modal personalizado
-function create_modal(id, title, body, center = 'modal-dialog-centered') {
-    container = document.createElement('div')
-    const modalHtml = `
-        <div class="modal fade" id="${id}" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-            <div class="modal-dialog ${center}">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">${title}</h5>
-                </div>
-                <div class="modal-body">
-                    ${body}
-                </div>
-            </div>
-            </div>
-        </div>`;
-    container.innerHTML = modalHtml
-    document.body.appendChild(container)
-    return new bootstrap.Modal(document.getElementById(id), { 'show': true, 'backdrop': 'static' })
+function create_modal(title, body, center = 'modal-dialog-centered') {
+    const modal = document.createElement("div")
+    modal.classList.add("modal", "fade")
+    modal.tabIndex = "-1"
+    modal.ariaHidden = true
+
+    const modal_dialog = document.createElement("div")
+    modal_dialog.classList.add("modal-dialog",)
+    if(center){ modal_dialog.classList.add("modal-dialog-centered")}
+
+    const modal_content = document.createElement("div")
+    modal_content.classList.add("modal-content")
+
+    if(title) { 
+        const modal_header = document.createElement("div")
+        modal_header.classList.add("modal-header")
+        modal_header.appendChild(title) 
+        modal_content.appendChild(modal_header)
+    }
+
+    const modal_body = document.createElement("div")
+    modal_body.classList.add("modal-body", "p-5")
+    modal_body.appendChild(body)
+    modal_content.appendChild(modal_body)
+
+    modal.appendChild(modal_dialog)
+    modal_dialog.appendChild(modal_content)
+
+    return new bootstrap.Modal(modal, { 'show': true, 'backdrop': 'static' })
 }
 
 function create_table(id, data, columns = []) {
@@ -118,9 +129,7 @@ function show_toast(msg, type = "info") {
 // ================================================ Request generalizado
 function request(path, method = "GET", data = null, type = null) {
     const headers = new Headers();
-    headers.append("cr", cr)
-    headers.append("gc", gc)
-    headers.append("perm", perm)
+    headers.append("Access-Token", sessionStorage.getItem("access_token"))
     headers.append("Content-Type", "application/json")
 
     var options = { method: method, headers: headers, };

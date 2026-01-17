@@ -72,7 +72,7 @@
             <!-- INIT DIVS SCREENS -->
             <div class="d-flex overflow-auto p-4 bg-dark-gray h-100 mb-4" id="sale_card_track">
                 <!-- INIT PROD SCREEN -->
-                <div class="sale_card_frame bg-dark-gray flex-grow-1" id="produtos">
+                <div class="sale_card_frame bg-dark-gray flex-grow-1 active" id="produtos">
                     <!-- INIT TITLE -->
                     <div class="d-flex flex-column">
                         <span class="fs-4 fw-bold">Selecione um produto.</span>
@@ -93,85 +93,90 @@
                 <!-- END PROD SCREEN -->
 
                 <!-- INIT CLIENT SCREEN -->
-                <div class="d-flex flex-row gap-4 sale_card_frame bg-dark-gray flex-grow-1" id="cliente">
-                    <!-- INIT LIST CLIENT -->
-                    <div class="d-flex flex-column overflow-auto flex-grow-1 gap-4 rounded flex-basis-400 border p-4">
-                        <!-- INIT TITLE -->
-                        <div>
-                            <span class="fs-4 fw-bold">Selecione o cliente</span>
-                            <span class="fs-6">Selecione na lista abaixo, caso o cliete nao esteja cadastro, clique <a href="#" onclick="change_screen('clients')">aqui</a></span>
-                        </div>
-                        <!-- END TITLE -->
-
-                        <!-- INIT INPUT SEARCH -->
-                        <div class="form-floating">
-                            <input class="form-control" placeholder="Busque por CPF ou Nome" type="text"
-                                id="client_cpf">
-                            <label for="client_cpf">Busque por CPF ou Nome</label>
-                        </div>
-                        <!-- END INPUT SEARCH -->
-
-                        <!-- INIT CLIENTS LIST -->
-                        <ul class="list-group list-group-hover rounded" id="lista_de_clientes"></ul>
-                        <!-- END CLIENTS LIST -->
+                <div class="d-flex flex-column gap-4 sale_card_frame bg-dark-gray flex-grow-1" id="cliente">
+                    <!-- INIT TITLE CLIENT -->
+                    <div class="d-flex flex-column">
+                        <span class="fs-4 fw-bold">Selecione o cliente</span>
+                        <span class="fs-6">Selecione na lista abaixo, caso o cliete nao esteja cadastro, clique <a href="#" onclick="change_screen('clients')">aqui</a></span>
                     </div>
-                    <!-- END LIST CLIENT -->
+                    <!-- END TITLE CLIENT -->
 
-                    <!-- INIT CLIENT DATA -->
-                    <div class="d-flex flex-column flex-basis-700 flex-grow-1 gap-4 rounded border p-4">
-                        <!-- INIT TITLE -->
-                        <span class="fs-4 fw-bold">Dados do Cliente</span>
-                        <!-- END TITLE -->
-
-                        <!-- INIT FORM TO SET CLIENT DATA -->
-                        <form id="sale_client" class="d-flex gap-2 flex-wrap">
-                            <!-- INIT CLIENT NAME -->
-                            <div class="form-floating flex-grow-1 flex-basis-400">
-                                <input class="form-control" type="text" id="name" placeholder="Nome" readonly>
-                                <label for="name">Nome</label>
+                    <div class="d-flex gap-2 flex-grow-1 overflow-hidden">
+                        <!-- INIT LIST CLIENT -->
+                        <div class="d-flex flex-column overflow-auto flex-grow-1 gap-4 rounded flex-basis-400 border p-4">
+                            <!-- INIT TITLE -->
+                            <!-- END TITLE -->
+    
+                            <!-- INIT INPUT SEARCH -->
+                            <div class="form-floating">
+                                <input class="form-control" placeholder="Busque por CPF ou Nome" type="text"
+                                    id="client_cpf">
+                                <label for="client_cpf">Busque por CPF ou Nome</label>
                             </div>
-                            <!-- END CLIENT NAME -->
-
-                            <!-- INIT CLIENT CPF -->
-                            <div class="form-floating flex-grow-1 flex-basis-400">
-                                <input type="text" class="form-control" id="cpf" placeholder="CPF" readonly>
-                                <label for="cpf">CPF</label>
-                            </div>
-                            <!-- END CLIENT CPF -->
-
-                            <!-- INIT CLIENT OBS -->
-                            <div class="form-floating flex-grow-1 flex-basis-400">
-                                <textarea class="form-control" id="obs" placeholder="Observações do Cliente" style="min-height: 200px;"></textarea>
-                                <label for="obs">Observações do Cliente</label>
-                            </div>
-                            <!-- END CLIENT OBS -->
-
-                            <!-- INIT CLIENT HISTORY -->
-                            <div class="flex-grow-1 flex-basis-700 mt-4">
-                                <!-- END HISTORY TITLE -->
-                                <span class="fs-4 mb-2">
-                                    <i class="bi bi-hourglass-split"></i> Histórico de Compras (Desabilitado Temporariamente)
-                                </span>
-                                <!-- END HISTORY TITLE -->
-
-                                <!-- INIT HISTORY LIST -->
-                                <ul class="list-group">
-                                    <li class="list-group-item p-5 text-center">
-                                        Nenhum histórico encontrado!
-                                    </li>
-                                </ul>
-                                <!-- END HISTORY LIST -->
-                            </div>
-                            <!-- END CLIENT HISTORY -->
-                        </form>
-                        <!-- END FORM TO SET CLIENT DATA -->
+                            <!-- END INPUT SEARCH -->
+    
+                            <!-- INIT CLIENTS LIST -->
+                            <ul class="list-group list-group-hover rounded" id="lista_de_clientes"></ul>
+                            <!-- END CLIENTS LIST -->
+                        </div>
+                        <!-- END LIST CLIENT -->
+    
+                        <!-- INIT CLIENT DATA -->
+                        <div class="d-flex flex-column flex-basis-500 flex-grow-1 gap-4 rounded border p-4">
+                            <!-- INIT TITLE -->
+                            <span class="fs-4 fw-bold">Dados do Cliente</span>
+                            <!-- END TITLE -->
+    
+                            <!-- INIT FORM TO SET CLIENT DATA -->
+                            <form id="sale_client" class="d-flex gap-2 flex-wrap">
+                                <!-- INIT CLIENT NAME -->
+                                <div class="form-floating flex-grow-1 flex-basis-400">
+                                    <input class="form-control" type="text" id="name" placeholder="Nome" readonly>
+                                    <label for="name">Nome</label>
+                                </div>
+                                <!-- END CLIENT NAME -->
+    
+                                <!-- INIT CLIENT CPF -->
+                                <div class="form-floating flex-grow-1 flex-basis-400">
+                                    <input type="text" class="form-control" id="cpf" placeholder="CPF" readonly>
+                                    <label for="cpf">CPF</label>
+                                </div>
+                                <!-- END CLIENT CPF -->
+    
+                                <!-- INIT CLIENT OBS -->
+                                <div class="form-floating flex-grow-1 flex-basis-400">
+                                    <textarea class="form-control" id="obs" placeholder="Observações do Cliente" style="min-height: 10vh;"></textarea>
+                                    <label for="obs">Observações do Cliente</label>
+                                </div>
+                                <!-- END CLIENT OBS -->
+        
+                                <!-- INIT CLIENT HISTORY -->
+                                <div class="d-flex flex-column gap-2 flex-grow-1">
+                                    <!-- INIT HISTORY TITLE -->
+                                    <span class="fs-4 mb-2">
+                                        <i class="bi bi-hourglass-split"></i> Histórico de Compras (Desabilitado Temporariamente)
+                                    </span>
+                                    <!-- END HISTORY TITLE -->
+    
+                                    <!-- INIT HISTORY LIST -->
+                                    <ul class="list-group overflow-auto">
+                                        <li class="list-group-item p-5 text-center">
+                                            Nenhum histórico encontrado!
+                                        </li>
+                                    </ul>
+                                    <!-- END HISTORY LIST -->
+                                </div>
+                                <!-- END CLIENT HISTORY -->
+                            </form>
+                            <!-- END FORM TO SET CLIENT DATA -->
+                        </div>
+                        <!-- END CLIENT DATA -->
                     </div>
-                    <!-- END CLIENT DATA -->
                 </div>
                 <!-- END CLIENT SCREEN -->
 
                 <!-- INIT PAYMENT SCREEN -->
-                <div class="sale_card_frame bg-dark-gray flex-grow-1 active" id="pagamento">
+                <div class="sale_card_frame bg-dark-gray flex-grow-1" id="pagamento">
                     <!-- INIT DIV SEPARET PAYMENTS METHODS AND SALE INFO-->
                     <div class="d-flex flex-grow-1 gap-2">
                         <!-- INIT DIV CLIENT INFOS AND SALE INFOS -->
@@ -184,7 +189,7 @@
                             
                             <!-- INIT TOTALS -->
                             <div class="d-flex justify-content-between gap-4 fs-5">
-                                <span id="subtotal_label_pay">Subtotal: R$ 0.00</span>
+                                <span id="subtotal_label_pay">Sub-Total: R$ 0.00</span>
                                 <span id="discount_label_pay">Desconto: R$ 0.00</span>
                                 <span id="total_label_pay">Valor Total: R$ 0.00</span>
                             </div>
@@ -196,7 +201,7 @@
                             <div class="d-flex justify-content-between gap-4 align-items-center">
                                 <!-- INIT MAT CAMP -->
                                 <div class="form-floating flex-grow-1">
-                                    <input type="text" class="form-control" id="mat_pay" placeholder="Matricula do Vendedor">
+                                    <input type="text" class="form-control money-mask vkactive focus-ring focus-ring-success" id="mat_pay" placeholder="Matricula do Vendedor">
                                     <label for="mat_pay">Matricula do Vendedor</label>
                                 </div>
                                 <!-- END MAT CAMP -->
@@ -204,20 +209,10 @@
                                 <form class="d-flex gap-2 flex-grow-1" id="form_discount_pay">
                                     <!-- INIT DISCOUNT CAMP -->
                                     <div class="form-floating flex-grow-1">
-                                        <input type="text" class="form-control" id="discount_pay" placeholder="Desconto">
+                                        <input type="text" class="form-control vkactive focus-ring focus-ring-success" id="discount_pay" placeholder="Desconto">
                                         <label for="discount_pay">Desconto</label>
                                     </div>
                                     <!-- END DISCOUNT CAMP -->
-                                    
-                                    <!-- INIT DISCOUNT TYPE CAMP -->
-                                    <div class="form-floating flex-grow-1">
-                                        <select class="form-control" id="discount_type_pay" aria-placeholder="Tipo">
-                                            <option value="percent">%</option>
-                                            <option value="value">R$</option>
-                                        </select>
-                                        <label for="discount_type_pay">Tipo</label>
-                                    </div>
-                                    <!-- END DISCOUNT TYPE CAMP -->
                                     
                                     <!-- INIT DISCOUNT BUTTON -->
                                     <button class="btn btn-red rounded" type="submit"> Aplicar Desconto </button>
@@ -225,26 +220,51 @@
                                 </form>
                             </div>
                             <!-- END CAMPS FOR INDENTIFY -->
+
+                            <!-- INIT VIRTUAL KEYBOARD -->
+                            <div class="form-floating">
+                                <input type="text" placeholder="Valor á pagar (Opicional)" id="payment_value" class="money-mask form-control vkactive focus-ring focus-ring-success">
+                                <label for="payment_value">Valor à pagar (Opicional)</label>
+                            </div>
+                            <div class="d-flex justify-content-around align-items-center gap-4">
+                                <span class="fs-4 fw-bold" id="amount_paid">Valor Pago: </span>
+                                <span class="fs-4 fw-bold" id="missing_to_pay">Falta Pagar: </span>
+                            </div>
+                            <div class="d-flex flex-column flex-grow-1 fw-bold fs-3 gap-2 align-items-center" id="virtual_keyboard">
+                                <div class="d-flex gap-2 align-items-center">
+                                    <button data-key="1" class="btn bg-primary p-5 rounded-5 fs-5">1</button>
+                                    <button data-key="2" class="btn bg-primary p-5 rounded-5 fs-5">2</button>
+                                    <button data-key="3" class="btn bg-primary p-5 rounded-5 fs-5">3</button>
+                                    <button data-key="back" class="btn bg-primary p-5 rounded-5 fs-5"><i class="bi bi-backspace-fill"></i></button>
+                                </div>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <button data-key="4" class="btn bg-primary p-5 rounded-5 fs-5">4</button>
+                                    <button data-key="5" class="btn bg-primary p-5 rounded-5 fs-5">5</button>
+                                    <button data-key="6" class="btn bg-primary p-5 rounded-5 fs-5">6</button>
+                                    <button data-key="." class="btn bg-primary p-5 rounded-5 fs-5">.</button>
+                                    <button data-key="clear" class="btn bg-primary p-5 rounded-5 fs-5">Limpar</button>
+                                </div>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <button data-key="7" class="btn bg-primary p-5 rounded-5 fs-5">7</button>
+                                    <button data-key="8" class="btn bg-primary p-5 rounded-5 fs-5">8</button>
+                                    <button data-key="9" class="btn bg-primary p-5 rounded-5 fs-5">9</button>
+                                    <button data-key="0" class="btn bg-primary p-5 rounded-5 fs-5">0</button>
+                                </div>
+                            </div>
+                            <!-- END VIRTUAL KEYBOARD -->
                         </div>
                         <!-- END DIV CLIENT INFOS AND SALE INFOS -->
 
                         <!-- INIT DIV PAYMENTS METHODS -->
-                        <div class="d-flex flex-column p-2 flex-grow-1 flex-basis-100" style="width: 200px;">    
-                            <!-- INIT INPUT VALUE -->
-                            <div class="form-floating mb-5">
-                                <input type="text" class="form-control" placeholder="Valor para pagamento" id="value_pay">
-                                <label for="value_pay">Valor para pagamento</label>
-                            </div>
-                            <!-- END INPUT VALUE -->
-
+                        <div class="d-flex flex-column p-2 flex-grow-1 flex-basis-100" style="width: 200px;">
                             <!-- INIT PAYMENTS BUTTONS -->
-                            <div class="d-flex flex-wrap flex-grow-1 gap-2">
-                                <button class="btn-payment flex-grow-1 flex-basis-200" disabled> Débito</button>
-                                <button class="btn-payment flex-grow-1 flex-basis-200" disabled>Crédito</button>
-                                <button class="btn-payment flex-grow-1 flex-basis-200">Dinheiro</button>
-                                <button class="btn-payment flex-grow-1 flex-basis-200">Pix</button>
-                                <button class="btn-payment flex-grow-1 flex-basis-200">Débito - External</button>
-                                <button class="btn-payment flex-grow-1 flex-basis-200">Crédito - External</button>
+                            <div class="d-flex flex-wrap flex-grow-1 gap-2" id="pay_btns">
+                                <button data-pay="debito" class="btn-payment flex-grow-1 flex-basis-200" disabled> Debito</button>
+                                <button data-pay="credito" class="btn-payment flex-grow-1 flex-basis-200" disabled>Credito</button>
+                                <button data-pay="dinheiro" class="btn-payment flex-grow-1 flex-basis-200" id="btn-pay-money">Dinheiro</button>
+                                <button data-pay="pix" class="btn-payment flex-grow-1 flex-basis-200">Pix</button>
+                                <button data-pay="debito_ext" class="btn-payment flex-grow-1 flex-basis-200">Debito - External</button>
+                                <button data-pay="credito_ext" class="btn-payment flex-grow-1 flex-basis-200">Credito - External</button>
                             </div>
                             <!-- END PAYMENTS BUTTONS -->
                         </div>
