@@ -105,14 +105,9 @@
 
     <script src="../js/manager.js"></script>
     <script> 
-        get_loja(); confer_perm(); restore_screen();
-
-        if(document.getElementById("adorno")){
-            datas_comemorativas('Feliz Natal 🌲🎅🏼', 'Feliz Ano Novo 🍾🥂');
-        }
-
-        if(window.innerWidth > 500){document.getElementById("frame_screen").height = "100%"}
-        else{document.getElementById("frame_screen").height = "90%"}
+        get_loja(); confer_perm(); restore_screen(); is_decoration(false);
+        if(window.innerWidth > 500){document.getElementById("frame_screen").height = "100%"; }
+        else{document.getElementById("frame_screen").height = "90%"; };
     </script>
 </body>
 </html>
