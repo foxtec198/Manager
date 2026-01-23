@@ -1,5 +1,5 @@
 > [!Important]
-> If you speak only english, please, red only line in English!
+> If you speak english, read line in English only, please!
 
 # Hubbix Manager
 ## Sistema de Gestão | Management system
