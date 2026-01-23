@@ -28,8 +28,8 @@ Abaixo algumas das funcionalidades do sitema, listadas de acordo com o genero, p
 ## Links
 - Site - [Hubbix Website](https://hubbix.com.br) - Site da Hubbix
 - Sistema - [Manager System](https://manager.hubbix.com.br) - Sistema manager
-- Academia Hubbix - [Hubix Academy](https://manager.hubbix.com.br) - Videos Tutoriais sobre os sistemas
-- Tecnobreve - [Tecnobreve Crop](https://tecnobreve.onrender.com) - Portólio da Tecnobreve (Diretoria)
+- Academia Hubbix - [Hubix Academy](https://videos.hubbix.com.br) - Videos Tutoriais sobre os sistemas
+- Tecnobreve - [Tecnobreve Corp.](https://tecnobreve.onrender.com) - Portólio da Tecnobreve (Diretoria)
 
 ## Tecnologias utilizadas | Technologies used
 
