@@ -43,7 +43,7 @@
 <body data-bs-theme="dark">
     <!-- Adornos -->
     <div class="flex-adorno mobile-hide" id="adorno" hidden>
-        <img src="assets/img/gorro.svg" alt="adorno" class="adorno">
+        <img src="../assets/img/gorro.svg" alt="adorno" class="adorno">
     </div>
 
     <!-- Main Section -->
@@ -143,16 +143,7 @@
     <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script> <!-- GRID JS-->
     <script src="../assets/js/main.js"></script> <!-- Main -->
     <script src="../assets/js/configs.js"></script> <!-- Config -->
-    <script>
-        // Liga os adornos no Painel
-        // datas_comemorativas('Feliz Natal 🎅🏼🌲', 'Boas festas 🍾🥂', ["#1d351d", "#8b081d"]);
-
-        // Quando no mobile seta o frame com 90% para nao interferir na barra de navegação
-        if (window.innerWidth > 500) { document.getElementById("frame_screen").height = "100%" }
-        else { document.getElementById("frame_screen").height = "90%" }
-
-        set_store(); confer_perm(); restore_screen();
-    </script>
+    <script> set_store(); confer_perm(); restore_screen(); is_decoration(); </script>
 </body>
 
 </html>
