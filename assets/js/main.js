@@ -46,6 +46,21 @@ div.classList.add("toast-container", "position-fixed", "bottom-0", "end-0", "p-3
 div.innerHTML = options;
 parent.document.body.appendChild(div);
 
+function is_decoration(state = true) {
+    const colors = [
+        "#1d351d",
+        "#8b081d"
+    ];
+    const adorno = parent.document.getElementById("adorno")
+
+    if (adorno && state) {
+        adorno.style.display = "flex"
+        datas_comemorativas('Feliz Natal 🎅🏼🌲', 'Boas festas 🍾🥂', colors);
+    } else {
+        adorno.style.display = "none"
+    }
+}
+
 // ================================================ Cria um modal personalizado
 function create_modal(title, body, center = 'modal-dialog-centered') {
     const modal = document.createElement("div")
@@ -55,15 +70,15 @@ function create_modal(title, body, center = 'modal-dialog-centered') {
 
     const modal_dialog = document.createElement("div")
     modal_dialog.classList.add("modal-dialog",)
-    if(center){ modal_dialog.classList.add("modal-dialog-centered")}
+    if (center) { modal_dialog.classList.add("modal-dialog-centered") }
 
     const modal_content = document.createElement("div")
     modal_content.classList.add("modal-content")
 
-    if(title) { 
+    if (title) {
         const modal_header = document.createElement("div")
         modal_header.classList.add("modal-header")
-        modal_header.appendChild(title) 
+        modal_header.appendChild(title)
         modal_content.appendChild(modal_header)
     }
 
