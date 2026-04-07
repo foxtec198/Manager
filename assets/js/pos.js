@@ -4,11 +4,12 @@ async function set_badge_pos() { // DOM do status do caixa
     if(status){
         status.classList.remove('bg-primary', 'bg-red')
         status.classList.add('placeholder')
-        const js = await get_pos() // Obtem os status do caixa
-        if (js.status) {
+        const pos_status = await new Request("caixa").send()
+        
+        if (pos_status.status) {
             status.classList.remove('placeholder')
             status.classList.add('bg-primary')
-            status.textContent = 'Caixa Aberto - ' + to_real(js.valor)
+            status.textContent = 'Caixa Aberto - ' + to_real(pos_status.valor)
         } else {
             status.classList.remove('placeholder')
             status.classList.add('bg-red')
@@ -20,10 +21,10 @@ async function set_badge_pos() { // DOM do status do caixa
 async function set_state() { // Altera o estado da screen de abertura ou fechamento
     const state_title = document.getElementById('state_title') // Titulo do estado do caixa
     const form_status = document.getElementById("status_caixa") // Formulario 
-    const btn = form_status.btn_status // Botao de abrir caixa 
-    const troco = form_status.troco
-    const js = await get_pos() // Obtem os status do caixa   
-    if(js.status){
+    const troco = form_status.troco // Input referente ao valor do troco (Valor atual do caixa)
+    const pos_status = await new Request("caixa").send() // Obtem os status do caixa   
+
+    if(pos_status.status){
         state_title.innerHTML = '<i class="bi bi-currency-exchange"></i> Fechar Caixa.'
         troco ? troco.parentElement.hidden = true : null
         btn_status.textContent = "Fechar Caixa."
@@ -41,6 +42,7 @@ async function set_state() { // Altera o estado da screen de abertura ou fechame
 async function set_expenses(nocons=false) { // DOM referente a tabela de despesas
     const expenses = nocons ? null : await get_expenses(); // Requisição das despesas    
     const lista = document.getElementById("lista_de_despesas")
+    
     if(lista){
         lista.innerHTML = ''
         const data = expenses ? expenses.map(expense => {
@@ -278,8 +280,8 @@ if(form_add_expense) {
 // ============================================================================================ POS
 // Obtem o status do caixa
 async function get_pos() { // Status do  caixa (ABERTO/FECHADO)
-    const req = await request("caixa/")
-    const res = await req.json()
+    const res = await new Reque
+    st("caixa").send()
     if (req.ok) { return res }
     else { show_toast(res, "danger"); return false }
 }

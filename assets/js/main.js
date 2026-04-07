@@ -1,6 +1,6 @@
 // ================================================ Define a api e a baseURL
-// var server = "https://api.hubbix.com.br"
-const server = "http://localhost:9560"
+var server = "http://localhost:9560"
+// var server = "https://dev.api.hubbix.com.br"
 const api = server + "/api/manager/"
 
 // ================================================ VARS
@@ -369,4 +369,4 @@ class CardCarousel {
             this.update()
         }
     }
-}
+};
