@@ -2,21 +2,20 @@
 var server = "http://localhost:9560"
 // var server = "https://dev.api.hubbix.com.br"
 const api = server + "/api/manager/"
+const request = new ApiRequest("")
 
 // ================================================ VARS
 const div = document.createElement("div"); // Cria um elemento DIV para o Toast
 const img = "../assets/img/fav.png"; // Define o caminho da imagem padrão, pode ser Utilizado com links também
-const cr = sessionStorage.getItem("cr")
-const gc = sessionStorage.getItem("gc")
-const perm = sessionStorage.getItem("perm")
-const display_name = sessionStorage.getItem("display_name")
-const mat = sessionStorage.getItem("matricula")
-const config_pecas = sessionStorage.getItem("peca") == "true"
-const config_estoque = sessionStorage.getItem("estoque") == "true"
-const spinner = '<span id="spin_ldg" class="spinner-border spinner-border-sm text-light" role="status"></span>'
-const divLdg = document.createElement('div')
-const root_style = getComputedStyle(document.body)
-const primary = root_style.getPropertyValue("--primary").trim()
+const cr = sessionStorage.getItem("cr") // CR credencial de loja
+const gc = sessionStorage.getItem("gc") // GC credencial de Grupo
+const perm = sessionStorage.getItem("perm") // Userperm
+const display_name = sessionStorage.getItem("display_name") // Username
+const mat = sessionStorage.getItem("matricula") // Uer ID (Matricula) - ID Real protegido
+const config_pecas = sessionStorage.getItem("peca") == "true" // Opções de peças
+const config_estoque = sessionStorage.getItem("estoque") == "true" // Opções de Estoque
+const spinner = '<span id="spin_ldg" class="spinner-border spinner-border-sm text-light" role="status"></span>' // Spinner loading
+const divLdg = document.createElement('div') // Div for login loading
 
 // ================================================ ICONS
 const icon_trash = "<i class='bi bi-trash-fill'></i>"
@@ -26,24 +25,12 @@ const icon_rocket = "<i class='bi bi-rocket-takeoff-fill'></i>"
 const icon_graph_up = '<i class="bi bi-graph-up-arrow"></i>'
 const icon_graph_down = '<i class="bi bi-graph-down-arrow"></i>'
 const icon_engine = '<i class="bi bi-engine"></i>'
+if (window.location.pathname != "/") { if (!cr || !gc ) { window.location = "/" } }
 
 // ================================================ HTML do Toast em si com MSG, IMG e Title
-// if (window.location.pathname != "/") { if (!cr || !gc || !perm) { window.location = "/" } }
-
-// ================================================ HTML do Toast em si com MSG, IMG e Title
-const options = `
-    <div id="manager_toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-            <img src="${img}" width="20vh" class="rounded me-2" alt="logo">
-            <strong class="me-auto" id="toast_title"></strong>
-            <small>now</small>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body" id="toast_msg"></div>
-    </div>
-`;
+const toast_options = `<div id="manager_toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true"><div class="toast-header"><img src="${img}" width="20vh" class="rounded me-2" alt="logo"><strong class="me-auto" id="toast_title"></strong><small>now</small><button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button></div><div class="toast-body" id="toast_msg"></div></div>`;
 div.classList.add("toast-container", "position-fixed", "bottom-0", "end-0", "p-3");
-div.innerHTML = options;
+div.innerHTML = toast_options;
 parent.document.body.appendChild(div);
 
 function is_decoration(state = true) {
@@ -141,21 +128,6 @@ function show_toast(msg, type = "info") {
     toastBootstrap.show()
 }
 
-// ================================================ Request generalizado
-function request(path, method = "GET", data = null, type = null) {
-    const headers = new Headers();
-    headers.append("Access-Token", sessionStorage.getItem("access_token"))
-    headers.append("Content-Type", "application/json")
-
-    var options = { method: method, headers: headers, };
-    if (data) { options["body"] = JSON.stringify(data) }
-
-    switch (type) {
-        case "general": return fetch(`${server}/api/${path}`, options);
-        default: return fetch(`${api}${path}`, options)
-    }
-}
-
 // ================================================ Função para colocar adorno das datas comemorativas
 function datas_comemorativas(msg, data, bgs = ["#fff", "#777"], fgs = ["#fff", "#fff"]) {
     if (document.getElementById("adorno")) {
@@ -251,36 +223,12 @@ function capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
-// ================================================ Transforma numero em real
+// ================================================ Transforma numero/string em BRL
 function to_real(valor) {
     return valor.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })
 }
 
 // ================================================ Loading
-function ldg() {
-    divLdg.hidden = ''
-    divLdg.style.width = '100%'
-    divLdg.style.height = '100%'
-    divLdg.style.display = 'flex'
-    divLdg.style.justifyContent = 'center'
-    divLdg.style.alignItems = 'center'
-    divLdg.style.position = 'absolute'
-    divLdg.style.zIndex = "5000000000"
-    divLdg.style.top = 0
-    divLdg.style.background = '#2B3035'
-    divLdg.innerHTML = `
-        <div class="loader">
-        <div class="loader-square"></div>
-        <div class="loader-square"></div>
-        <div class="loader-square"></div>
-        <div class="loader-square"></div>
-        <div class="loader-square"></div>
-        <div class="loader-square"></div>
-        <div class="loader-square"></div>
-        </div>`
-    document.body.appendChild(divLdg)
-}
-
 function is_loading(loading = true) {
     if (loading) {
         divLdg.hidden = ''
@@ -307,13 +255,42 @@ function is_loading(loading = true) {
     } else { divLdg.hidden = 'none' }
 }
 
+// ================================================ Loading for Login
+function ldg() {
+    divLdg.hidden = ''
+    divLdg.style.width = '100%';
+    divLdg.style.height = '100%';
+    divLdg.style.display = 'flex';
+    divLdg.style.justifyContent = 'center';
+    divLdg.style.alignItems = 'center';
+    divLdg.style.position = 'absolute';
+    divLdg.style.zIndex = "5000000000";
+    divLdg.style.top = 0;
+    divLdg.style.background = '#2B3035';
+    divLdg.innerHTML = `
+                <div class="loader">
+                <div class="loader-square"></div>
+                <div class="loader-square"></div>
+                <div class="loader-square"></div>
+                <div class="loader-square"></div>
+                <div class="loader-square"></div>
+                <div class="loader-square"></div>
+                <div class="loader-square"></div>
+                </div>`
+    document.body.appendChild(divLdg);
+};
+
 function closeLdg() {
     divLdg.hidden = 'none'
 }
 
+
 // ================================================ Seta os dados da loja na base
 async function set_store() {
-    const res = await get_store() // Obtem os dados da loja
+    request.path = "lojas"
+    request.method = "GET"
+    request.type = "general"
+    const res = await request.send() // Obtem os dados da loja
 
     // Seta o nome da loja
     const label = document.getElementById('nomeLoja')
@@ -324,21 +301,6 @@ async function set_store() {
     const img = document.getElementById('logoBase')
     img.src = `${server}/api/files/img/manager/${encodeURIComponent(res.logo)}`
     img.classList.remove('placeholder')
-}
-
-// ================================================ REQUESTS GERAIS
-async function get_store() { // Pega os dados da loja
-    const req = await request("lojas", "GET", null, "general")
-    const res = await req.json()
-    if (req.ok) { return res }
-    else { show_toast(res, "alert"); return false }
-}
-
-async function get_person() { // Obtem os dados do usuario logado
-    const req = await request(`funcionarios?mat=${mat}`, "GET")
-    const res = await req.json()
-    if (req.ok) { return res }
-    else { return false }
 }
 
 class CardCarousel {

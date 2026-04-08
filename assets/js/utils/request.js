@@ -1,4 +1,4 @@
-class Request {
+class ApiRequest {
     constructor(path, method = "GET", data = null, type = null) {
         this.path = path
         this.method = method
@@ -10,25 +10,29 @@ class Request {
     }
 
     async send() {
+        is_loading();
         const options = { method: this.method, headers: this.headers };
-        this.data ? options["body"] = JSON.stringify(this.data) : null
+        this.data ? options["body"] = JSON.stringify(this.data) : null;
 
         switch (this.type) {
             case "general": 
                 try{
                     const req = await fetch(`${server}/api/${this.path}`, options);
-                    return await req.json()
-                }catch{show_toast("Erro de conexão", "danger"); return;}
+                    is_loading(false);
+                    return await req.json();
+                }catch{is_loading(false); show_toast("Erro de conexão", "danger"); return;}
                 
             default: 
                 try{
-                    const req = await fetch(`${api}${this.path}`, options)
-                    return await req.json()
-                }catch{show_toast("Erro de conexão", "danger"); return;}
+                    const req = await fetch(`${api}${this.path}`, options); 
+                    is_loading(false); 
+                    return await req.json();
+                }catch{is_loading(false); show_toast("Erro de conexão", "danger"); return;}
         }
     };
 
     async sendForm(form) {
+        is_loading();
         const options = { method: this.method, headers: this.headers };
         options["body"] = new FormData(form)
 
@@ -36,14 +40,16 @@ class Request {
             case "general": 
                 try{
                     const req = await fetch(`${server}/api/${this.path}`, options);
-                    return await req.json()
-                }catch{show_toast("Erro de conexão", "danger"); return;}
+                    is_loading(false);
+                    return await req.json();
+                }catch{is_loading(false); show_toast("Erro de conexão", "danger"); return;}
                 
             default: 
                 try{
-                    const req = await fetch(`${api}${this.path}`, options)
-                    return await req.json()
-                }catch{show_toast("Erro de conexão", "danger"); return;}
+                    const req = await fetch(`${api}${this.path}`, options);
+                    is_loading(false);
+                    return await req.json();
+                }catch{is_loading(false); show_toast("Erro de conexão", "danger"); return;}
         }
     };
 };

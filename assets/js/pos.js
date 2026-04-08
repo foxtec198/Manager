@@ -1,10 +1,14 @@
+const pos = new PosModel()
+const expenses = new ExpensesModel()
+const pay_report = new PaymentsDashboard()
+
 // ============================================================================================ FUNCTIONS / DOM's
 async function set_badge_pos() { // DOM do status do caixa
     const status = document.getElementById('pos_status')
     if(status){
         status.classList.remove('bg-primary', 'bg-red')
         status.classList.add('placeholder')
-        const pos_status = await new Request("caixa").send()
+        const pos_status = await pos.status()
         
         if (pos_status.status) {
             status.classList.remove('placeholder')
@@ -22,7 +26,7 @@ async function set_state() { // Altera o estado da screen de abertura ou fechame
     const state_title = document.getElementById('state_title') // Titulo do estado do caixa
     const form_status = document.getElementById("status_caixa") // Formulario 
     const troco = form_status.troco // Input referente ao valor do troco (Valor atual do caixa)
-    const pos_status = await new Request("caixa").send() // Obtem os status do caixa   
+    const pos_status = await pos.status() // Obtem os status do caixa   
 
     if(pos_status.status){
         state_title.innerHTML = '<i class="bi bi-currency-exchange"></i> Fechar Caixa.'
@@ -40,12 +44,11 @@ async function set_state() { // Altera o estado da screen de abertura ou fechame
 }
 
 async function set_expenses(nocons=false) { // DOM referente a tabela de despesas
-    const expenses = nocons ? null : await get_expenses(); // Requisição das despesas    
-    const lista = document.getElementById("lista_de_despesas")
-    
+    const lista = document.getElementById("lista_de_despesas") // Listas HTML
+    const res = nocons ? null : await expenses.get(); // Requisição das despesas    
     if(lista){
         lista.innerHTML = ''
-        const data = expenses ? expenses.map(expense => {
+        const data = res ? res.map(expense => {
             return [
                 new Date(expense.data).toLocaleDateString('pt-br', {'day': '2-digit', 'month': 'long', 'hour': '2-digit', 'minute': "2-digit"}), 
                 expense.motivo, 
@@ -62,7 +65,7 @@ async function set_expenses(nocons=false) { // DOM referente a tabela de despesa
 }
 
 async function set_mini_dashboard(filter = "week") { // DOM referente ao Mini Dashboard 
-    const payments = await get_infos_payments(filter)
+    const payments = await pay_report.get(filter)
     const div_mini_report = document.getElementById("mini_report")
     
     if (payments.total > 0) {
@@ -87,7 +90,6 @@ async function set_mini_dashboard(filter = "week") { // DOM referente ao Mini Da
         const lbl_total_prods = document.getElementById("prods_total")
         const lbl_percent_prods = document.getElementById("prods_percent")
 
-        console.log(prods_total)
         lbl_total_prods.textContent = to_real(prods_total) 
         lbl_total_os.textContent = to_real(orders_total)
 
@@ -161,8 +163,8 @@ async function set_mini_dashboard(filter = "week") { // DOM referente ao Mini Da
     }
 }
 
-async function set_last_value_pos() { // DOM ultimo valor do caixa fehcado
-    const status = await get_last_closed()
+async function set_last_value_pos() { // DOM reeferente ao ultimo valor do caixa fehcado
+    const status = await pos.last_closed()
     if (status) {
         const pos_value_input = document.getElementById("troco")
         pos_value_input.value = status
@@ -177,13 +179,12 @@ function alter_expense(select) { // Mostra/Oculta o campo para declarar o motivo
 }
 
 async function set_delete_expense(expense_id) { // Remove uma despesa e atualiza a tabela de despesas
-    is_loading();
     const res = await delete_expense(expense_id);
     if(res){
-        const expenses = await get_expenses();
+        const all_expenses = await expenses.get();
         const grid = await set_expenses(true);
         grid.updateConfig({
-            data: expenses.map(expense => {
+            data: all_expenses.map(expense => {
                 return [
                     new Date(expense.data).toLocaleDateString('pt-br', {'day': '2-digit', 'month': 'long', 'hour': '2-digit', 'minute': "2-digit"}), 
                     expense.motivo, 
@@ -197,16 +198,14 @@ async function set_delete_expense(expense_id) { // Remove uma despesa e atualiza
         }).forceRender();
         show_toast(res)
     }
-    is_loading(false)
 }
 // ============================================================================================ FORMS
 const form_status_pos = document.getElementById("status_caixa") // Formulario de abertura de caixa
 if (form_status_pos) {
     form_status_pos.addEventListener("submit", async function (e) {
-        is_loading();
         e.preventDefault()
         if(this.btn_status.textContent.includes("Fechar")){
-            const res = await close_pos(this.mat.value)
+            const res = await pos.close(this.mat.value)
             if (res) {
                 show_toast(res)
                 set_badge_pos();
@@ -214,7 +213,7 @@ if (form_status_pos) {
             this.reset();
             set_state();
         }else{
-            const res = await open_pos(this.mat.value, this.troco.value)
+            const res = await pos.open(this.mat.value, this.troco.value)
             if (res) {
                 show_toast(res, "info")
                 set_badge_pos();
@@ -223,25 +222,17 @@ if (form_status_pos) {
             set_state();
             set_last_value_pos();
         };
-        is_loading(false)
     })
 }
 
 const form_add_value = document.getElementById("form_add_value") // Formulario de adição de valor
 if (form_add_value) {
     form_add_value.addEventListener("submit", async function (e) {
-        is_loading();
         e.preventDefault();
         const valor = form_add_value.valor ? form_add_value.valor.value : null;
         const matricula = form_add_value.matricula ? form_add_value.matricula.value : null;
-        if(valor, matricula) {
-            const res = await add_value(valor, matricula);
-            if(res){
-                set_badge_pos();
-                show_toast(res);
-            }
-        };
-        is_loading(false);
+        const res = await pos.append(valor, matricula); 
+        if(res){ set_badge_pos(); show_toast(res); }; // Caso de sucesso altera as informações
     })
 }
 
@@ -277,59 +268,11 @@ if(form_add_expense) {
     })
 }
 
-// ============================================================================================ POS
-// Obtem o status do caixa
-async function get_pos() { // Status do  caixa (ABERTO/FECHADO)
-    const res = await new Reque
-    st("caixa").send()
-    if (req.ok) { return res }
-    else { show_toast(res, "danger"); return false }
-}
-
-async function open_pos(mat, troco) { // Abre o caixa
-    const req = await request("caixa", "POST", { "mat": mat, "valor": troco })
-    const res = await req.json()
-    if (req.ok) { return res }
-    else { show_toast(res, "danger"); return false }
-}
-
-async function close_pos(mat) { // Fecha o caixa
-    const req = await request("caixa?mat=" + mat, "DELETE")
-    const res = await req.json()
-
-    if (req.ok) { return res }
-    else { show_toast(res, "danger"); return false }
-}
-
-async function get_last_closed() { //Obtem o ultimo valor de fechmento
-    const req = await request("caixa/last_closed")
-    const res = await req.json()
-
-    if (req.ok) { return res }
-    else { show_toast(res, "danger"); return false }
-}
-
-async function add_value(value, matricula) { // Adiciona um reforço ao caixa, uma adição de troco
-    data = {
-        "valor": value,
-        "mat": matricula
-    }
-    const req = await request("caixa", "PATCH", data)
-    const res = await req.json()
-
-    if(req.ok) { return res }
-    else{ show_toast(res, "danger"); return false}
-}
-
 // ============================================================================================ DESPESAS
 async function get_expenses(data = null, id = null) { // Obtem despesas cadastradas
-    if (data) { req = await request("despesas?date=" + data) }
-    else if (id) { req = await request("despesas?id=" + id) }
-    else { req = await request("despesas") }
+    data ? request.path = `despesas?date=${data}` : request.path = id ? `despesas?id=${id}` : "despesas"
 
-    const res = await req.json()
-    if (req.ok) { return res }
-    else { show_toast(res, "danger"); return false }
+    return await request.send()
 }
 
 async function create_expense(motivo, valor, matricula) { // Cria uma despesa no BD
@@ -354,14 +297,6 @@ async function delete_expense(id) { // Remove uma despesas no BD
 
 async function delete_expense(expense_id) { // Deleta uma despesa
     const req = await request("despesas?id=" + expense_id, "DELETE")
-    const res = await req.json()
-    if (req.ok) { return res }
-    else { show_toast(res, "danger"); return false }
-}
-
-// ============================================================================================ DASHBOARDS
-async function get_infos_payments(filter) { // Informações dos pagamentos deb, cred, pix, din
-    const req = await request("dashboards/payments?filter=" + filter)
     const res = await req.json()
     if (req.ok) { return res }
     else { show_toast(res, "danger"); return false }

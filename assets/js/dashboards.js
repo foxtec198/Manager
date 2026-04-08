@@ -1,3 +1,5 @@
+const init_report = new InitDashboard()
+
 function welcome() {
     const welcome_txt = document.getElementById("welcome_txt"); // Obtem o arquivo do texto
     if (welcome_txt) {
@@ -13,7 +15,9 @@ function welcome() {
 }
 
 async function info_person() {
-    const res = await get_person()
+    request.path = `funcionarios?mat=${mat}`
+    request.method = "GET"
+    const res = await request.send()
     if (res) {
         const img = encodeURIComponent(res.img)
         const path = `${server}/api/files/img/manager/${img}`
@@ -31,8 +35,7 @@ async function info_person() {
 }
 
 async function get_infos() {
-    const req = await request("dashboards?mat=" + mat)
-    const res = await req.json()
+    const res = await init_report.get(mat)
     const div_goals = document.getElementById("div_goal")
 
     if (div_goals) {
@@ -115,7 +118,6 @@ function create_progress_bar(title, valor_atual, meta, percent = false, value = 
     // Se a meta estiver zerada seta como 10 por cento
     if (meta <= 0) { progress.style.width = "100%" }
     else { progress.style.width = value_percent + "%" }
-    console.log(value_percent)
     if(value_percent == 0 && meta >= 0){progress.style.width = "15%"}
     progress_bar.appendChild(progress)
 
