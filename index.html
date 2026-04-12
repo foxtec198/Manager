@@ -12,7 +12,7 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="icon" href="assets/img/fav.png">
-    <link rel="manifest" href="assets/js/manifest.json">
+    <link rel="manifest" href="assets/json/manifest.json">
     <link rel="stylesheet" href="assets/css/base.css">
     <!-- END CSS -->
 </head>
@@ -30,15 +30,15 @@
         <form class="form" id="form_login">
             <!-- INIT INPUT MAT -->
             <span class="input-span">
-                <label for="email" class="label">Matrícula</label>
-                <input type="number" name="matricula" id="mat" required autofocus />
+                <label for="mat" class="label">Matrícula</label>
+                <input type="number" id="mat" required autofocus autocomplete="email"/>
             </span>
             <!-- END INPUT MAT -->
 
             <!-- INIT INPUT PWD -->
             <span class="input-span">
-                <label for="password" class="label">Senha</label>
-                <input type="password" name="pwd" id="pwd" required />
+                <label for="pwd" class="label">Senha</label>
+                <input type="password" id="pwd" required autocomplete="current-password"/>
             </span>
             <!-- END INPUT PWD -->
 
@@ -65,10 +65,10 @@
         crossorigin="anonymous"></script>
     <script src="assets/js/three.min.js"></script>
     <script src="assets/js/vanta.net.min.js"></script>
-    <script src="assets/js/utils/request.js"></script> <!-- Main Code -->
-    <script src="assets/js/main.js"></script> <!-- Main Code -->
-    <script src="assets/js/configs.js"></script> <!-- Config Code -->
-    <script> // Animação de Fundo
+    <script type="module" src="assets/js/main.js"></script>
+    <script type="module" src="assets/js/utils/auth.js"></script>
+    <script> 
+        // Animação de Fundo
         VANTA.NET({
             el: "#imgCont",
             mouseControls: true,
@@ -84,11 +84,6 @@
             maxDistance: 19.00,
             spacing: 19.00,
         });
-
-        document.getElementById('form_login').addEventListener("submit", function (e) {
-            e.preventDefault() // Evita o reload
-            login(this) // Chama o login
-        })
     </script>
     <!-- END SCRIPTS -->
 </body>

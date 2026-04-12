@@ -1,5 +1,9 @@
-const init_report = new InitDashboard()
+import { InitDashboard } from "../models/dashboards.js";
+import { capitalize, to_real } from "../utils/ui.js";
+import { primary, server } from "../config/env.js";
+import { ApiRequest } from "../utils/request.js";
 
+// Função responsavel por dar as boas vindas ao usuario
 function welcome() {
     const welcome_txt = document.getElementById("welcome_txt"); // Obtem o arquivo do texto
     if (welcome_txt) {
@@ -10,74 +14,11 @@ function welcome() {
         else if (hora >= 12 && hora < 19) { welcome_str = "Boa tarde" }
         else { welcome_str = "Boa noite" }
 
-        welcome_txt.textContent = `${welcome_str} ${capitalize(display_name)}, bem vindo!`
+        welcome_txt.textContent = `${welcome_str} ${capitalize(sessionStorage.getItem("display_name") || "Visitante")}, bem vindo!`
     }
 }
 
-async function info_person() {
-    request.path = `funcionarios?mat=${mat}`
-    request.method = "GET"
-    const res = await request.send()
-    if (res) {
-        const img = encodeURIComponent(res.img)
-        const path = `${server}/api/files/img/manager/${img}`
-
-        const person_img = document.getElementById("person")
-        person_img.style.backgroundImage = `url("${path}")`
-
-        const person_name = document.getElementById("person_name")
-        person_name.textContent = display_name
-
-        const person_perm = document.getElementById("person_perm")
-        person_perm.textContent = perm
-
-    }
-}
-
-async function get_infos() {
-    const res = await init_report.get(mat)
-    const div_goals = document.getElementById("div_goal")
-
-    if (div_goals) {
-        div_goals.innerHTML = ''
-        div_goals.classList.remove("align-items-center", "justify-content-center")
-
-        const pgmes = create_progress_bar("Vendas Mes", res.real.mes, res.metas.mes)
-        const pgdia = create_progress_bar("Vendas Dia", res.real.dia, res.metas.dia)
-        const pgclients = create_progress_bar("Clientes", res.real.clientes, res.metas.clientes, false, true)
-
-        div_goals.appendChild(pgmes)
-        div_goals.appendChild(pgdia)
-        div_goals.appendChild(pgclients)
-    }
-
-    const person_sales = document.getElementById("person_sales")
-    person_sales.textContent = to_real(res.real.func)
-
-    const ticket_goal = document.getElementById("ticket_goal")
-    ticket_goal.textContent = "Meta - Ticket Médio: " + to_real(res.metas.ticket)
-
-    const divBtns = document.createElement("div")
-    divBtns.classList.add("d-flex", "gap-2")
-
-    const btn = document.createElement("button")
-    btn.classList.add("btn", "btn-lg", "btn-primary")
-    btn.textContent = "Iniciar Venda."
-    btn.addEventListener("click", function () { change_screen("sales/sales") })
-
-    const btnOrder = document.createElement("button")
-    btnOrder.classList.add("btn", "btn-lg", "btn-outline-primary")
-    btnOrder.textContent = "Ordens de Serviço."
-    btnOrder.addEventListener("click", function () { change_screen("orders/orders") })
-
-    divBtns.appendChild(btn)
-    divBtns.appendChild(btnOrder)
-    document.getElementById("goals_btns").appendChild(divBtns)
-
-    create_chart_payments(res.real.pagamentos)
-
-}
-
+// Função que cria uma barra de progresso para cada meta
 function create_progress_bar(title, valor_atual, meta, percent = false, value = false) {
     const div = document.createElement("div")
     div.classList.add("d-flex", "align-items-center", "justify-content-start", "gap-4")
@@ -123,11 +64,8 @@ function create_progress_bar(title, valor_atual, meta, percent = false, value = 
 
     // Titulo da Meta
     const spn_goal = document.createElement("span")
-    if (value) {
-        spn_goal.textContent = meta
-    } else {
-        spn_goal.textContent = to_real(meta)
-    }
+    if (value) { spn_goal.textContent = meta }
+    else { spn_goal.textContent = to_real(meta) }
 
     div.appendChild(spn_title)
     div.appendChild(progress_bar)
@@ -136,12 +74,13 @@ function create_progress_bar(title, valor_atual, meta, percent = false, value = 
     return div
 }
 
+// Função que cria o chart dos pagamentos
 function create_chart_payments(payments) {
     const graf_div = document.getElementById("grafDiv")
     graf_div.innerHTML = '' // Zera o conteudo atual
 
-    pays = {}
-    for(item in payments){
+    const pays = {}
+    for(let item in payments){
         if(payments[item] > 0){
             pays[item] = payments[item]
         }
@@ -233,3 +172,71 @@ function create_chart_payments(payments) {
         .style("text-anchor", "middle");
 }
 
+// Função para obter as informações do USUARIO - PROVISORIA
+async function get_user_infos() {
+    const res = await new ApiRequest(`funcionarios?mat=${sessionStorage.getItem("mat")}`).send();
+    if (res) {
+        const img = encodeURIComponent(res.img);
+        const path = `${server}/api/files/img/manager/${img}`;
+
+        const person_img = document.getElementById("person");
+        person_img.style.backgroundImage = `url("${path}")`;
+
+        const person_name = document.getElementById("person_name");
+        person_name.textContent = sessionStorage.getItem("display_name");
+
+        const person_perm = document.getElementById("person_perm");
+        person_perm.textContent = sessionStorage.getItem("perm");
+
+    }
+}
+
+// Obtem as informações do dashboard e seta as INFOS com DOM
+async function get_infos() {
+    const res = await new InitDashboard().get(sessionStorage.getItem("mat"))
+    const div_goals = document.getElementById("div_goal")
+
+    if (div_goals) {
+        div_goals.innerHTML = ''
+        div_goals.classList.remove("align-items-center", "justify-content-center")
+
+        const pgmes = create_progress_bar("Vendas Mes", res.real.mes, res.metas.mes)
+        const pgdia = create_progress_bar("Vendas Dia", res.real.dia, res.metas.dia)
+        const pgclients = create_progress_bar("Clientes", res.real.clientes, res.metas.clientes, false, true)
+
+        div_goals.appendChild(pgmes)
+        div_goals.appendChild(pgdia)
+        div_goals.appendChild(pgclients)
+    }
+
+    const person_sales = document.getElementById("person_sales")
+    person_sales.textContent = to_real(res.real.func)
+
+    const ticket_goal = document.getElementById("ticket_goal")
+    ticket_goal.textContent = "Meta - Ticket Médio: " + to_real(res.metas.ticket)
+
+    const divBtns = document.createElement("div")
+    divBtns.classList.add("d-flex", "gap-2")
+
+    const btn = document.createElement("button")
+    btn.classList.add("btn", "btn-lg", "btn-primary")
+    btn.textContent = "Iniciar Venda."
+    btn.addEventListener("click", function () { change_screen("sales/sales") })
+
+    const btnOrder = document.createElement("button")
+    btnOrder.classList.add("btn", "btn-lg", "btn-outline-primary")
+    btnOrder.textContent = "Ordens de Serviço."
+    btnOrder.addEventListener("click", function () { change_screen("orders/orders") })
+
+    divBtns.appendChild(btn)
+    divBtns.appendChild(btnOrder)
+    document.getElementById("goals_btns").appendChild(divBtns)
+
+    create_chart_payments(res.real.pagamentos)
+
+}
+
+// Instancia as funções caso esteja na pagina de Relatorios Iniciais
+if(window.location.pathname == "/pages/init_reports.html"){
+    welcome(); get_infos(); get_user_infos(); // GET USER IS PROV.
+};

@@ -1,0 +1,82 @@
+import { img } from "../config/env.js"
+
+// Função responsavel por mostrar um toast de informação 
+export function show_toast(msg, type = "info") {
+    const check_div = document.getElementById("div_toast")
+    const div = check_div ? check_div : document.createElement("div")
+    const toast_options = `<div id="manager_toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true"><div class="toast-header"><img src="${img}" width="20vh" class="rounded me-2" alt="logo"><strong class="me-auto" id="toast_title"></strong><small>now</small><button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button></div><div class="toast-body" id="toast_msg"></div></div>`;
+
+    div.id = "div_toast"
+    div.innerHTML = toast_options;
+    div.classList.add("toast-container", "position-fixed", "bottom-0", "end-0", "p-3");
+    parent.document.body.appendChild(div);
+
+    const manager_toast = parent.document.getElementById('manager_toast');
+    
+    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(manager_toast);
+    manager_toast.querySelector("#toast_msg").textContent = msg;
+
+    switch(type){
+        case "info":
+            manager_toast.querySelector("#toast_title").textContent = "Hubbix Manager";
+            manager_toast.classList.remove("text-bg-warning", "text-bg-danger");
+        case "alert":
+            manager_toast.querySelector("#toast_title").textContent = "Hubbix Manager - Alerta!";
+            manager_toast.classList.add("text-bg-warning");
+        case "danger":
+            manager_toast.querySelector("#toast_title").textContent = "Hubbix Manager - Perigo!";
+            manager_toast.classList.add("text-bg-danger");
+    }
+    toastBootstrap.show();
+}
+
+// Função responsavel por ligar/desligar o carregamento
+export function is_loading(loading = true) {
+    const div_loading = document.getElementById("divLdg") // Seta a variavel caso ja exista
+    const divLdg = div_loading ? div_loading : document.createElement("div") // Caso nao existe, cria o DIVLDG
+    divLdg.id = "divLdg" // Seta o id em toda instancia (Por garantia)
+
+    if (loading) {
+        divLdg.style.width = '100%';
+        divLdg.style.height = '100%';
+        divLdg.style.display = 'flex';
+        divLdg.style.justifyContent = 'center';
+        divLdg.style.alignItems = 'center';
+        divLdg.style.position = 'absolute';
+        divLdg.style.zIndex = "5000000000";
+        divLdg.style.top = 0;
+        divLdg.innerHTML = `<div class="loader"><div class="loader-square"></div><div class="loader-square"></div><div class="loader-square"></div><div class="loader-square"></div><div class="loader-square"></div><div class="loader-square"></div><div class="loader-square"></div></div>`;
+        document.body.appendChild(divLdg);
+    } 
+    else { try{document.body.removeChild(divLdg)}catch{}; };
+}
+
+// Função nao primitiva para deixar a primeira letra maiuscula
+export function capitalize(str) {
+    str = str.toLowerCase()
+    return str.charAt(0).toUpperCase() + str.slice(1)
+};
+
+// Tranforma uma string ou integer em BRL
+export function to_real(valor) {
+    return valor.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })
+}
+
+export function change_screen(screen, el=null) {
+    const others = parent.document.querySelectorAll('.menu-item');
+    others.forEach(element => {
+        element.style.background = null;
+        element.style.color = '#fff';
+    });
+    
+    if (el) {
+        el.style.background = "rgba(41, 201, 108, 0.08)";
+        el.style.color = '#2ecc71';
+        el.style.boxShadow = "inset 0 0 0 1px #2ecc71aa, 0 0 6px #2ecc7190;";
+        el.style.borderRadius = "30px";
+    };
+
+    const frame = parent.document.getElementById('frame_screen');
+    sessionStorage.setItem('frame', `../pages/${screen}.html`);
+    frame.src = `../pages/${screen}.html`;
+}

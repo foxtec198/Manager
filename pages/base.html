@@ -53,11 +53,10 @@
             style="min-width: 180px;">
             <div class="d-flex gap-4 p-2 flex-row align-items-center justify-content-start flex-grow-1 flex-basis">
                 <a href="" onclick="change_screen('init_reports')">
-                    <img id="logoBase" class="logo img-fluid object-fit-contain placeholder">
+                    <img data-name="brand" class="logo img-fluid object-fit-contain placeholder">
                 </a>
                 <div class="vr"></div>
-                <span class="rounded-pill placeholder neon-text fs-5" id="nomeLoja" style="font-size: 13px;">Nome da
-                    Loja</span>
+                <span class="rounded-pill placeholder neon-text fs-5" data-name="store" style="font-size: 12px;">[STORE NAME]</span>
             </div>
             <div class="d-flex gap-2 fs-5 align-items-center justify-content-center flex-grow-1 flex-basis">
                 <div class="newNav">
@@ -141,10 +140,6 @@
     <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"></script> <!-- InputMask-->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- CHARTJS -->
     <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script> <!-- GRID JS-->
-    <script src="../assets/js/utils/request.js"></script> <!-- API Request Util -->
-    <script src="../assets/js/main.js"></script> <!-- Main -->
-    <script src="../assets/js/configs.js"></script> <!-- Config -->
-    <script> set_store(); confer_perm(); restore_screen(); is_decoration(false); </script>
 </body>
 
 </html>

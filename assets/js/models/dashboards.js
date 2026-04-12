@@ -1,13 +1,16 @@
-class InitDashboard {
+import { ApiRequest } from "../utils/request.js"
+
+export class InitDashboard {
     async get(mat){
-        request.path = `dashboards?mat=${mat}`
+        const request = new ApiRequest(`dashboards?mat=${mat}`)
         return await request.send()
     }
 }
+new InitDashboard().get(sessionStorage.getItem("mat"))
 
-class PaymentsDashboard {
+export class PaymentsDashboard {
     async get(filter){
-        request.path = `dashboards/payments?filter=${filter}`
+        const request = new ApiRequest(`dashboards/payments?filter=${filter}`)
         return await request.send()
     }
 

@@ -240,15 +240,14 @@ const form_add_expense = document.getElementById("form_add_expense") // Formular
 if(form_add_expense) {
     form_add_expense.addEventListener("submit", async (e) => {
         e.preventDefault();
-        is_loading();
         const matricula = form_add_expense.matricula.value;
         const valor = form_add_expense.valor.value;
         const motivo = form_add_expense.motivo.value != 'Sangria' ? form_add_expense.motivo_declarado.value : form_add_expense.motivo.value;
-        const res = await create_expense(motivo, valor, matricula);
+        const res = await expenses.set(matricula, valor, motivo);
         if(res){
             set_badge_pos();
             const grid = await set_expenses(true);
-            const expenses = await get_expenses();
+            const expenses = await expenses.get();
             grid.updateConfig({
                 data: expenses.map(expense => {
                     return [
@@ -263,7 +262,6 @@ if(form_add_expense) {
                 })
             }).forceRender();
             form_add_expense.reset();
-            is_loading(false);
         }
     })
 }
