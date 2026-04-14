@@ -62,6 +62,7 @@ export function to_real(valor) {
     return valor.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })
 }
 
+// Função para troca de tela
 export function change_screen(screen, el=null) {
     const others = parent.document.querySelectorAll('.menu-item');
     others.forEach(element => {
@@ -80,3 +81,27 @@ export function change_screen(screen, el=null) {
     sessionStorage.setItem('frame', `../pages/${screen}.html`);
     frame.src = `../pages/${screen}.html`;
 }
+
+// Função para restaurar a tela após reload
+export function restore_screen(change_element=true) {
+    const last_frame = sessionStorage.getItem('frame') // Obtém o utlimo frame utilizado
+    const iframe = parent.document.getElementById('frame_screen') // Obtem o IFRAME
+    const isPage = window.location.pathname === last_frame.replace("..", "") // Confirma se ja esta na pagina
+    
+    if (last_frame && iframe && !isPage) { // Confirma se encontrou o frame e o widget
+        const frameText = last_frame
+        .replace('/', '')
+        .replace('../', '')
+        .replace('.html', '')
+        .split("/")[1]; // Separa somete o pathname correto e necessário
+
+        iframe.src = last_frame; // Seta o frame ao Iframe
+        const element = parent.document.querySelector(`.menu-${frameText}`)
+        if (element && change_element) {
+            element.style.background = "rgba(41, 201, 108, 0.08)";
+            element.style.color = '#2ecc71';
+            element.style.borderRadius = "30px";
+            element.style.boxShadow = "inset 0 0 0 1px #2ecc71aa, 0 0 6px #2ecc7190;";
+        };
+    };
+};

@@ -1,6 +1,8 @@
 // main.js
+import { change_screen, restore_screen  } from "./utils/ui.js";
 import { App } from "./core/app.js";
-import { change_screen  } from "./utils/ui.js";
+import { setPosState } from "./services/pos_service.js";
+
 
 const app = new App();
 
@@ -20,15 +22,17 @@ async function init() {
     // 🔴 não autenticado → vai pro login
     if (!isAuthenticated() && !isLoginPage()) {
         parent.window.location.href = "/"; // Força o login
-        return; // Inibi continuidade no codig
+        return; // Inibi continuidade no codigo
     }
     
     // ✅ Autenticado → vai pra logica
     if (isAuthenticated() && !isLoginPage()){
         app.setStore() // Seta os dados da Loja dinamicamente, como nome e logo
+        setPosState() // Seta os dados da Loja dinamicamente, como nome e logo
+
         parent.window.change_screen = change_screen // Seta a função change screen globalmente
         window.change_screen = change_screen // Seta a função change screen localmente
     }
 }
 
-init();
+window.addEventListener("DOMContentLoaded", () => { restore_screen() }); init();

@@ -23,8 +23,8 @@
             <!-- Abertura e Fechamento de caixa -->
             <div class="d-flex text-truncate flex-column p-4 justify-content-start gap-4 card rounded-4 flex-grow-1 flex-basis-200">
                 <div class="d-flex justify-content-between">
-                    <span class="fw-bold fs-4" id="state_title"><i class="bi bi-currency-exchange"></i> [STATE NOW]</span>
-                    <span class="badge fs-5 rounded-4 placeholder" id="pos_status">[STATUS CAIXA]</span>
+                    <strong class="fw-bold fs-4" data-state="pos"><i class="bi bi-currency-exchange"></i> [STATE NOW]</strong>
+                    <span class="badge fs-5 rounded-4 placeholder" data-state="pos">[STATUS CAIXA]</span>
                 </div>
                 <form id="status_caixa">
                     <div class="d-flex gap-2 flex-wrap">
@@ -33,13 +33,13 @@
                                 required>
                             <label for="mattroco">Matricula</label>
                         </div>
-                        <div class="form-floating flex-grow-1 flex-basis-500">
-                            <input class="form-control rounded-5 px-3 money-mask" id="troco" placeholder="Troco"
+                        <div class="form-floating flex-grow-1 flex-basis-500" data-state="troco">
+                            <input class="form-control rounded-5 px-3 money-mask" placeholder="Troco"
                                 type="text" name="troco" required>
                             <label for="troco">Troco</label>
                         </div>
                     </div>
-                    <button class="btn btn-lg fw-bold w-100 mt-5" id="btn_status" name="btn" type="submit">[STATE BUTTON]</button>
+                    <button class="btn btn-lg fw-bold w-100 mt-5" name="btn" data-state="pos" type="submit">[STATE BUTTON]</button>
                 </form>
             </div>
             <!-- Carousel Despesas e Reforço -->
