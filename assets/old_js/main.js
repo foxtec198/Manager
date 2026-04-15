@@ -104,7 +104,7 @@ function create_table(id, data, columns = []) {
     return grid
 }
 
-// ================================================ Cria um toast para exibir uma mensagem
+// ============== OK ================================== Cria um toast para exibir uma mensagem
 function show_toast(msg, type = "info") {
     const manager_toast = parent.document.getElementById('manager_toast')
     const divMsg = parent.document.getElementById("toast_msg")
@@ -152,7 +152,7 @@ function datas_comemorativas(msg, data, bgs = ["#fff", "#777"], fgs = ["#fff", "
     };
 }
 
-// ================================================ Troca e memoriza a screen
+// ============================== OK ================== Troca e memoriza a screen
 function change_screen(screen, t = null) {
     others = parent.document.querySelectorAll('.menu-item')
     others.forEach(element => {
@@ -171,7 +171,7 @@ function change_screen(screen, t = null) {
     frame.src = `../pages/${screen}.html`
 }
 
-// ================================================ Recupera a tela mesmo que atualize a pagina
+// ============================ OK ==================== Recupera a tela mesmo que atualize a pagina
 function restore_screen() {
     frame = sessionStorage.getItem('frame')
     frameWidget = parent.document.getElementById('frame_screen')

@@ -1,11 +1,11 @@
-import { apiRequest } from "../services/api_service.js";
+import { ApiRequest } from "../utils/request.js";
 import { server } from "../config/env.js";
 
 export class App {
     // Função responsavel por carregar logo e nome da loja em qualquer tela
     async setStore() {
         // Obtem os dados da Loja
-        const res = await apiRequest("lojas", "GET", null, "general", false); 
+        const res = await new ApiRequest("lojas", "GET", null, "general", false).send();
         
         if(res){
             // Obtem todos os elementos com data name, onde será setado os dados da loja (Logo, Nome)

@@ -1,3 +1,4 @@
+import { setExpenses } from "../services/expenses_service.js"
 import { PosModel } from "../models/pos.js"
 import { to_real } from "../utils/ui.js";
 
@@ -75,27 +76,6 @@ export async function setPosState(){
         };
     });
 };
-
-async function setExpenses(nocons=false) { // DOM referente a tabela de despesas
-    const lista = document.getElementById("lista_de_despesas") // Listas HTML
-    const res = nocons ? null : await expenses.get(); // Requisição das despesas    
-    if(lista){
-        lista.innerHTML = ''
-        const data = res ? res.map(expense => {
-            return [
-                new Date(expense.data).toLocaleDateString('pt-br', {'day': '2-digit', 'month': 'long', 'hour': '2-digit', 'minute': "2-digit"}), 
-                expense.motivo, 
-                expense.funcionario.toUpperCase(),
-                to_real(expense.valor),
-                gridjs.html(`
-                    <button class="btn btn-danger" onclick="set_delete_expense(${expense.id})">${icon_trash} Remover</button>
-                `)
-            ]
-        }) : {}; // Data usando map para formatar os dados da tabela
-        const columns = ["Data", "Motivo", "Funcionário", "Valor", "Ações"] // Colunas da Tabela
-        return create_table("lista_de_despesas", data, columns); // Cria a tabela e indexa
-    }
-}
 
 async function set_mini_dashboard(filter = "week") { // DOM referente ao Mini Dashboard 
     const payments = await pay_report.get(filter)

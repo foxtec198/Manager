@@ -1,7 +1,7 @@
 import { ApiRequest } from "../utils/request.js"
 
 // GERENCIAMENTO DE DESPESAS!
-export class ExpensesModel{
+export class ExpenseModel{
     // OBTÉM AS DESPESAS (COM FILTRO OU SEM)
     async get(filter, value){
         const request = new ApiRequest()

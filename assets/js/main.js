@@ -2,6 +2,7 @@
 import { change_screen, restore_screen  } from "./utils/ui.js";
 import { App } from "./core/app.js";
 import { setPosState } from "./services/pos_service.js";
+import { setExpenses } from "./services/expenses_service.js";
 
 
 const app = new App();
@@ -23,16 +24,17 @@ async function init() {
     if (!isAuthenticated() && !isLoginPage()) {
         parent.window.location.href = "/"; // Força o login
         return; // Inibi continuidade no codigo
-    }
+    };
     
     // ✅ Autenticado → vai pra logica
     if (isAuthenticated() && !isLoginPage()){
-        app.setStore() // Seta os dados da Loja dinamicamente, como nome e logo
-        setPosState() // Seta os dados da Loja dinamicamente, como nome e logo
+        app.setStore(); // Seta os dados da Loja dinamicamente, como nome e logo
+        setPosState(); // Seta os dados da Loja dinamicamente, como nome e logo
+        setExpenses();
 
-        parent.window.change_screen = change_screen // Seta a função change screen globalmente
-        window.change_screen = change_screen // Seta a função change screen localmente
-    }
+        parent.window.change_screen = change_screen; // Seta a função change screen globalmente
+        window.change_screen = change_screen; // Seta a função change screen localmente
+    };
 }
 
 window.addEventListener("DOMContentLoaded", () => { restore_screen() }); init();

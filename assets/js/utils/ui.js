@@ -105,3 +105,58 @@ export function restore_screen(change_element=true) {
         };
     };
 };
+
+export function create_modal(title, body, center = 'modal-dialog-centered') {
+    const modal = document.createElement("div")
+    modal.classList.add("modal", "fade")
+    modal.tabIndex = "-1"
+    modal.ariaHidden = true
+
+    const modal_dialog = document.createElement("div")
+    modal_dialog.classList.add("modal-dialog",)
+    if (center) { modal_dialog.classList.add("modal-dialog-centered") }
+
+    const modal_content = document.createElement("div")
+    modal_content.classList.add("modal-content")
+
+    if (title) {
+        const modal_header = document.createElement("div")
+        modal_header.classList.add("modal-header")
+        modal_header.appendChild(title)
+        modal_content.appendChild(modal_header)
+    }
+
+    const modal_body = document.createElement("div")
+    modal_body.classList.add("modal-body", "p-5")
+    modal_body.appendChild(body)
+    modal_content.appendChild(modal_body)
+
+    modal.appendChild(modal_dialog)
+    modal_dialog.appendChild(modal_content)
+
+    return new bootstrap.Modal(modal, { 'show': true, 'backdrop': 'static' })
+};
+
+export function create_table(element, data, columns = []) {
+    const grid = new gridjs.Grid({
+        search: true, // Pesquisa das colunas
+        pagination: true, // Paginação padrao
+        columns: columns, // Colunas da Tabela
+        data: data, // Dados da Tabela
+        language: { // Seta a tradução da tabela
+            search: {
+                "placeholder": "Buscar..."
+            },
+            pagination: {
+                "previous": "Anterior",
+                "next": "Próximo",
+                "showing": "Mostrando",
+                "to": "até",
+                "of": "de",
+                "results": "despesas"
+            }
+        }
+    });
+    grid.render(element);
+    return grid;
+};

@@ -19,86 +19,110 @@
 
 <body data-bs-theme="dark">
     <div class="d-flex flex-column gap-4">
+        <!-- Opções do Caixa -->
         <div class="d-flex justify-content-between gap-4">
-            <!-- Abertura e Fechamento de caixa -->
-            <div class="d-flex text-truncate flex-column p-4 justify-content-start gap-4 card rounded-4 flex-grow-1 flex-basis-200">
-                <div class="d-flex justify-content-between">
-                    <strong class="fw-bold fs-4" data-state="pos"><i class="bi bi-currency-exchange"></i> [STATE NOW]</strong>
-                    <span class="badge fs-5 rounded-4 placeholder" data-state="pos">[STATUS CAIXA]</span>
-                </div>
-                <form id="status_caixa">
-                    <div class="d-flex gap-2 flex-wrap">
-                        <div class="form-floating flex-grow-1 flex-basis-500">
-                            <input class="form-control rounded-5 px-3" placeholder="Matricula" type="number" name="mat"
-                                required>
-                            <label for="mattroco">Matricula</label>
+            <div class="d-flex flex-column gap-4 flex-grow-1" style="flex-basis: 1050px;">
+                <div class="d-flex gap-4">
+                    <!-- Abertura e Fechamento de caixa -->
+                    <div
+                        class="d-flex text-truncate flex-column p-4 justify-content-start gap-4 card rounded-4 flex-grow-1 flex-basis-200">
+                        <div class="d-flex justify-content-between">
+                            <strong class="fw-bold fs-4" data-state="pos"><i class="bi bi-currency-exchange"></i> [STATE
+                                NOW]</strong>
+                            <span class="badge fs-5 rounded-4 placeholder" data-state="pos">[STATUS CAIXA]</span>
                         </div>
-                        <div class="form-floating flex-grow-1 flex-basis-500" data-state="troco">
-                            <input class="form-control rounded-5 px-3 money-mask" placeholder="Troco"
-                                type="text" name="troco" required>
-                            <label for="troco">Troco</label>
-                        </div>
-                    </div>
-                    <button class="btn btn-lg fw-bold w-100 mt-5" name="btn" data-state="pos" type="submit">[STATE BUTTON]</button>
-                </form>
-            </div>
-            <!-- Carousel Despesas e Reforço -->
-            <div class="card-carousel card p-4 rounded-4 flex-grow-1 flex-basis-200" data-index="0">
-                <span class="fs-4 fw-bold"><i class="bi bi-arrow-down-up"></i> Movimentação de caixa</span>
-                <div class="card-carousel-track h-100">
-                    <!-- ENTRADAS / REFORÇO -->
-                    <div class="card-view p-4">
-                        <span class="fs-5 badge bg-primary">Entradas <i class="bi bi-arrow-90deg-up"></i></span>
-                        <form class="d-flex flex-column gap-2 mt-5" id="form_add_value">
-                            <div class="form-floating">
-                                <input type="text" placeholder="Valor R$" class="form-control rounded-5 px-3 money-mask" name="valor"/>
-                                <label for="valor">Valor R$</label>
+                        <form id="status_caixa">
+                            <div class="d-flex gap-2 flex-wrap">
+                                <div class="form-floating flex-grow-1 flex-basis-500">
+                                    <input class="form-control rounded-5 px-3" placeholder="Matricula" type="number"
+                                        name="mat" required>
+                                    <label for="mattroco">Matricula</label>
+                                </div>
+                                <div class="form-floating flex-grow-1 flex-basis-500" data-state="troco">
+                                    <input class="form-control rounded-5 px-3 money-mask" placeholder="Troco"
+                                        type="text" name="troco" required>
+                                    <label for="troco">Troco</label>
+                                </div>
                             </div>
-                            <div class="form-floating">
-                                <input type="number" placeholder="Matricula" class="form-control rounded-5 px-3" name="matricula"/>
-                                <label for="valor">Matricula</label>
-                            </div>
-                            <button class="btn btn-lg btn-primary" type="submit">Adicionar Reforço.</button>
+                            <button class="btn btn-lg fw-bold w-100 mt-5" name="btn" data-state="pos"
+                                type="submit">[STATE BUTTON]</button>
                         </form>
                     </div>
-                    <!-- DESPESA / SANGRIA -->
-                    <div class="card-view p-4">
-                        <span class="fs-5 badge bg-red">Saidas <i class="bi bi-arrow-90deg-down"></i></span>
-                        <form class="d-flex flex-column gap-2 mt-5" id="form_add_expense">
-                            <div class="form-floating">
-                                <input type="text" placeholder="Valor R$" class="form-control rounded-5 px-3 money-mask" name="valor" required/>
-                                <label for="valor">Valor R$</label>
+                    <!-- Carousel Despesas e Reforço -->
+                    <div class="card-carousel card p-4 rounded-4 flex-grow-1 flex-basis-200" data-index="0">
+                        <span class="fs-4 fw-bold"><i class="bi bi-arrow-down-up"></i> Movimentação de caixa</span>
+                        <div class="card-carousel-track h-100">
+                            <!-- ENTRADAS / REFORÇO -->
+                            <div class="card-view p-4">
+                                <span class="fs-5 badge bg-primary">Entradas <i class="bi bi-arrow-90deg-up"></i></span>
+                                <form class="d-flex flex-column gap-2 mt-5" id="form_add_value">
+                                    <div class="form-floating">
+                                        <input type="text" placeholder="Valor R$"
+                                            class="form-control rounded-5 px-3 money-mask" name="valor" />
+                                        <label for="valor">Valor R$</label>
+                                    </div>
+                                    <div class="form-floating">
+                                        <input type="number" placeholder="Matricula" class="form-control rounded-5 px-3"
+                                            name="matricula" />
+                                        <label for="valor">Matricula</label>
+                                    </div>
+                                    <button class="btn btn-lg btn-primary" type="submit">Adicionar Reforço.</button>
+                                </form>
                             </div>
-                            <div class="form-floating flex-grow-1">
-                                <select class="form-control rounded-5 px-3" aria-placeholder="Selecione o motivo" name="motivo" onchange="alter_expense(this)">
-                                    <option>Sangria</option>
-                                    <option>Despesa</option>
-                                </select>
-                                <label for="motivo">Selecione o motivo</label>
+                            <!-- DESPESA / SANGRIA -->
+                            <div class="card-view p-4">
+                                <span class="fs-5 badge bg-red">Saidas <i class="bi bi-arrow-90deg-down"></i></span>
+                                <form class="d-flex flex-column gap-2 mt-5" id="form_add_expense">
+                                    <div class="form-floating">
+                                        <input type="text" placeholder="Valor R$"
+                                            class="form-control rounded-5 px-3 money-mask" name="valor" required />
+                                        <label for="valor">Valor R$</label>
+                                    </div>
+                                    <div class="form-floating flex-grow-1">
+                                        <select class="form-control rounded-5 px-3"
+                                            aria-placeholder="Selecione o motivo" name="motivo"
+                                            onchange="alter_expense(this)">
+                                            <option>Sangria</option>
+                                            <option>Despesa</option>
+                                        </select>
+                                        <label for="motivo">Selecione o motivo</label>
+                                    </div>
+                                    <div class="form-floating flex-grow-1" hidden>
+                                        <input type="text" class="form-control rounded-5 px-3"
+                                            placeholder="Qual a despesa?" id="motivo_declarado" />
+                                        <label for="motivo_declarado">Qual a despesa?</label>
+                                    </div>
+                                    <div class="form-floating">
+                                        <input type="number" placeholder="Matricula" class="form-control rounded-5 px-3"
+                                            name="matricula" required />
+                                        <label for="valor">Matricula</label>
+                                    </div>
+                                    <button class="btn btn-lg btn-red" type="submit">Adicionar Saida.</button>
+                                </form>
                             </div>
-                            <div class="form-floating flex-grow-1" hidden>
-                                <input type="text" class="form-control rounded-5 px-3" placeholder="Qual a despesa?" id="motivo_declarado"/>
-                                <label for="motivo_declarado">Qual a despesa?</label>
-                            </div>
-                            <div class="form-floating">
-                                <input type="number" placeholder="Matricula" class="form-control rounded-5 px-3" name="matricula" required/>
-                                <label for="valor">Matricula</label>
-                            </div>
-                            <button class="btn btn-lg btn-red" type="submit">Adicionar Saida.</button>
-                        </form>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn carousel-nav prev fw-bold fs-4">‹</button>
+                            <button class="btn carousel-nav next fw-bold fs-4">›</button>
+                        </div>
                     </div>
                 </div>
-                <div class="btn-group">
-                    <button class="btn carousel-nav prev fw-bold fs-4">‹</button>
-                    <button class="btn carousel-nav next fw-bold fs-4">›</button>
+
+                <!-- Expenses -->
+                <div class="card p-4 flex-grow-1 overflow-auto">
+                    <p class="fs-5 fw-bold"><i class="bi bi-back"></i> Despesas</p>
+                    <div data-api="expenses"></div>
                 </div>
+                <!-- End Expenses -->
             </div>
             <!-- Mini Dashboard -->
             <div class="d-flex flex-column gap-4 p-4 rounded-4 card flex-grow-1 flex-basis-400">
                 <div class="d-flex justify-content-between align-items-start">
-                    <span class="fs-4 fw-bold flex-grow-1"><i class="bi bi-bar-chart-fill"></i> Análise Financeira</span>
+                    <span class="fs-4 fw-bold flex-grow-1"><i class="bi bi-bar-chart-fill"></i> Análise
+                        Financeira</span>
                     <div class="form-floating flex-shrink-1 flex-basis-500">
-                        <select class="form-control rounded-5 px-3" id="filter_select" aria-placeholder="Selecione um periodo" onchange="set_mini_dashboard(this.value)">
+                        <select class="form-control rounded-5 px-3" id="filter_select"
+                            aria-placeholder="Selecione um periodo" onchange="set_mini_dashboard(this.value)">
                             <option value="week">Ultimos 7 dias</option>
                             <option value="day">Hoje</option>
                             <option value="month">Este Mes</option>
@@ -124,14 +148,9 @@
                 </div>
             </div>
         </div>
-        <!-- Despesas -->
-        <div class="card p-4 flex-grow-1 overflow-auto">
-            <p class="fs-5 fw-bold"><i class="bi bi-back"></i> Despesas</p>
-            <div id="lista_de_despesas"></div>
-        </div>
     </div>
 
-    <!-- INIT SCRIPTS -->
+    <!-- SCRIPTS JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
