@@ -1,4 +1,5 @@
 import { img } from "../config/env.js"
+import { setButtonFoDeleteExpense } from "../services/expenses_service.js"
 
 // Função responsavel por mostrar um toast de informação 
 export function show_toast(msg, type = "info") {
@@ -84,7 +85,7 @@ export function change_screen(screen, el=null) {
 
 // Função para restaurar a tela após reload
 export function restore_screen(change_element=true) {
-    const last_frame = sessionStorage.getItem('frame') // Obtém o utlimo frame utilizado
+    const last_frame = sessionStorage.getItem('frame') || "" // Obtém o utlimo frame utilizado
     const iframe = parent.document.getElementById('frame_screen') // Obtem o IFRAME
     const isPage = window.location.pathname === last_frame.replace("..", "") // Confirma se ja esta na pagina
     
@@ -137,10 +138,12 @@ export function create_modal(title, body, center = 'modal-dialog-centered') {
     return new bootstrap.Modal(modal, { 'show': true, 'backdrop': 'static' })
 };
 
-export function create_table(element, data, columns = []) {
+export function create_table(element, data, columns = [], limit = 5) {
     const grid = new gridjs.Grid({
         search: true, // Pesquisa das colunas
-        pagination: true, // Paginação padrao
+        pagination: {
+            limit: limit,
+        }, // Paginação padrao
         columns: columns, // Colunas da Tabela
         data: data, // Dados da Tabela
         language: { // Seta a tradução da tabela
@@ -153,10 +156,13 @@ export function create_table(element, data, columns = []) {
                 "showing": "Mostrando",
                 "to": "até",
                 "of": "de",
-                "results": "despesas"
+                "results": "resultados"
             }
         }
     });
+
     grid.render(element);
+    grid.updateConfig({ data: data }).forceRender();
+    setButtonFoDeleteExpense();
     return grid;
 };

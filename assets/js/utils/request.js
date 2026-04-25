@@ -33,7 +33,7 @@ export class ApiRequest {
 
         try {
             const req = await fetch(`${baseUrl}${this.path}`, options);
-            return await req.json();
+            return req;
         } catch (err) {
             show_toast(`Erro com o servidor: ${err} - Codigo: ${err.status_code}`, "danger");
         } finally {

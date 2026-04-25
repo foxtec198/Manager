@@ -22,11 +22,11 @@
         <div class="d-flex gap-2 flex-wrap">
             <!-- Person info -->
             <div class="d-flex align-items-end justify-content-end flex-grow-1 flex-basis flex-column rounded-5 shadow-lg"
-                id="person">
+                data-display="person-img" id="person">
                 <div class="d-flex w-100" id="person_info">
                     <div class="d-flex flex-column">
-                        <span class="fs-5 fw-bold" id="person_name">[DISPLAY NAME]</span>
-                        <span id="person_perm">[PERMISSION]</span>
+                        <span class="fs-5 fw-bold" data-display="name">[DISPLAY NAME]</span>
+                        <span data-display="perm">[PERMISSION]</span>
                     </div>
                     <span class="fs-5 fw-bold" id="person_sales">R$ 0</span>
                 </div>
@@ -57,7 +57,7 @@
             </div>
         </div>
     </div>
-
+    
     <!-- INIT SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
     <script type="module" src="../assets/js/main.js"></script>

@@ -59,7 +59,7 @@ function create_progress_bar(title, valor_atual, meta, percent = false, value = 
     // Se a meta estiver zerada seta como 10 por cento
     if (meta <= 0) { progress.style.width = "100%" }
     else { progress.style.width = value_percent + "%" }
-    if(value_percent == 0 && meta >= 0){progress.style.width = "15%"}
+    if (value_percent == 0 && meta >= 0) { progress.style.width = "15%" }
     progress_bar.appendChild(progress)
 
     // Titulo da Meta
@@ -76,17 +76,19 @@ function create_progress_bar(title, valor_atual, meta, percent = false, value = 
 
 // Função que cria o chart dos pagamentos
 function create_chart_payments(payments) {
+    // Codigo usando o D3 Charts, somente para esse chart, os demais com o ChartJS
     const graf_div = document.getElementById("grafDiv")
+    const graf = document.createElement("div")
+
     graf_div.innerHTML = '' // Zera o conteudo atual
 
     const pays = {}
-    for(let item in payments){
-        if(payments[item] > 0){
+    for (let item in payments) {
+        if (payments[item] >= 0) {
             pays[item] = payments[item]
         }
     }
 
-    const graf = document.createElement("div")
     // Converter JSON para array de objetos
     const data = Object.entries(pays).map(([label, value]) => ({
         label,
@@ -101,7 +103,7 @@ function create_chart_payments(payments) {
     // Cores
     const color = d3.scaleOrdinal()
         .domain(data.map(d => d.label))
-        .range([primary]); // Cores dos graficos
+        .range(["#4EC98E", "#63EE88", "#4aba77", "#58956B"]); // Cores dos graficos
 
     // Criar SVG
     const svg = d3.select(graf)
@@ -159,84 +161,111 @@ function create_chart_payments(payments) {
         .style("pointer-events", "none")
         .style("opacity", 0);
 
-    // Labels internas no gráfico (opcional)
-    svg
-        .selectAll("text")
-        .data(pie(data))
-        .join("text")
-        .text(d => d.data.value > 0 ? d.data.label : "")
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("dy", "-5")
+        .style("fill", "#aaa")
+        .style("font-size", "12px")
+        .text("TOTAL");
+
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("dy", "18")
         .style("fill", "#fff")
-        .attr("transform", d => `translate(${arc.centroid(d)})`)
-        .style("font-size", "14px")
-        .style("font-weight", "bold")
-        .style("text-anchor", "middle");
-}
+        .style("font-size", "18px")
+        .style("font-weight", "700")
+        .text(to_real(data.reduce((s, d) => s + d.value, 0)));
 
-// Função para obter as informações do USUARIO - PROVISORIA
-async function get_user_infos() {
-    const res = await new ApiRequest(`funcionarios?mat=${sessionStorage.getItem("mat")}`).send();
-    if (res) {
-        const img = encodeURIComponent(res.img);
-        const path = `${server}/api/files/img/manager/${img}`;
+    const legend = d3.select(graf)
+        .append("div")
+        .style("display", "flex")
+        .style("flex-direction", "column")
+        .style("gap", "8px")
+        .style("margin-left", "20px");
 
-        const person_img = document.getElementById("person");
-        person_img.style.backgroundImage = `url("${path}")`;
+    data.forEach(d => {
+        const item = legend.append("div")
+            .style("display", "flex")
+            .style("align-items", "center")
+            .style("gap", "8px");
 
-        const person_name = document.getElementById("person_name");
-        person_name.textContent = sessionStorage.getItem("display_name");
+        item.append("span")
+            .style("width", "10px")
+            .style("height", "10px")
+            .style("border-radius", "50%")
+            .style("background", color(d.label));
 
-        const person_perm = document.getElementById("person_perm");
-        person_perm.textContent = sessionStorage.getItem("perm");
-
-    }
-}
+        item.append("span")
+            .style("color", "#fff")
+            .style("font-size", "13px")
+            .text(`${d.label} - ${to_real(d.value)}`);
+    });
+    
+    graf.style.display = "flex";
+    graf.style.alignItems = "center";
+    graf.style.justifyContent = "center";
+    graf.style.gap = "25px";
+    graf_div.appendChild(graf)
+};
 
 // Obtem as informações do dashboard e seta as INFOS com DOM
 async function get_infos() {
-    const res = await new InitDashboard().get(sessionStorage.getItem("mat"))
-    const div_goals = document.getElementById("div_goal")
+    const req = await new InitDashboard().get(sessionStorage.getItem("mat")); // Requisição
+    const res = await req.json(); // JSON Final
+    const div_goals = document.getElementById("div_goal");
 
-    if (div_goals) {
-        div_goals.innerHTML = ''
-        div_goals.classList.remove("align-items-center", "justify-content-center")
+    if (req.ok) {
+        // Metas e barras de progresso
+        if (div_goals) {
+            div_goals.innerHTML = ''; // Zera caso haja alguma barra existente
+            div_goals.classList.remove("align-items-center", "justify-content-center"); // Seta o CSS
 
-        const pgmes = create_progress_bar("Vendas Mes", res.real.mes, res.metas.mes)
-        const pgdia = create_progress_bar("Vendas Dia", res.real.dia, res.metas.dia)
-        const pgclients = create_progress_bar("Clientes", res.real.clientes, res.metas.clientes, false, true)
+            // Cria as barras de progresso!
+            const pgmes = create_progress_bar("Vendas Mes", res.real.mes, res.metas.mes);
+            const pgdia = create_progress_bar("Vendas Dia", res.real.dia, res.metas.dia);
+            const pgclients = create_progress_bar("Clientes", res.real.clientes, res.metas.clientes, false, true);
 
-        div_goals.appendChild(pgmes)
-        div_goals.appendChild(pgdia)
-        div_goals.appendChild(pgclients)
-    }
+            const goasl = [pgmes, pgdia, pgclients] // Lista das barras de progresso
+            goasl.forEach(item => { div_goals.appendChild(item); }); // Adição das barras
+        }
 
-    const person_sales = document.getElementById("person_sales")
-    person_sales.textContent = to_real(res.real.func)
+        // Vendas por funcionario (Logado)
+        const person_sales = document.getElementById("person_sales")
+        person_sales.textContent = to_real(res.real.func)
 
-    const ticket_goal = document.getElementById("ticket_goal")
-    ticket_goal.textContent = "Meta - Ticket Médio: " + to_real(res.metas.ticket)
+        // Ticket medio da loja (Meta)
+        const ticket_goal = document.getElementById("ticket_goal")
+        ticket_goal.textContent = "Meta - Ticket Médio: " + to_real(res.metas.ticket)
 
-    const divBtns = document.createElement("div")
-    divBtns.classList.add("d-flex", "gap-2")
+        // Div dos buttons (Venda e OS)
+        const divBtns = document.createElement("div")
+        divBtns.classList.add("d-flex", "gap-2")
 
-    const btn = document.createElement("button")
-    btn.classList.add("btn", "btn-lg", "btn-primary")
-    btn.textContent = "Iniciar Venda."
-    btn.addEventListener("click", function () { change_screen("sales/sales") })
+        // Button de vendas
+        const btn = document.createElement("button")
+        btn.classList.add("btn", "btn-lg", "btn-primary")
+        btn.textContent = "Iniciar Venda."
+        btn.addEventListener("click", function () { change_screen("sales/sales") })
 
-    const btnOrder = document.createElement("button")
-    btnOrder.classList.add("btn", "btn-lg", "btn-outline-primary")
-    btnOrder.textContent = "Ordens de Serviço."
-    btnOrder.addEventListener("click", function () { change_screen("orders/orders") })
+        // Button de Ordem de Serviço
+        const btnOrder = document.createElement("button")
+        btnOrder.classList.add("btn", "btn-lg", "btn-outline-primary")
+        btnOrder.textContent = "Ordens de Serviço."
+        btnOrder.addEventListener("click", function () { change_screen("orders/orders") })
 
-    divBtns.appendChild(btn)
-    divBtns.appendChild(btnOrder)
-    document.getElementById("goals_btns").appendChild(divBtns)
+        // Dom dos buttons
+        divBtns.appendChild(btn)
+        divBtns.appendChild(btnOrder)
+        document.getElementById("goals_btns").appendChild(divBtns)
 
-    create_chart_payments(res.real.pagamentos)
+        // Cria o grafico de pagamentos (por tipo)
+        console.log(res.real.pagamentos);
 
-}
+        create_chart_payments(res.real.pagamentos);
+    };
+};
 
 // Instancia as funções caso esteja na pagina de Relatorios Iniciais
-if(window.location.pathname == "/pages/init_reports.html"){
-    welcome(); get_infos(); get_user_infos(); // GET USER IS PROV.
+if (window.location.pathname == "/pages/init_reports.html") {
+    welcome(); get_infos(); // GET USER IS PROV.
 };

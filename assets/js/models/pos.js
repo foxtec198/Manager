@@ -1,4 +1,5 @@
 import { ApiRequest } from "../utils/request.js"
+import { show_toast } from "../utils/ui.js"
 
 export class PosModel {
     async status (){ // Função para status do caixa
@@ -13,7 +14,7 @@ export class PosModel {
 
     async append(mat, value){ // Função para adicionar valor ao caixa
         const request = new ApiRequest("caixa", "PATCH")
-        request.data = {mat:mat, valor: value}
+        request.data = {mat:parseInt(mat), valor: parseFloat(value)}
         return await request.send()
     }
 
@@ -24,6 +25,8 @@ export class PosModel {
     }
 
     async last_closed() {
-        return await new ApiRequest("caixa/last_closed", "GET").send()
+        const req = await new ApiRequest("caixa/last_closed", "GET").send()
+        const res = await req.json()
+        return req.ok ? res : null
     }
 }

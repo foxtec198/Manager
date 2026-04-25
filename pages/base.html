@@ -18,41 +18,23 @@
     <link rel="stylesheet" href="../assets/css/utils.css">
     <link rel="stylesheet" href="../assets/css/fonts.css">
     <link rel="stylesheet" href="../assets/css/base.css">
-    <style>
-        html,
-        body {
-            height: 100%;
-        }
-
-        #frame_screen {
-            height: 100%;
-        }
-
-        @media (max-width: 500px) {
-            #frame_screen {
-                height: 90%;
-            }
-        }
-    </style>
 </head>
 
 <body data-bs-theme="dark">
     <!-- Adornos -->
-    <div class="flex-adorno mobile-hide" id="adorno" hidden>
+    <!-- <div class="flex-adorno mobile-hide" id="adorno" hidden>
         <img src="../assets/img/gorro.svg" alt="adorno" class="adorno">
-    </div>
+    </div> -->
 
     <!-- Main Section -->
     <section class="d-flex flex-column h-100">
         <!-- Options Desktop -->
         <div class="d-flex flex-row flex-wrap justify-content-between overflow-hidden mobile-hide nv"
             style="min-width: 180px;">
-            <div class="d-flex gap-4 p-2 flex-row align-items-center justify-content-start flex-grow-1 flex-basis">
-                <a href="" onclick="change_screen('init_reports')">
-                    <img data-name="brand" class="logo img-fluid object-fit-contain placeholder">
-                </a>
+            <div class="d-flex gap-2 p-1 flex-row align-items-center justify-content-start flex-grow-1 flex-basis">
+                <a onclick="change_screen('init_reports')" style="cursor: pointer;"><img data-name="brand" class="logo img-fluid object-fit-contain placeholder"></a>
                 <div class="vr"></div>
-                <span class="rounded-pill placeholder neon-text fs-5" data-name="store" style="font-size: 12px;">[STORE NAME]</span>
+                <span class="rounded-pill placeholder neon-text fs-6" data-name="store" style="max-width: 200px;">[STORE NAME]</span>
             </div>
             <div class="d-flex gap-2 fs-5 align-items-center justify-content-center flex-grow-1 flex-basis">
                 <div class="newNav">
