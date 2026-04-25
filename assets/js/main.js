@@ -29,9 +29,10 @@ async function init() {
     // ✅ Autenticado → vai pra logica
     if (isAuthenticated() && !isLoginPage()){
         app.setStore(); // Seta os dados da Loja dinamicamente, como nome e logo
+        app.setUser(); // Seta dados do usuario logado dinamicamente.
         setPosState(); // Seta os dados da Loja dinamicamente, como nome e logo
-        setExpenses();
-
+        setExpenses(); // Seta dinamicamente as despesas
+        
         parent.window.change_screen = change_screen; // Seta a função change screen globalmente
         window.change_screen = change_screen; // Seta a função change screen localmente
     };
