@@ -72,17 +72,24 @@ export async function setPosState(){
         // Confirma se é do estilo troco que será uma div que contem o input troco ou apenas o input
         if(el.dataset.state == "troco"){
             if(res.status && req.ok){
+                el.querySelector("input[id='troco']").removeAttribute("required")
                 el.style.display = 'none' // Esconde o div quando o caixa estiver aberto
             }else{
                 // Itera o elemento para setar o ultimo valor
                 switch(el.nodeName){
                     // Somente o input
-                    case "INPUT": el.value = value_last_closed;
+                    case "INPUT": 
+                        el.setAttribute("required");
+                        el.style.display = "";
+                        el.value = value_last_closed;
                     
                     // O Div com o input dentro
-                    case "DIV": el.querySelector("input[name='troco']").value = value_last_closed;
-                }
-            }
+                    case "DIV": 
+                        const troco = el.querySelector("input[id='troco']");
+                        troco.setAttribute("required");
+                        troco.value = value_last_closed;
+                };
+            };
         };
     });
 };
@@ -213,27 +220,20 @@ window.alter_expense = function alter_expense(select) {
 };
 
 // ============================================================================================ FORMS
-const form_status_pos = document.getElementById("status_caixa") // Formulario de abertura de caixa
-if (form_status_pos) {
-    form_status_pos.addEventListener("submit", async function (e) {
-        e.preventDefault()
-        if(this.btn_status.textContent.includes("Fechar")){
-            const res = await pos.close(this.mat.value)
-            if (res) {
-                show_toast(res)
-                set_badge_pos();
-            }
-            this.reset();
-            set_state();
+const pos_form_status = document.querySelector("#pos_form_status"); // Formulario de abertura de caixa
+if (pos_form_status) {
+    pos_form_status.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        if(pos_form_status.btn_status.textContent.includes("Fechar")){
+            const req = await new PosModel().close(pos_form_status.mat.value);
+            const res = await req.json();
+            if (req.ok) { show_toast(res); setPosState() };
+            pos_form_status.reset();
         }else{
-            const res = await pos.open(this.mat.value, this.troco.value)
-            if (res) {
-                show_toast(res, "info")
-                set_badge_pos();
-            }
-            this.reset()
-            set_state();
-            set_last_value_pos();
+            const req = await new PosModel().open(pos_form_status.mat.value, pos_form_status.troco.value);
+            const res = await req.json();
+            if (req.ok) { show_toast(res, "info"); setPosState() };
+            pos_form_status.reset();
         };
     })
 }
