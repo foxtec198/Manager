@@ -4,7 +4,6 @@ import { create_table } from "../utils/ui.js";
 import { to_real } from "../utils/ui.js";
 
 export function setButtonFoDeleteExpense() {
-    console.log("Iniciando");
     document.querySelectorAll("[data-expense-delete]").forEach(el => {
         el.addEventListener("click", (event) => {
             event.preventDefault(); // Evita reload

@@ -6,7 +6,6 @@ export class InitDashboard {
         return await request.send()
     }
 }
-new InitDashboard().get(sessionStorage.getItem("mat"))
 
 export class PaymentsDashboard {
     async get(filter){

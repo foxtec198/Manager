@@ -1,9 +1,8 @@
 // main.js
-import { change_screen, restore_screen  } from "./utils/ui.js";
-import { App } from "./core/app.js";
+import { change_screen, restore_screen, show_toast  } from "./utils/ui.js";
 import { setPosState } from "./services/pos_service.js";
 import { setExpenses } from "./services/expenses_service.js";
-
+import { App } from "./core/app.js";
 
 const app = new App();
 
@@ -22,6 +21,7 @@ function isAuthenticated () {
 async function init() {
     // 🔴 não autenticado → vai pro login
     if (!isAuthenticated() && !isLoginPage()) {
+        sessionStorage.clear(); // Limpa o historico de sessão
         parent.window.location.href = "/"; // Força o login
         return; // Inibi continuidade no codigo
     };
@@ -39,3 +39,8 @@ async function init() {
 }
 
 window.addEventListener("DOMContentLoaded", () => { restore_screen() }); init();
+const queryString = window.location.search; // Obtém a string de consulta inteira
+const url = new URLSearchParams(queryString); // Cria um objeto URLSearchParams
+const msgToast = url.get("toast") // Obtem a mensagem do toast
+
+isLoginPage() && msgToast ? show_toast(msgToast) : null

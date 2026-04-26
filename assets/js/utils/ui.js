@@ -21,14 +21,19 @@ export function show_toast(msg, type = "info") {
         case "info":
             manager_toast.querySelector("#toast_title").textContent = "Hubbix Manager";
             manager_toast.classList.remove("text-bg-warning", "text-bg-danger");
+            toastBootstrap.show();
+            return;
         case "alert":
             manager_toast.querySelector("#toast_title").textContent = "Hubbix Manager - Alerta!";
             manager_toast.classList.add("text-bg-warning");
+            toastBootstrap.show();
+            return;
         case "danger":
             manager_toast.querySelector("#toast_title").textContent = "Hubbix Manager - Perigo!";
             manager_toast.classList.add("text-bg-danger");
+            toastBootstrap.show();
+            return;
     }
-    toastBootstrap.show();
 }
 
 // Função responsavel por ligar/desligar o carregamento

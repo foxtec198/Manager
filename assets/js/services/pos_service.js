@@ -85,9 +85,10 @@ export async function setPosState(){
                     
                     // O Div com o input dentro
                     case "DIV": 
-                        const troco = el.querySelector("input[id='troco']");
-                        troco.setAttribute("required");
+                        el.style.display = ""   
+                        const troco = el.querySelector("input[id='troco']")
                         troco.value = value_last_closed;
+                        troco.setAttribute("required", true)
                 };
             };
         };
@@ -99,7 +100,6 @@ async function set_mini_dashboard(filter = "week") { // DOM referente ao Mini Da
     const req = await new PaymentsDashboard().get(filter); // Obtém os dados de acordo com o filtro (week, day, month)
     const payments = await req.json(); // JSON Final
     const div_mini_report = document.getElementById("mini_report"); // Div do dashboard
-    console.log(payments);
     
     if(req.ok){ // Confirma se o request foi sucedido
         if (payments.total > 0) { // Confirma se os resultados sao maiores que ZERO
@@ -227,7 +227,7 @@ if (pos_form_status) {
         if(pos_form_status.btn_status.textContent.includes("Fechar")){
             const req = await new PosModel().close(pos_form_status.mat.value);
             const res = await req.json();
-            if (req.ok) { show_toast(res); setPosState() };
+            if (req.ok) { show_toast(res, "info"); setPosState() };
             pos_form_status.reset();
         }else{
             const req = await new PosModel().open(pos_form_status.mat.value, pos_form_status.troco.value);

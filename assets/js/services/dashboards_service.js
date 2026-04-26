@@ -259,8 +259,6 @@ async function get_infos() {
         document.getElementById("goals_btns").appendChild(divBtns)
 
         // Cria o grafico de pagamentos (por tipo)
-        console.log(res.real.pagamentos);
-
         create_chart_payments(res.real.pagamentos);
     };
 };
