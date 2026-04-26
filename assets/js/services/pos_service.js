@@ -241,12 +241,14 @@ if (pos_form_status) {
 const form_add_value = document.getElementById("form_add_value") // Formulario de adição de valor
 if (form_add_value) {
     form_add_value.addEventListener("submit", async function (e) {
-        e.preventDefault();
-        const valor = form_add_value.valor ? form_add_value.valor.value : null;
-        const matricula = form_add_value.matricula ? form_add_value.matricula.value : null;
-        const req = await new PosModel().append(parseInt(matricula), parseFloat(valor)); 
-        const res = await req.json()
-        if(req.ok){ setPosState(); };
+        e.preventDefault(); // Evita reload
+        const matricula = form_add_value.matricula.value; // Obtem a matricula
+        const valor = form_add_value.valor.value // Obtemm o valor do trco
+        const req = await new PosModel().append(parseInt(matricula), parseFloat(valor)); // Requisição 
+        const res = await req.json(); // JSON Final
+        if(req.ok){ setPosState(); show_toast(res)} // Seta o status do caixa
+        else{show_toast(res, "danger")};
+        form_add_value.reset(); // Limpa o formulario
     })
 }
 
@@ -265,7 +267,9 @@ if(form_add_expense) {
         const req = await new ExpenseModel().set(matricula, valor, motivo); // Seta a despesa
         const res = await req.json(); // JSON final
 
-        if(req.ok){ setPosState(); setExpenses(); };
+        if(req.ok){ setPosState(); setExpenses(); show_toast(res.msg);}
+        else{show_toast(res, "danger"); };
+        form_add_expense.reset()
     })
 }
 
