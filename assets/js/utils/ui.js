@@ -1,5 +1,4 @@
 import { img } from "../config/env.js"
-import { setButtonFoDeleteExpense } from "../services/expenses_service.js"
 
 // Função responsavel por mostrar um toast de informação 
 export function show_toast(msg, type = "info") {
@@ -168,6 +167,5 @@ export function create_table(element, data, columns = [], limit = 5) {
 
     grid.render(element);
     grid.updateConfig({ data: data }).forceRender();
-    setButtonFoDeleteExpense();
     return grid;
 };

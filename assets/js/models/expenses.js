@@ -31,7 +31,7 @@ export class ExpenseModel{
 
     // REMOVE UMA DESPESA
     async delete(id) {
-        const request = new ApiRequest(`despesa?id=${id}`, "DELETE")
+        const request = new ApiRequest(`despesas?id=${parseInt(id)}`, "DELETE")
         return await request.send()
     }
 }

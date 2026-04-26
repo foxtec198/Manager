@@ -4,7 +4,7 @@ import { PaymentsDashboard } from "../models/dashboards.js";
 import { PosModel } from "../models/pos.js"
 
 // Services
-import { setExpenses, deleteExpense } from "../services/expenses_service.js"
+import { setExpenses } from "../services/expenses_service.js"
 
 // Utils and More
 import { show_toast, to_real } from "../utils/ui.js";
@@ -227,12 +227,14 @@ if (pos_form_status) {
         if(pos_form_status.btn_status.textContent.includes("Fechar")){
             const req = await new PosModel().close(pos_form_status.mat.value);
             const res = await req.json();
-            if (req.ok) { show_toast(res, "info"); setPosState() };
+            if (req.ok) { show_toast(res, "info"); setPosState() }
+            else{show_toast(res, "danger")};
             pos_form_status.reset();
         }else{
             const req = await new PosModel().open(pos_form_status.mat.value, pos_form_status.troco.value);
             const res = await req.json();
-            if (req.ok) { show_toast(res, "info"); setPosState() };
+            if (req.ok) { show_toast(res, "info"); setPosState() }
+            else{show_toast(res, "danger")};
             pos_form_status.reset();
         };
     })
