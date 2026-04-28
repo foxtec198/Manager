@@ -33,7 +33,7 @@ const pages = [ "pos" ]
 
 // Logica para carregamento
 pages.forEach(page => {
-    // Inibe carregamentos fora da tela de POS sem que seja instancia manualmente
+    // Inibe carregamentos fora da tela definida sem que seja instancia manualmente
     if (window.location.pathname == `/pages/${page}.html`){
         document.querySelectorAll('.card-carousel')
         .forEach(el => new CardCarousel(el));
