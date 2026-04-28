@@ -21,6 +21,12 @@
 </head>
 
 <body data-bs-theme="dark">
+    <!--=============================================================================================
+    =================================================================================================
+    =========================== DEV BY GUILHERME BREVE  =============================================
+    =================================================================================================
+    ==============================================================================================-->
+    
     <!-- Adornos -->
     <!-- <div class="flex-adorno mobile-hide" id="adorno" hidden>
         <img src="../assets/img/gorro.svg" alt="adorno" class="adorno">
@@ -32,33 +38,26 @@
         <div class="d-flex flex-row flex-wrap justify-content-between overflow-hidden mobile-hide nv"
             style="min-width: 180px;">
             <div class="d-flex gap-2 p-1 flex-row align-items-center justify-content-start flex-grow-1 flex-basis">
-                <a onclick="change_screen('init_reports')" style="cursor: pointer;"><img data-name="brand" class="logo img-fluid object-fit-contain placeholder"></a>
+                <a style="cursor: pointer;" data-change-screen="init_reports"><img data-name="brand" class="logo img-fluid object-fit-contain placeholder"></a>
                 <div class="vr"></div>
                 <span class="rounded-pill placeholder neon-text fs-6" data-name="store" style="max-width: 200px;">[STORE NAME]</span>
             </div>
             <div class="d-flex gap-2 fs-5 align-items-center justify-content-center flex-grow-1 flex-basis">
                 <div class="newNav">
-                    <button onclick="change_screen('pos', this)"
-                        class="btnNewNav active menu-item menu-pos">Caixa</button>
-                    <button onclick="change_screen('sales', this)"
-                        class="btnNewNav menu-item menu-sales">Vendas</button>
-                    <button onclick="change_screen('orders', this)"
-                        class="btnNewNav menu-item menu-orders">Ordens</button>
-                    <button onclick="change_screen('clients', this)"
-                        class="btnNewNav menu-item menu-clients">Clientes</button>
-                    <button onclick="change_screen('products', this)"
-                        class="btnNewNav menu-item menu-prods">Estoque</button>
-                    <button onclick="change_screen('parts', this)" class="btnNewNav menu-item menu-parts">Peças</button>
-                    <button onclick="change_screen('reports', this)"
-                        class="btnNewNav menu-item menu-reports">Relatórios</button>
-                    <button onclick="change_screen('suport', this)"
-                        class="btnNewNav menu-item menu-sup">Suporte</button>
+                    <button data-change-screen="pos" class="btnNewNav">Caixa</button>
+                    <button data-change-screen="sales" class="btnNewNav">Vendas</button>
+                    <button data-change-screen="orders" class="btnNewNav">Ordens</button>
+                    <button data-change-screen="clients" class="btnNewNav">Clientes</button>
+                    <button data-change-screen="products" class="btnNewNav">Estoque</button>
+                    <button data-change-screen="parts" class="btnNewNav">Peças</button>
+                    <button data-change-screen="reports" class="btnNewNav">Relatórios</button>
+                    <button data-change-screen="suport" class="btnNewNav">Suporte</button>
                 </div>
                 <div class="newNav text-truncate">
-                    <button onclick="change_screen('config/config', this)" class="btnNewNav menu-item menu-config"><i
+                    <button data-change-screen="config" class="btnNewNav"><i
                             class="bi bi-gear-fill"></i> Configurações</button>
                 </div>
-                <button onclick="logout()" class="btnNewNav btn-outline-red">Sair</button>
+                <button data-btn="logout" class="btnNewNav btn-outline-red">Sair</button>
             </div>
         </div>
 
@@ -69,46 +68,6 @@
                 frameborder="0"></iframe>
         </div>
     </section>
-
-    <!-- Options Mobile -->
-    <div class="navBot mobile">
-        <div class="d-flex mt-1 flex-row justify-content-around g-4">
-            <a class="d-flex flex-column p-1 align-items-center navBot-item menu-caixa"
-                onclick="change_screen('caixa')">
-                <i class="bi bi-box-seam-fill"></i>
-                <p>Caixa</p>
-            </a>
-            <a class="d-flex flex-column p-1 align-items-center navBot-item menu-vendas"
-                onclick="change_screen('vendas')">
-                <i class="bi bi-graph-up-arrow"></i>
-                <p>Vendas</p>
-            </a>
-            <a class="d-flex flex-column p-1 align-items-center navBot-item menu-os" onclick="change_screen('os')">
-                <i class="bi bi-file-earmark-zip-fill"></i>
-                <p>Ordens</p>
-            </a>
-            <a class="d-flex flex-column p-1 align-items-center navBot-item" role="button" data-bs-toggle="dropdown"
-                aria-expanded="false">
-                <i class="bi bi-list"></i>
-                <p>Demais</p>
-            </a>
-            <ul class="dropdown-menu text-bg-dark">
-                <li><button onclick="change_screen('clientes')" class="dropdown-item dp-item menu-clientes"><i
-                            class="bi bi-person-bounding-box"></i> Clientes</a></li>
-                <li><button onclick="change_screen('estoque')" class="dropdown-item dp-item menu-estoque"><i
-                            class="bi bi-archive-fill"></i> Estoque</a></li>
-                <li><button onclick="change_screen('pecas')" class="dropdown-item dp-item menu-pecas"><i
-                            class="bi bi-gear-fill"></i> Peças</a></li>
-                <li><button onclick="change_screen('relatorios')" id="btnMrelatorios"
-                        class="dropdown-item dp-item menu-relatorios"><i class="bi bi-microsoft"></i> Relatórios</a>
-                </li>
-                <hr>
-                <li><button onclick="change_screen('config')"
-                        class="dropdown-item dp-item menu-config">Configurações</a></li>
-                <li><button class="dropdown-item dp-item-exit" onclick="logout()">Sair</button></li>
-            </ul>
-        </div>
-    </div>
 
     <!-- Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 

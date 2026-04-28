@@ -68,14 +68,18 @@ export function to_real(valor) {
 }
 
 // Função para troca de tela
-export function change_screen(screen, el=null) {
-    const others = parent.document.querySelectorAll('.menu-item');
-    others.forEach(element => {
-        element.style.background = null;
-        element.style.color = '#fff';
+export function change_screen(screen, el) {
+    const isButton = el.nodeName === "BUTTON" ? true : false
+    const others = parent.document.querySelectorAll('[data-change-screen]')
+    .forEach(other_element => {
+        const isButton = other_element.nodeName === "BUTTON"
+        if(isButton){
+            other_element.style.background = null;
+            other_element.style.color = '#fff';
+        };
     });
     
-    if (el) {
+    if (el && isButton) {
         el.style.background = "rgba(41, 201, 108, 0.08)";
         el.style.color = '#2ecc71';
         el.style.boxShadow = "inset 0 0 0 1px #2ecc71aa, 0 0 6px #2ecc7190;";
@@ -83,8 +87,8 @@ export function change_screen(screen, el=null) {
     };
 
     const frame = parent.document.getElementById('frame_screen');
-    sessionStorage.setItem('frame', `../pages/${screen}.html`);
     frame.src = `../pages/${screen}.html`;
+    sessionStorage.setItem('frame', `../pages/${screen}.html`);
 }
 
 // Função para restaurar a tela após reload
@@ -101,8 +105,10 @@ export function restore_screen(change_element=true) {
         .split("/")[1]; // Separa somete o pathname correto e necessário
 
         iframe.src = last_frame; // Seta o frame ao Iframe
-        const element = parent.document.querySelector(`.menu-${frameText}`)
-        if (element && change_element) {
+        const element = parent.document.querySelector(`[data-change-screen="${frameText}"]`)
+        const isButton = element.nodeName === "BUTTON" ? true : false
+
+        if (element && isButton && change_element) {
             element.style.background = "rgba(41, 201, 108, 0.08)";
             element.style.color = '#2ecc71';
             element.style.borderRadius = "30px";
@@ -110,6 +116,22 @@ export function restore_screen(change_element=true) {
         };
     };
 };
+
+export function set_buttons(){
+    // Set btns para troca de tela ========================================
+    parent.document.querySelectorAll("[data-change-screen]").forEach(el => {
+        el.addEventListener("click", (e) => {
+            e.preventDefault();
+            const screen = el.dataset.changeScreen
+            change_screen(screen, el)
+        })
+        
+    });
+
+    // Set btns para troca de tela ========================================
+    parent.document.querySelectorAll("[data]")
+}
+set_buttons()
 
 export function create_modal(title, body, center = 'modal-dialog-centered') {
     const modal = document.createElement("div")

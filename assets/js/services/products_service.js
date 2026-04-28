@@ -6,7 +6,7 @@ const model_product = new ProdutctsModel();
 function create_btn_sales(produto) { // Cria os botaos dos produtos de forma estrategica
     const btn_product = document.createElement("button"); // Cria oelemento btn
     // Add o css ao btn
-    btn_product.classList.add( 
+    btn_product.classList.add(
         "rounded-4", "shadow-lg", "produto",
         "p-2", "bg-gray", "overflow-hidden",
         "d-flex", "flex-column", "justify-content-between"
@@ -25,7 +25,7 @@ function create_btn_sales(produto) { // Cria os botaos dos produtos de forma est
     span_dados.textContent = `${to_real(produto.valor)}` // Seta o valor do produto em formato REAL (R$ 0,00)
 
     // Adiciona os labels ao btn
-    btn_product.appendChild(span_nome) 
+    btn_product.appendChild(span_nome)
     btn_product.appendChild(span_dados)
 
     // Seta o evento de clique
@@ -38,11 +38,34 @@ function create_btn_sales(produto) { // Cria os botaos dos produtos de forma est
 }
 
 async function set_products() {
-    const req = await model_product.get("categoria") // Rquisição dos produtos
-    const products = await req.json(); // JSON Fnal
+    const req = await model_product.get_categories() // Rquisição dos produtos por categorias
+    const products_by_categ = await req.json(); // JSON Fnal
+    const card_prods = document.getElementById("produtos")
+    card_prods.classList.add("d-flex", "flex-wrap", "justify-content-start", "align-items-center", "gap-2")
     
     if (req.ok) {
-        console.log(products);
+        for (const categorie in products_by_categ) {
+            const products = products_by_categ[categorie];
+            if (Object.keys(products).length > 0) {
+                const div_categ = document.createElement("div");
+                div_categ.classList.add("d-flex", "w-100", "mt-5", "fs-4", "div_categ");
+
+                const span_categ = document.createElement("span");
+                span_categ.classList.add("text-truncate", "w-100");
+                span_categ.textContent = categorie;
+
+                const div_prod = document.createElement("div");
+                div_prod.classList.add("d-flex", "w-100", "mt-5", "fs-4", "div_categ_prod");
+
+                div_categ.appendChild(span_categ);
+                div_categ.appendChild(div_prod);
+                card_prods.appendChild(div_categ);
+
+                products.forEach(prod => {
+                    card_prods.appendChild(create_btn_sales(prod))
+                });
+            };
+        };
     };
 };
 

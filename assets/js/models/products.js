@@ -7,6 +7,11 @@ export class ProdutctsModel{
         return await req.send()
     };
 
+    async get_categories(){
+        const req = await new ApiRequest('produtos/categorias').send()
+        return req
+    };
+
     async set(){
 
     };
