@@ -125,43 +125,55 @@ export function set_buttons(){
             const screen = el.dataset.changeScreen
             change_screen(screen, el)
         })
-        
+    });
+    
+    document.querySelectorAll("[data-change-screen]").forEach(el => {
+        el.addEventListener("click", (e) => {
+            e.preventDefault();
+            const screen = el.dataset.changeScreen
+            change_screen(screen, el)
+        })
     });
 
     // Set btns para troca de tela ========================================
     parent.document.querySelectorAll("[data]")
 }
-set_buttons()
 
 export function create_modal(title, body, center = 'modal-dialog-centered') {
-    const modal = document.createElement("div")
-    modal.classList.add("modal", "fade")
-    modal.tabIndex = "-1"
-    modal.ariaHidden = true
+    const modal = document.createElement("div");
+    modal.classList.add("modal", "fade");
+    modal.ariaHidden = true;
+    modal.tabIndex = "-1";
+    modal.style.height = "100%"
+    modal.style.width = "100%"
 
-    const modal_dialog = document.createElement("div")
-    modal_dialog.classList.add("modal-dialog",)
-    if (center) { modal_dialog.classList.add("modal-dialog-centered") }
+    const modal_dialog = document.createElement("div");
+    modal_dialog.classList.add("modal-dialog");
+    if (center) { modal_dialog.classList.add("modal-dialog-centered") };
 
-    const modal_content = document.createElement("div")
-    modal_content.classList.add("modal-content")
+    const modal_content = document.createElement("div");
+    modal_content.classList.add("modal-content");
 
     if (title) {
-        const modal_header = document.createElement("div")
-        modal_header.classList.add("modal-header")
-        modal_header.appendChild(title)
-        modal_content.appendChild(modal_header)
-    }
+        const modal_header = document.createElement("div");
+        modal_header.classList.add("modal-header");
+        modal_header.appendChild(title);
+        modal_content.appendChild(modal_header);
+    };
 
-    const modal_body = document.createElement("div")
-    modal_body.classList.add("modal-body", "p-5")
-    modal_body.appendChild(body)
-    modal_content.appendChild(modal_body)
+    const modal_body = document.createElement("div");
+    modal_body.classList.add("modal-body", "p-5");
+    modal_body.appendChild(body);
+    modal_content.appendChild(modal_body);
 
-    modal.appendChild(modal_dialog)
-    modal_dialog.appendChild(modal_content)
+    modal.appendChild(modal_dialog);
+    modal_dialog.appendChild(modal_content);
 
-    return new bootstrap.Modal(modal, { 'show': true, 'backdrop': 'static' })
+    
+    const instance = new bootstrap.Modal(modal, { 'show': true, 'backdrop': false });
+    parent.document.body.appendChild(modal);
+
+    return instance 
 };
 
 export function create_table(element, data, columns = [], limit = 5) {
