@@ -203,3 +203,24 @@ export function create_table(element, data, columns = [], limit = 5) {
     grid.updateConfig({ data: data }).forceRender();
     return grid;
 };
+
+export function format_number(n){
+    return n.replaceAll(",", "")
+}
+
+// INPUTS MASKS
+$(document).ready(function () {
+    $(".tel-mask").inputmask("(99) 99999-9999");
+});
+
+$(document).ready(function () {
+    $(".email-mask").inputmask("email");
+});
+
+$(document).ready(function () {
+    $(".money-mask").inputmask("currency");
+});
+
+$(document).ready(function () {
+    $(".cpf-mask").inputmask("999.999.999-99");
+});

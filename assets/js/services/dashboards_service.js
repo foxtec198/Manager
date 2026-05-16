@@ -1,6 +1,6 @@
 import { InitDashboard } from "../models/dashboards.js";
 import { capitalize, to_real } from "../utils/ui.js";
-import { primary, server } from "../config/env.js";
+import { server } from "../config/env.js";
 import { ApiRequest } from "../utils/request.js";
 
 // Função responsavel por dar as boas vindas ao usuario
@@ -103,7 +103,8 @@ function create_chart_payments(payments) {
     // Cores
     const color = d3.scaleOrdinal()
         .domain(data.map(d => d.label))
-        .range(["#4EC98E", "#63EE88", "#4aba77", "#58956B"]); // Cores dos graficos
+        // Cores do graficos
+        .range(["#4EC98E", "#63EE88", "#4aba77", "#58956B"]); 
 
     // Criar SVG
     const svg = d3.select(graf)
@@ -132,7 +133,7 @@ function create_chart_payments(payments) {
         .join("path")
         .attr("d", arc)
         .attr("fill", d => color(d.data.label))
-        .attr("stroke", primary)
+        .attr("stroke", d => color(d.data.label))
         .style("stroke-width", "2px")
         .style("opacity", 0.9)
         .on("mouseover", function (event, d) {

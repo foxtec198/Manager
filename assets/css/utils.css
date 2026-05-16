@@ -1,22 +1,22 @@
 :root {
+    /* Cores principais (ALTERAVEIS) */
     --primary: #5E8B60;
     --secondary: #3a5a40;
     --tertiary: #2B3035;
+    
+    /* Texto (ALTERAVEL) */
+    --primary-foreground: #fff;
 
     --cinza_escuro: #282729;
     --cinza_claro: #2B3035;
     
-    --primary-foreground: #fff;
     --blue: #023047;
-
-    --violet: #8338ec;
-
+    --violet: #f72585;
     --orange: #fb8500;
+    --brow: #603808;
 
-    --brow: #bc6c25;
-
-    --red: #c1121f;
-    --red2: rgb(202, 49, 60);
+    --dark-red: #c1121f;
+    --red: rgb(202, 49, 60);
 }
 
 .card-carousel {
@@ -98,14 +98,14 @@
 }
 
 .bg-red {
-    background: var(--red) !important;
+    background: var(--dark-red) !important;
     color: #fff !important;
 }
 
 .bg-outline-red {
     background: none !important;
-    border: 3px solid var(--red) !important;
-    color: var(--red) !important;
+    border: 3px solid var(--dark-red) !important;
+    color: var(--dark-red) !important;
 }
 
 /* BUTTONS */
@@ -131,25 +131,25 @@
 }
 
 .btn-red {
-    background-color: var(--red) !important;
+    background-color: var(--dark-red) !important;
     border: none !important;
     border-radius: 30px;
     color: #fff !important;
 }
 
 .btn-red:hover {
-    background-color: var(--red) !important;
+    background-color: var(--dark-red) !important;
 }
 
 .btn-outline-red {
     background-color: none;
-    border: 3px solid var(--red) !important;
+    border: 3px solid var(--dark-red) !important;
     border-radius: 30px;
-    color: var(--red) !important;
+    color: var(--dark-red) !important;
 }
 
 .btn-outline-red:hover {
-    background-color: var(--red2) !important;
+    background-color: var(--red) !important;
     color: #fff !important;
 }
 
@@ -172,5 +172,5 @@
 }
 
 .text-red {
-    color: var(--red) !important;
+    color: var(--dark-red) !important;
 }

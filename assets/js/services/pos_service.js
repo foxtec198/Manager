@@ -7,7 +7,7 @@ import { PosModel } from "../models/pos.js"
 import { setExpenses } from "../services/expenses_service.js"
 
 // Utils and More
-import { show_toast, to_real } from "../utils/ui.js";
+import { show_toast, to_real, format_number } from "../utils/ui.js";
 import { icon_rocket, icon_graph_down, icon_graph_up } from "../utils/icons.js";
 
 // Funcao responsavel por setar o estado do caixa
@@ -225,13 +225,15 @@ if (pos_form_status) {
     pos_form_status.addEventListener("submit", async function (e) {
         e.preventDefault();
         if(pos_form_status.btn_status.textContent.includes("Fechar")){
+
             const req = await new PosModel().close(pos_form_status.mat.value);
             const res = await req.json();
             if (req.ok) { show_toast(res, "info"); setPosState() }
             else{show_toast(res, "danger")};
             pos_form_status.reset();
         }else{
-            const req = await new PosModel().open(pos_form_status.mat.value, pos_form_status.troco.value);
+            const value = parseFloat(format_number(pos_form_status.troco.value))
+            const req = await new PosModel().open(pos_form_status.mat.value, value);
             const res = await req.json();
             if (req.ok) { show_toast(res, "info"); setPosState() }
             else{show_toast(res, "danger")};
@@ -245,7 +247,7 @@ if (form_add_value) {
     form_add_value.addEventListener("submit", async function (e) {
         e.preventDefault(); // Evita reload
         const matricula = form_add_value.matricula.value; // Obtem a matricula
-        const valor = form_add_value.valor.value // Obtemm o valor do trco
+        const valor = format_number(form_add_value.valor.value) // Obtemm o valor do trco
         const req = await new PosModel().append(parseInt(matricula), parseFloat(valor)); // Requisição 
         const res = await req.json(); // JSON Final
         if(req.ok){ setPosState(); show_toast(res)} // Seta o status do caixa
@@ -259,7 +261,7 @@ if(form_add_expense) {
     form_add_expense.addEventListener("submit", async (e) => {
         e.preventDefault();
         const matricula = form_add_expense.matricula.value; // Matricula do responsavel
-        const valor = form_add_expense.valor.value; // Valor da despesa/sangria
+        const valor = format_number(form_add_expense.valor.value); // Valor da despesa/sangria
 
         // Seta o motivo ou a sangria
         const motivo = form_add_expense.motivo.value != 'Sangria' 
