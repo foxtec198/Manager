@@ -208,6 +208,13 @@ export function format_number(n){
     return n.replaceAll(",", "")
 }
 
+export function word_normalize(str) {
+    return str
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+}
+
 // INPUTS MASKS
 $(document).ready(function () {
     $(".tel-mask").inputmask("(99) 99999-9999");

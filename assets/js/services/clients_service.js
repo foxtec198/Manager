@@ -1,9 +1,10 @@
 import { ClientModel } from "../models/clients.js"
+import { word_normalize } from "../utils/ui.js";
 
 const client_model = new ClientModel();
 
-document.querySelectorAll(".list-clients")
-.forEach(async(el) => {
+// Seta lista de clientes
+document.querySelectorAll(".list-clients").forEach(async(el) => {
     const isClientArea = el.dataset.set == "clients" // 2FA for clients
     const req = await client_model.get() // Obtem os clientes
     const res = await req.json(); // JSON Final
@@ -13,6 +14,7 @@ document.querySelectorAll(".list-clients")
         res.forEach(client => {
             const li_client = document.createElement("li");
             li_client.classList.add("list-group-item", "list-group-item-hover");
+            li_client.dataset.nameClient = `${client.nome} ${client.cpf}`
 
             const div_dados = document.createElement("div");
             div_dados.classList.add("d-flex", "justify-content-between", "align-items-center");
@@ -53,3 +55,27 @@ document.querySelectorAll(".list-clients")
         });
     };  
 });
+
+// Seta busca de clientes (Dinamico)
+document.querySelectorAll("[data-search='clients']").forEach(el => {
+    el.addEventListener("input", () => {
+        document.querySelectorAll("[data-name-client]").forEach(client => {
+            const search = word_normalize(el.value)
+                .toLowerCase()
+                .trim()
+                .split(' ');
+
+            const name = word_normalize(client.dataset.nameClient)
+                .toLowerCase();
+
+            const words_name = name
+                .split(' ');
+
+            const finded = search.every(busca =>
+                words_name.some(p => p.startsWith(busca))
+            );
+
+            client.style.display = finded ? "" : "none"
+        })
+    })
+})
