@@ -2,6 +2,15 @@
 import { change_screen, restore_screen, show_toast, set_buttons } from "./utils/ui.js";
 import { setPosState } from "./services/pos_service.js";
 import { setExpenses } from "./services/expenses_service.js";
+import { setCategoryTable } from "./services/categories_service.js";
+import { setBrandTable } from "./services/brands_service.js";
+import { setProviderTable } from "./services/providers_service.js";
+import { setEmployeeTable } from "./services/employees_service.js";
+import { setOrderTable } from "./services/orders_service.js";
+import { setInvoiceTable } from "./services/invoices_service.js";
+import { setReleaseTable } from "./services/releases_service.js";
+import { setPartsTable } from "./services/parts_service.js";
+import { loadConfig } from "./services/config_service.js";
 import { App } from "./core/app.js";
 
 const app = new App();
