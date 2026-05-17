@@ -5,3 +5,4 @@ export const icon_rocket = "<i class='bi bi-rocket-takeoff-fill'></i>"
 export const icon_graph_up = '<i class="bi bi-graph-up-arrow"></i>'
 export const icon_graph_down = '<i class="bi bi-graph-down-arrow"></i>'
 export const icon_engine = '<i class="bi bi-engine"></i>'
+export const icon_edit = '<i class="bi bi-pencil-square"></i>'

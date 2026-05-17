@@ -32,12 +32,14 @@ document.querySelectorAll(".list-clients").forEach(async(el) => {
             btn.textContent = "+";
             btn.addEventListener("click", function() {
                 const id_client = client.id;
+                const div = document.createElement("div"); // Cria DIVID
                 
-                document.querySelectorAll("[data-display='client']")
-                .forEach(el => el.textContent = client.nome);
-
-                document.querySelectorAll("[data-set='form-data-client']")
-                .forEach(form =>{
+                document.querySelectorAll("[data-client-id]").forEach(el => el.remove()); // Remove IDS existentes
+                div.dataset.clientId = id_client; // Seta o data do ID
+                document.body.appendChild(div); // Insere o div
+                
+                document.querySelectorAll("[data-display='client']").forEach(el => el.textContent = client.nome);
+                document.querySelectorAll("[data-set='form-data-client']").forEach(form => {
                     form.name.value = client.nome
                     form.cpf.value = client.cpf
                     form.obs.value = client.obs == null || client.obs == '' 

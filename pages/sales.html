@@ -53,9 +53,9 @@
 
             <!-- INIT FOOTER WITH TOTAL -->
             <div class="d-flex flex-column align-items-end">
-                <span class="fs-5 flex-grow-1 text-end text-primary" id="subtotal">Sub-Total: R$ 0,00</span>
-                <span class="fs-5 flex-grow-1 text-end text-red" id="desconto">Desconto: R$ 0,00</span>
-                <span class="fs-5 flex-grow-1 text-end" id="total_prod">Total: R$ 0,00</span>
+                <span class="fs-5 flex-grow-1 text-end text-primary" data-display="subtotal">Sub-Total: R$ 0,00</span>
+                <span class="fs-5 flex-grow-1 text-end text-red" data-display="discount">Desconto: R$ 0,00</span>
+                <span class="fs-5 flex-grow-1 text-end" data-display="total">Total: R$ 0,00</span>
             </div>
             <!-- END FOOTER WITH TOTAL -->
         </div>
@@ -190,9 +190,9 @@
                             
                             <!-- INIT TOTALS -->
                             <div class="d-flex justify-content-between gap-4 fs-5">
-                                <span id="subtotal_label_pay">Sub-Total: R$ 0.00</span>
-                                <span id="discount_label_pay">Desconto: R$ 0.00</span>
-                                <span id="total_label_pay">Valor Total: R$ 0.00</span>
+                                <span id="subtotal_label_pay" data-display="subtotal">Sub-Total: R$ 0.00</span>
+                                <span id="discount_label_pay" data-display="discount">Desconto: R$ 0.00</span>
+                                <span id="total_label_pay" data-display="total">Valor Total: R$ 0.00</span>
                             </div>
                             <!-- END TOTALS -->
 
@@ -242,7 +242,7 @@
                                     <button data-key="4" class="btn bg-primary p-5 rounded-5 fs-5">4</button>
                                     <button data-key="5" class="btn bg-primary p-5 rounded-5 fs-5">5</button>
                                     <button data-key="6" class="btn bg-primary p-5 rounded-5 fs-5">6</button>
-                                    <button data-key="." class="btn bg-primary p-5 rounded-5 fs-5">.</button>
+                                    <button data-key="," class="btn bg-primary p-5 rounded-5 fs-5">,</button>
                                     <button data-key="clear" class="btn bg-primary p-5 rounded-5 fs-5">Limpar</button>
                                 </div>
                                 <div class="d-flex gap-2 align-items-center">

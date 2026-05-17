@@ -12,15 +12,20 @@ export class ProdutctsModel{
         return req
     };
 
-    async set(){
-
+    async set(data){
+        const req = new ApiRequest("produtos", "POST")
+        req.data = data
+        return await req.send()
     };
 
-    async update(){
-
+    async update(id, data){
+        const req = new ApiRequest("produtos", "PATCH")
+        req.data = { id, ...data }
+        return await req.send()
     };
 
-    async delete(){
-
+    async delete(id){
+        const req = new ApiRequest(`produtos?id=${id}`, "DELETE")
+        return await req.send()
     };
 };

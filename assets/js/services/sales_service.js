@@ -1,17 +1,18 @@
 import { cart } from "../config/env.js"; 
 import { show_toast, create_modal } from "../utils/ui.js";
-import { to_real } from "../utils/ui.js";
+import { to_real, format_number } from "../utils/ui.js";
 import { icon_trash } from "../utils/icons.js"
+import { SalesModel } from "../models/sales.js"
 
 let activeInput; // Input para o KEYBOARD
-let id_client; // ID Client
 let subtotal = 0 // Valor bruto
 let desconto = 0; // Desconto se aplicavel
 let total = 0; // Valor liquido
-const pago = { "DINHEIRO": 0, "DEBITO": 0, "CREDITO": 0, "PIX": 0 } // Valor já pago (Não funciona para o INTERNAL)
 let valor_pago = 0; // Total pago
-let faltante = 0;
-parent.window.pago = pago
+let faltante = 0; // Valor Faltante (Pagamento Divido apenas)
+const pago = { "DINHEIRO": 0, "DEBITO": 0, "CREDITO": 0, "PIX": 0 } // Valor já pago (Não funciona para o INTERNAL)
+parent.window.pago = pago // Pay Globalize 
+const sale_model = new SalesModel() // Modelo da Venda
 
 export function create_prod_table(produto) { // Cria a tabela de produtos
     const frame_cart = document.getElementById("frame_cart"); // Obtem o frame do Carrinho
@@ -57,26 +58,24 @@ export function create_prod_table(produto) { // Cria a tabela de produtos
 };
 
 export function add_row_prod_table(produto, tb = null) { // Adiciona um produto a tabela acima
-    const subtotal_label = document.getElementById("subtotal") // Label de Subtotal
-    const total_prod = document.getElementById("total_prod") // Label do Total
     const tbody = tb ? tb : document.getElementById("table_prod_body") // Table Body(TBODY)
 
     // Confirma se o produto já está no cart
-    if (cart[produto.nome]) { // Caso esteja 
-        cart[produto.nome] ? cart[produto.nome]++ : cart[produto.nome] = 1
+    if (cart[produto.id]) { // Caso esteja 
+        cart[produto.id] ? cart[produto.id]++ : cart[produto.id] = 1
 
         const tr = document.getElementById(`tr_${produto.nome.toLowerCase().trim()}`)
 
         const td_quantidade = tr.querySelector(".td_quantidade")
-        td_quantidade.textContent = cart[produto.nome]
+        td_quantidade.textContent = cart[produto.id]
         td_quantidade.classList.add("td_quantidade")
 
         const td_valor = tr.querySelector(".td_valor")
-        td_valor.textContent = to_real(produto.valor * cart[produto.nome])
+        td_valor.textContent = to_real(produto.valor * cart[produto.id])
         td_valor.classList.add("td_valor")
 
     } else { // Caso contrário
-        cart[produto.nome] ? cart[produto.nome]++ : cart[produto.nome] = 1
+        cart[produto.id] ? cart[produto.id]++ : cart[produto.id] = 1
         const tr = document.createElement("tr") // Table row
         tr.id = `tr_${produto.nome.toLowerCase().trim()}`
         tr.addEventListener("click", () => {
@@ -92,7 +91,7 @@ export function add_row_prod_table(produto, tb = null) { // Adiciona um produto 
         td_valor.classList.add("td_valor")
 
         const td_quantidade = document.createElement("td")
-        td_quantidade.textContent = cart[produto.nome]
+        td_quantidade.textContent = cart[produto.id]
         td_quantidade.classList.add("td_quantidade")
 
         const td_acao = document.createElement("td")
@@ -100,42 +99,41 @@ export function add_row_prod_table(produto, tb = null) { // Adiciona um produto 
         btn_rmv.classList.add("btn", "btn-sm", "btn-danger")
         btn_rmv.innerHTML = icon_trash
         btn_rmv.addEventListener("click", () => {
-            if (confirm("Limpar linha?")) {
-                total -= parseFloat(produto.valor) * parseFloat(cart[produto.nome]);
-                subtotal -= parseFloat(produto.valor) * parseFloat(cart[produto.nome]);
-
-                total_prod.textContent = "Total: " + to_real(total);
-                subtotal_label.textContent = "Sub-Total: " + to_real(subtotal);
+            if (confirm("Deseja limpar esta linha inteira?")) {
+                total -= parseFloat(produto.valor) * parseFloat(cart[produto.id]);
+                subtotal -= parseFloat(produto.valor) * parseFloat(cart[produto.id]);
+                atualizar_valores();
 
                 tbody.removeChild(tr);
-                delete cart[produto.nome];
-
+                delete cart[produto.id];
                 if (Object.keys(cart) >= 0) {
-                    const frame_cart = document.getElementById("frame_cart")
+                    const frame_cart = document.getElementById("frame_cart");
                     frame_cart.innerHTML = '';
-                    frame_cart.classList.add("bi", "bi-basket-fill", "display-1", "text-center")
-                    frame_cart.classList.remove("d-flex", "align-items-start", "h-100")
-                    frame_cart.style.opacity = "0.2"
-                }
+                    frame_cart.classList.add("bi", "bi-basket-fill", "display-1", "text-center");
+                    frame_cart.classList.remove("d-flex", "align-items-start", "h-100");
+                    frame_cart.style.opacity = "0.2";
+                };
+            };
+        });
+        td_acao.appendChild(btn_rmv);
 
-            }
-        })
-        td_acao.appendChild(btn_rmv)
-
-        tr.appendChild(td_nome)
-        tr.appendChild(td_quantidade)
-        tr.appendChild(td_valor)
-        tr.appendChild(td_acao)
-        tbody.appendChild(tr)
+        tr.appendChild(td_nome);
+        tr.appendChild(td_quantidade);
+        tr.appendChild(td_valor);
+        tr.appendChild(td_acao);
+        tbody.appendChild(tr);
     }
     subtotal += produto.valor
     total += produto.valor
-    subtotal_label.textContent = "Sub-Total: " + to_real(subtotal);
-    total_prod.textContent = "Total: " + to_real(subtotal - desconto);
-    document.getElementById("subtotal_label_pay").textContent = "Sub-Total: " + to_real(subtotal);
-    document.getElementById("discount_label_pay").textContent = "Desconto: " + to_real(desconto);
-    document.getElementById("total_label_pay").textContent = "Total: " + to_real(subtotal - desconto);
+    atualizar_valores();
+    
 };
+
+function atualizar_valores(){
+    document.querySelectorAll("[data-display='subtotal']").forEach(el => el.textContent = `Desconto: ${to_real(subtotal)}`)
+    document.querySelectorAll("[data-display='discount']").forEach(el => el.textContent = `Desconto: ${to_real(desconto)}`)
+    document.querySelectorAll("[data-display='total']").forEach(el => el.textContent = `Total: ${to_real(subtotal - desconto)}`)
+}
 
 export function create_btn_sales(produto) { // Cria os botaos dos produtos de forma estrategica
     const btn_product = document.createElement("button"); // Cria oelemento btn
@@ -180,14 +178,14 @@ document.querySelectorAll('#virtual_keyboard button').forEach(btn => { // Evento
         const key = btn.dataset.key;
 
         if (key === 'clear') {
-        activeInput.value = '';
-        return;
+            activeInput.value = '';
+            return;
         }
 
         if (key === 'back') {
-        activeInput.value =
-            activeInput.value.slice(0, -1);
-        return;
+            activeInput.value =
+                activeInput.value.slice(0, -1);
+            return;
         }
 
         activeInput.value += key;
@@ -232,20 +230,19 @@ document.querySelectorAll("#pay_btns button").forEach(main_btn => { // Evento pa
         const modal = create_modal(null, modal_body);
         modal.show();
         
-        btn_yes.addEventListener("click", async() => {
-            pago[payment_method.toUpperCase()] += valor_final
-            valor_pago = 0
+        btn_yes.addEventListener("click", async(e) => {
+            e.preventDefault();
+            pago[payment_method.toUpperCase()] += valor_final;
+            valor_pago = 0;
             for(let method in pago){ valor_pago += parseFloat(pago[method]) };
-            console.log(valor_pago);
             
-            faltante = total - valor_pago
-            amount_paid.textContent = "Valor Pago: " +  to_real(valor_final)
-            missing_to_pay.textContent = "Falta Pagar: " +  to_real(faltante)
-            modal.hide(),
-            document.getElementById("payment_value").value = ''
+            faltante = total - valor_pago;
+            amount_paid.textContent = "Valor Pago: " +  to_real(valor_final);
+            missing_to_pay.textContent = "Falta Pagar: " +  to_real(faltante);
+            document.getElementById("payment_value").value = '';
+            modal.hide();
             
             if(faltante <= 0){
-                let isModalClose;
                 if(faltante < 0){
                     const div = document.createElement("div")
                     div.classList.add("d-flex", "flex-column", "gap-4", "justify-content-center")
@@ -263,7 +260,6 @@ document.querySelectorAll("#pay_btns button").forEach(main_btn => { // Evento pa
                     
                     const modal_troco = create_modal(null, div);
                     modal_troco.show()
-                    isModalClose = modal_troco.style.display ? true : false
                 };
 
                 const sp = document.createElement("span")
@@ -271,9 +267,14 @@ document.querySelectorAll("#pay_btns button").forEach(main_btn => { // Evento pa
 
                 const modal_payment = create_modal(null, sp);
                 modal_payment.show()
-                // const res = await send_sale(cart, id_client, desconto)
-                const res = true
-                if(res){modal_payment.hide(); show_toast('Venda com sucesso')};
+
+                const DIVID = document.querySelector("[data-client-id]")
+
+                const client_id = DIVID ? DIVID.dataset.clientId : 0;
+                const data = { valor: subtotal, client_id: client_id, desconto: desconto, cart: cart,pagamento: main_btn.textContent.toUpperCase(), mat: sessionStorage.getItem("mat") };
+                const req = await sale_model.set(data);
+                const res = await req.json();
+                if(req.ok){ location.reload() };
             };
         });
     });
@@ -299,6 +300,13 @@ document.querySelectorAll(".btn-categ").forEach(el => { // Evento para click do 
 document.querySelectorAll("input[id='search']").forEach(el => {
     el.addEventListener("input", (e) => {
         e.preventDefault();
-        console.log(el.value);
     })
 });
+
+const form_discount = document.querySelector("#form_discount_pay")
+form_discount.addEventListener("submit", (e)=>{
+    e.preventDefault();
+    desconto = parseFloat(form_discount.discount_pay.value);
+    total -= desconto
+    atualizar_valores();
+})

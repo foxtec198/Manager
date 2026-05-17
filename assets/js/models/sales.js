@@ -6,15 +6,19 @@ export class SalesModel{
         return req
     };
 
-    async set(){
-
+    async set(data){
+        const req = new ApiRequest("vendas", "POST", data)
+        return await req.send()
     };
 
-    async update(){
-
+    async update(id, data){
+        const req = new ApiRequest("vendas", "PATCH")
+        req.data = { id, ...data }
+        return await req.send()
     };
 
-    async delete(){
-
+    async delete(id){
+        const req = new ApiRequest(`vendas?id=${id}`, "DELETE")
+        return await req.send()
     };
 };
