@@ -4,7 +4,8 @@ import { to_real, format_number } from "../utils/ui.js";
 import { icon_trash } from "../utils/icons.js"
 import { SalesModel } from "../models/sales.js"
 
-let activeInput; // Input para o KEYBOARD
+let activeInput = document.querySelector("#mat_pay"); // Input para o KEYBOARD
+activeInput.style.border = "2px solid var(--primary)"; // Seta borda primeira instancia
 let subtotal = 0 // Valor bruto
 let desconto = 0; // Desconto se aplicavel
 let total = 0; // Valor liquido
