@@ -19,7 +19,7 @@ export class App {
                         el.textContent = res.loja.nome_loja;
     
                     // Brand será setado a logo
-                    case "brand": el.src = `${server}/api/files/img/manager/${encodeURIComponent(res.logo)}`;
+                    case "brand": el.src = `${server}/api/files/img/manager/${encodeURIComponent(res.config.logo)}`;
                 }
             });
         }
