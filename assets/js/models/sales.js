@@ -1,9 +1,13 @@
 import { ApiRequest } from '../utils/request.js'
 
 export class SalesModel{
-    async get(){ // Obter todas as vendas
-        const req = await new ApiRequest("vendas")
-        return req
+    async get(filter){ // Obter todas as vendas
+        if(filter && typeof(filter) == 'object'){
+            const key = Object.keys(filter)[0];
+            const value = Object.values(filter)[0];
+            return await new ApiRequest(`vendas?${key}=${value}`).send();
+        };
+        return await new ApiRequest("vendas").send();
     };
 
     async set(data){
