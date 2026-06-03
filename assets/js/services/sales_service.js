@@ -1,6 +1,5 @@
-import { cart } from "../config/env.js"; 
-import { show_toast, create_modal } from "../utils/ui.js";
-import { to_real, format_number } from "../utils/ui.js";
+import { cart, server } from "../config/env.js"; 
+import { show_toast, create_modal, to_real, format_number, create_table } from "../utils/ui.js";
 import { icon_trash } from "../utils/icons.js"
 import { SalesModel } from "../models/sales.js"
 
@@ -59,24 +58,25 @@ export function create_prod_table(produto) { // Cria a tabela de produtos
 };
 
 export function add_row_prod_table(produto, tb = null) { // Adiciona um produto a tabela acima
+    const id = produto.id
     const tbody = tb ? tb : document.getElementById("table_prod_body") // Table Body(TBODY)
 
     // Confirma se o produto já está no cart
-    if (cart[produto.id]) { // Caso esteja 
-        cart[produto.id] ? cart[produto.id]++ : cart[produto.id] = 1
+    if (cart[id]) { // Caso esteja 
+        cart[id] ? cart[id]++ : cart[id] = 1
 
         const tr = document.getElementById(`tr_${produto.nome.toLowerCase().trim()}`)
 
         const td_quantidade = tr.querySelector(".td_quantidade")
-        td_quantidade.textContent = cart[produto.id]
+        td_quantidade.textContent = cart[id]
         td_quantidade.classList.add("td_quantidade")
 
         const td_valor = tr.querySelector(".td_valor")
-        td_valor.textContent = to_real(produto.valor * cart[produto.id])
+        td_valor.textContent = to_real(produto.valor * cart[id])
         td_valor.classList.add("td_valor")
 
     } else { // Caso contrário
-        cart[produto.id] ? cart[produto.id]++ : cart[produto.id] = 1
+        cart[id] ? cart[id]++ : cart[id] = 1
         const tr = document.createElement("tr") // Table row
         tr.id = `tr_${produto.nome.toLowerCase().trim()}`
         tr.addEventListener("click", () => {
@@ -92,7 +92,7 @@ export function add_row_prod_table(produto, tb = null) { // Adiciona um produto 
         td_valor.classList.add("td_valor")
 
         const td_quantidade = document.createElement("td")
-        td_quantidade.textContent = cart[produto.id]
+        td_quantidade.textContent = cart[id]
         td_quantidade.classList.add("td_quantidade")
 
         const td_acao = document.createElement("td")
@@ -101,13 +101,12 @@ export function add_row_prod_table(produto, tb = null) { // Adiciona um produto 
         btn_rmv.innerHTML = icon_trash
         btn_rmv.addEventListener("click", () => {
             if (confirm("Deseja limpar esta linha inteira?")) {
-                total -= parseFloat(produto.valor) * parseFloat(cart[produto.id]);
-                subtotal -= parseFloat(produto.valor) * parseFloat(cart[produto.id]);
+                total -= parseFloat(produto.valor) * parseFloat(cart[id]);
+                subtotal -= parseFloat(produto.valor) * parseFloat(cart[id]);
                 atualizar_valores();
-
                 tbody.removeChild(tr);
-                delete cart[produto.id];
-                if (Object.keys(cart) >= 0) {
+                delete cart[id];
+                if (Object.keys(cart).length <= 0) {
                     const frame_cart = document.getElementById("frame_cart");
                     frame_cart.innerHTML = '';
                     frame_cart.classList.add("bi", "bi-basket-fill", "display-1", "text-center");
@@ -131,10 +130,10 @@ export function add_row_prod_table(produto, tb = null) { // Adiciona um produto 
 };
 
 function atualizar_valores(){
-    document.querySelectorAll("[data-display='subtotal']").forEach(el => el.textContent = `Desconto: ${to_real(subtotal)}`)
-    document.querySelectorAll("[data-display='discount']").forEach(el => el.textContent = `Desconto: ${to_real(desconto)}`)
-    document.querySelectorAll("[data-display='total']").forEach(el => el.textContent = `Total: ${to_real(subtotal - desconto)}`)
-}
+    document.querySelectorAll("[data-display='subtotal']").forEach(el => el.textContent = `Sub-Total: ${to_real(subtotal)}`);
+    document.querySelectorAll("[data-display='discount']").forEach(el => el.textContent = `Desconto: ${to_real(desconto)}`);
+    document.querySelectorAll("[data-display='total']").forEach(el => el.textContent = `Total: ${to_real(subtotal - desconto)}`);
+};
 
 export function create_btn_sales(produto) { // Cria os botaos dos produtos de forma estrategica
     const btn_product = document.createElement("button"); // Cria oelemento btn
@@ -304,10 +303,71 @@ document.querySelectorAll("input[id='search']").forEach(el => {
     })
 });
 
+document.querySelectorAll("[data-api='sales']").forEach(async el => {
+    const month = new Date().toLocaleDateString("pt-br", {'month': 'numeric'});
+    const req = await sale_model.get({"month": month});
+    const res = await req.json();
+    
+    if(req.ok){
+        const columns = [
+            "Nome", "Atendente", "Data",
+            "Pagamento", "Tipo", "Valor", "Ações"
+        ]
+        const data = res ? res.map(release => {
+            return [
+                release.nome,
+                gridjs.html(`<img width="40" height="40" class="rounded-circle" src="${server}/api/files/img/manager/${encodeURI(release.photo)}" /> <span class="ms-2">${release.atendente}</span>`),
+                new Date(release.data).toLocaleDateString("pt-br"),
+                release.pagamento,
+                release.tipo == "OS" 
+                    ? gridjs.html(`<span class="badge fs-6 bg-blue">Ordens</span>`)
+                    : gridjs.html(`<span class="badge fs-6 bg-success">Produtos</span>`),
+                to_real(release.valor),
+            ]
+        }): [];
+
+        const table = create_table(el, data, columns, 8)
+    };
+})
+
 const form_discount = document.querySelector("#form_discount_pay")
 form_discount.addEventListener("submit", (e)=>{
     e.preventDefault();
     desconto = parseFloat(form_discount.discount_pay.value);
     total -= desconto
     atualizar_valores();
+})
+
+document.addEventListener('DOMContentLoaded', async()=>{
+    const sp = document.createElement("span")
+    sp.textContent = "Lista de Vendas"
+
+    const body = document.createElement("div")
+    body.dataset.api = "sales"  
+
+    const month = new Date().toLocaleDateString("pt-br", {'month': 'numeric'});
+    const req = await sale_model.get({"month": month});
+    const res = await req.json();
+    
+    if(req.ok){
+        const columns = [
+            "Nome", "Atendente", "Data",
+            "Pagamento", "Tipo", "Valor", "Ações"
+        ]
+        const data = res ? res.map(release => {
+            return [
+                release.nome,
+                gridjs.html(`<img width="40" height="40" class="rounded-circle" src="${server}/api/files/img/manager/${encodeURI(release.photo)}" /> <span class="ms-2">${release.atendente}</span>`),
+                new Date(release.data).toLocaleDateString("pt-br"),
+                release.pagamento,
+                release.tipo == "OS" 
+                    ? gridjs.html(`<span class="badge fs-6 bg-blue">Ordens</span>`)
+                    : gridjs.html(`<span class="badge fs-6 bg-success">Produtos</span>`),
+                to_real(release.valor),
+            ]
+        }): [];
+        create_table(body, data, columns, 8);
+    };
+    const modal = create_modal(sp, body, "modal-dialog-centered", "xl") 
+    document.querySelector("#btn_sale").addEventListener("click", ()=>{modal.show()})
 })

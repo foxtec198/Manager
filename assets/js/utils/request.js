@@ -32,16 +32,16 @@ export class ApiRequest {
 
         try {// Escopo da requisição Final
             const req = await fetch(`${baseUrl}${this.path}`, options); // Requisição
-            if(!req.ok){console.warn(await req.json())}
+            if(!req.ok){console.warn(await req.clone().json())}
 
             // Confirma se o status nao esta OK e se é 401
             if(!req.ok && req.status === 401){ // Condicional para token expirado!
-                const res = await req.json(); // Obtem o JSON
+                const res = await req.clone().json(); // Obtem o JSON
                 // Confirma se o JSON é referente ao token
                 if(res.toLowerCase().includes("token") && res.toLowerCase().includes("expirado")){
                     sessionStorage.clear() // Limpa o session storage
                     parent.window.location = "/?toast=Token de acesso expirado, por favor refaça o login!"; // Muda para a tela de login e mostra a mensagem de acesso Expirado
-                }else{ return await fetch(`${baseUrl}${this.path}`, options); }; // Retorna a requisição novamente por conta de ja ter instanciado o JSON
+                }else{ return req }; // Retorna a requisição
             }else{ return req }; // Retorna a requisição.
         } catch (err) { show_toast(`Erro com o servidor, tente novamente mais tarde! - Erro: ${err} - Codigo: ${err.status_code}`, "danger");} // Retorna o erro
         finally { is_loading(false); }; // Remove o carregamento!

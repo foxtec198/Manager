@@ -139,9 +139,9 @@ export function set_buttons(){
     parent.document.querySelectorAll("[data]")
 }
 
-export function create_modal(title, body, center = 'modal-dialog-centered') {
+export function create_modal(title, body, center='modal-dialog-centered', size="l", backdrop=false) {
     const modal = document.createElement("div");
-    modal.classList.add("modal", "fade");
+    modal.classList.add("modal", `modal-${size}`, "fade");
     modal.ariaHidden = true;
     modal.tabIndex = "-1";
     modal.style.height = "100%"
@@ -170,7 +170,7 @@ export function create_modal(title, body, center = 'modal-dialog-centered') {
     modal_dialog.appendChild(modal_content);
 
     
-    const instance = new bootstrap.Modal(modal, { 'show': true, 'backdrop': false });
+    const instance = new bootstrap.Modal(modal, { 'show': true, 'backdrop': backdrop });
     parent.document.body.appendChild(modal);
 
     return instance 
