@@ -13,6 +13,9 @@ import { setPartsTable } from "./services/parts_service.js";
 import { loadConfig } from "./services/config_service.js";
 import { App } from "./core/app.js";
 
+// Externals
+import 'https://cdnjs.cloudflare.com/ajax/libs/gridjs/6.2.0/gridjs.production.min.js';
+
 const app = new App();
 
 // Confirma se esta na tela de Login
