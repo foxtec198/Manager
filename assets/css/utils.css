@@ -19,6 +19,10 @@
     --red: rgb(202, 49, 60);
 }
 
+.hidden{
+    display: none !important;
+}
+
 .card-carousel {
   position: relative;
   overflow: hidden;
