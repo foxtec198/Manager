@@ -304,7 +304,7 @@ document.querySelectorAll("input[id='search']").forEach(el => {
 });
 
 document.querySelectorAll("[data-api='sales']").forEach(async el => {
-    const month = new Date().toLocaleDateString("pt-br", {'month': 'numeric'});
+    const month = new Date().toLocaleDateString("pt-br", {'month': 'numeric'}) - 1;
     const req = await sale_model.get({"month": month});
     const res = await req.json();
     
@@ -336,38 +336,4 @@ form_discount.addEventListener("submit", (e)=>{
     desconto = parseFloat(form_discount.discount_pay.value);
     total -= desconto
     atualizar_valores();
-})
-
-document.addEventListener('DOMContentLoaded', async()=>{
-    const sp = document.createElement("span")
-    sp.textContent = "Lista de Vendas"
-
-    const body = document.createElement("div")
-    body.dataset.api = "sales"  
-
-    const month = new Date().toLocaleDateString("pt-br", {'month': 'numeric'});
-    const req = await sale_model.get({"month": month});
-    const res = await req.json();
-    
-    if(req.ok){
-        const columns = [
-            "Nome", "Atendente", "Data",
-            "Pagamento", "Tipo", "Valor", "Ações"
-        ]
-        const data = res ? res.map(release => {
-            return [
-                release.nome,
-                gridjs.html(`<img width="40" height="40" class="rounded-circle" src="${server}/api/files/img/manager/${encodeURI(release.photo)}" /> <span class="ms-2">${release.atendente}</span>`),
-                new Date(release.data).toLocaleDateString("pt-br"),
-                release.pagamento,
-                release.tipo == "OS" 
-                    ? gridjs.html(`<span class="badge fs-6 bg-blue">Ordens</span>`)
-                    : gridjs.html(`<span class="badge fs-6 bg-success">Produtos</span>`),
-                to_real(release.valor),
-            ]
-        }): [];
-        create_table(body, data, columns, 8);
-    };
-    const modal = create_modal(sp, body, "modal-dialog-centered", "xl") 
-    document.querySelector("#btn_sale").addEventListener("click", ()=>{modal.show()})
 })
