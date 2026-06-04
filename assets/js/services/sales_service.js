@@ -304,7 +304,7 @@ document.querySelectorAll("input[id='search']").forEach(el => {
 });
 
 document.querySelectorAll("[data-api='sales']").forEach(async el => {
-    const month = new Date().toLocaleDateString("pt-br", {'month': 'numeric'}) - 1;
+    const month = new Date().toLocaleDateString("pt-br", {'month': 'numeric'});
     const req = await sale_model.get({"month": month});
     const res = await req.json();
     
