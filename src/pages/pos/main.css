@@ -1,0 +1,55 @@
+body, html, :root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  --radius: 20px
+}
+
+.p-avatar-image img{
+  position: relative;
+  top: 0;
+  left: 0;
+  max-width: 50px;
+  max-height: 50px;
+}
+
+section {
+  width: 100%;
+  padding: 0 10px;
+}
+
+.frame-pos{
+  position: relative;
+}
+
+.badge-pos{
+  position: absolute !important;
+  top: 0;
+  right: 1rem;
+  font-size: small;
+}
+
+.first-frame {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 20px;
+  flex-wrap: wrap;
+
+}
+
+.p-fieldset{
+  flex: 1;
+  flex-basis: 200px;
+  border-radius: var(--radius) !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.p-fieldset-content{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}

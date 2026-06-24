@@ -1,0 +1,48 @@
+.topbar-mobile {
+  display: none;
+}
+
+.topbar-desktop{
+  padding: .6rem;
+}
+
+.topbar-desktop-itens{
+  padding: .4rem;
+  background-color: var(--tertiary);
+  border-radius: 30px;
+}
+
+@media (max-width: 1050px) {
+  .topbar-desktop {
+    display: none !important;
+  }
+
+  .topbar-mobile {
+    display: flex !important;
+    gap: 0.5rem !important;
+  }
+}
+
+header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .5rem;
+    
+    & .p-button{
+        border-radius: 30px !important;
+        font-weight: 750;
+
+    }
+
+    & button:hover{
+      opacity: .8;
+    }
+
+    & button.active{
+        background-color: var(--primary-color) !important;
+        color: #fff !important;
+        border: none;
+    }
+
+}

@@ -1,0 +1,41 @@
+:root {
+    --primary: #5E8B60;
+    --secondary: #3a5a40;
+    --tertiary: #2B3035;
+    --foreground: #fff;
+    --dark_gray: #282729;
+    --gray: #2B3035;
+    --blue: #023047;
+    --violet: #f72585;
+    --orange: #fb8500;
+    --brow: #603808;
+    --dark-red: #c1121f;
+    --red: rgb(202, 49, 60);
+}
+
+/* BUTTONS STYLES */
+.p-button-success {
+    background: var(--primary) !important;
+    color: var(--foreground) !important;
+    font-weight: 700 !important;
+    border: none !important;
+}
+
+.p-button-danger {
+    background: var(--red) !important;
+    color: var(--foreground) !important;
+    font-weight: 700 !important;
+    border: none !important;
+}
+
+.p-tag-success{
+    background: var(--primary);
+    color: var(--foreground) !important;
+    font-weight: 900 !important;
+}
+
+.p-tag-danger{
+    background: var(--red);
+    color: var(--foreground) !important;
+    font-weight: 900 !important;
+}
